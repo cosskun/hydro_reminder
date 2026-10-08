@@ -36,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (sheetContext) {
         return Container(
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             left: 24,
             right: 24,
             top: 24,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -61,13 +61,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  '💧 Günlük Hedefiniz Belirlendi! 💧',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+                const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    '💧 Günlük Hedefiniz Belirlendi! 💧',
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -103,14 +107,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () async {
+                    // Close the bottom sheet popup immediately first
+                    if (Navigator.of(sheetContext).canPop()) {
+                      Navigator.of(sheetContext).pop();
+                    }
                     await provider.updateProfile(
                       gender: _selectedGender,
                       age: age,
                       weight: weight,
                     );
-                    if (mounted) {
-                      Navigator.pop(context); // Close bottom sheet
-                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade600,
@@ -171,7 +176,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.shade100.withOpacity(0.6),
+                        color: Colors.blue.shade100.withValues(alpha: 0.6),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -198,7 +203,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Colors.blue.shade800.withOpacity(0.7),
+                    color: Colors.blue.shade800.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -206,12 +211,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: Colors.white, width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.shade900.withOpacity(0.04),
+                        color: Colors.blue.shade900.withValues(alpha: 0.04),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
@@ -256,7 +261,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? Colors.blue.shade600
-                                        : Colors.blue.shade50.withOpacity(0.5),
+                                        : Colors.blue.shade50.withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: isSelected
@@ -304,7 +309,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   decoration: InputDecoration(
                                     suffixText: 'yıl',
                                     filled: true,
-                                    fillColor: Colors.blue.shade50.withOpacity(0.3),
+                                    fillColor: Colors.blue.shade50.withValues(alpha: 0.3),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide(color: Colors.blue.shade100),
@@ -339,7 +344,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   decoration: InputDecoration(
                                     suffixText: 'kg',
                                     filled: true,
-                                    fillColor: Colors.blue.shade50.withOpacity(0.3),
+                                    fillColor: Colors.blue.shade50.withValues(alpha: 0.3),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                       borderSide: BorderSide(color: Colors.blue.shade100),

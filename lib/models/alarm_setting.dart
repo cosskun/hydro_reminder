@@ -72,4 +72,30 @@ class AlarmSetting {
       isCustomSound: isCustomSound ?? this.isCustomSound,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is AlarmSetting &&
+        other.id == id &&
+        other.hour == hour &&
+        other.minute == minute &&
+        other.isEnabled == isEnabled &&
+        other.label == label &&
+        other.soundName == soundName &&
+        other.soundPath == soundPath &&
+        other.isCustomSound == isCustomSound;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        id,
+        hour,
+        minute,
+        isEnabled,
+        label,
+        soundName,
+        soundPath,
+        isCustomSound,
+      );
 }

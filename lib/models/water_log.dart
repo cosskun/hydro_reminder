@@ -37,4 +37,34 @@ class WaterLog {
       beverageId: (json['beverageId'] as String?) ?? 'water',
     );
   }
+
+  WaterLog copyWith({
+    String? id,
+    DateTime? timestamp,
+    int? amountMl,
+    int? rawAmountMl,
+    String? beverageId,
+  }) {
+    return WaterLog(
+      id: id ?? this.id,
+      timestamp: timestamp ?? this.timestamp,
+      amountMl: amountMl ?? this.amountMl,
+      rawAmountMl: rawAmountMl ?? this.rawAmountMl,
+      beverageId: beverageId ?? this.beverageId,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is WaterLog &&
+        other.id == id &&
+        other.timestamp == timestamp &&
+        other.amountMl == amountMl &&
+        other.rawAmountMl == rawAmountMl &&
+        other.beverageId == beverageId;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, timestamp, amountMl, rawAmountMl, beverageId);
 }

@@ -43,10 +43,46 @@ class BadgeItem {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'title': title,
+      'description': description,
+      'icon': icon,
+      'category': category,
       'isUnlocked': isUnlocked,
       'unlockedAt': unlockedAt?.toIso8601String(),
+      'currentProgress': currentProgress,
+      'progressLabel': progressLabel,
     };
   }
+
+  factory BadgeItem.fromJson(Map<String, dynamic> json) {
+    return BadgeItem(
+      id: json['id'] as String,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      icon: json['icon'] as String? ?? '⭐',
+      category: json['category'] as String? ?? 'general',
+      isUnlocked: json['isUnlocked'] as bool? ?? false,
+      unlockedAt: json['unlockedAt'] != null
+          ? DateTime.tryParse(json['unlockedAt'] as String)
+          : null,
+      currentProgress: (json['currentProgress'] as num?)?.toDouble() ?? 0.0,
+      progressLabel: json['progressLabel'] as String? ?? '',
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is BadgeItem &&
+        other.id == id &&
+        other.title == title &&
+        other.isUnlocked == isUnlocked &&
+        other.unlockedAt == unlockedAt &&
+        other.currentProgress == currentProgress;
+  }
+
+  @override
+  int get hashCode => Object.hash(id, title, isUnlocked, unlockedAt, currentProgress);
 
   static const List<BadgeItem> definitions = [
     BadgeItem(

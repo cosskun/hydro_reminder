@@ -228,6 +228,7 @@ class WaterProvider with ChangeNotifier {
 
   // Initialize Provider
   Future<void> init() async {
+    await _storageService.init();
     _hasCompletedOnboarding = await _storageService.hasCompletedOnboarding();
     
     final profile = await _storageService.getProfile();
@@ -422,27 +423,32 @@ class WaterProvider with ChangeNotifier {
     } catch (_) {}
   }
 
-  // Calculate customized daily water target
+  // Calculate customized daily water target (EFSA & WHO standards)
   int calculateDailyGoal({
     required String gender,
     required int age,
     required double weight,
   }) {
-    double calculated = weight * 35.0;
-
-    if (gender == 'Erkek') {
-      calculated += 500.0;
+    // Baseline multiplier per kg:
+    // Men: 35 ml/kg, Women: 31 ml/kg, Other: 33 ml/kg
+    double multiplier = 35.0;
+    if (gender == 'Kadın') {
+      multiplier = 31.0;
     } else if (gender == 'Diğer') {
-      calculated += 250.0;
+      multiplier = 33.0;
     }
 
-    if (age < 30) {
-      calculated += 200.0;
-    } else if (age >= 55) {
-      calculated -= 200.0;
+    // Age factor
+    if (age < 18) {
+      multiplier += 4.0; // Adolescents have higher relative water turnover
+    } else if (age >= 65) {
+      multiplier -= 3.0; // Senior baseline
     }
 
-    return ((calculated / 100.0).round() * 100).clamp(1000, 6000);
+    double calculated = weight * multiplier;
+
+    // Round to nearest 50 ml for a clean, realistic target
+    return ((calculated / 50.0).round() * 50).clamp(1000, 5000);
   }
 
   // Save profile & update target
@@ -509,7 +515,7 @@ class WaterProvider with ChangeNotifier {
 
     if (_isSoundEffectsEnabled) {
       try {
-        HapticFeedback.mediumImpact();
+        HapticFeedback.lightImpact();
         SoundService().playWaterSipSound();
       } catch (_) {}
     }

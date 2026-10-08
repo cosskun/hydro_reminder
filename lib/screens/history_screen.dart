@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/badge_item.dart';
 import '../models/water_log.dart';
 import '../providers/water_provider.dart';
+import '../widgets/history/weekly_bar_chart.dart';
+import '../widgets/history/stat_card.dart';
+import '../widgets/history/badge_card.dart';
+import '../widgets/history/daily_log_group.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -96,99 +99,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 16),
 
           // Custom 7-Day Bar Chart
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1C2541) : Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark ? Colors.black26 : Colors.blue.shade900.withValues(alpha: 0.02),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-              border: Border.all(
-                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
-                width: 1,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Son 7 Günlük Tüketim',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade900.withValues(alpha: 0.8),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  height: 140,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: last7Days.map((dayData) {
-                      final percentage = dayData['percentage'] as double;
-                      final barHeight = 90 * percentage;
-                      final isToday = dayData['dayLabel'] == DateFormat('E', 'tr_TR').format(DateTime.now());
-
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              dayData['amount'] > 0 ? '${dayData['amount']}' : '',
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: isToday
-                                    ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800)
-                                    : (isDark ? const Color(0xFF64748B) : Colors.grey.shade600),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            width: 16,
-                            height: barHeight.clamp(4.0, 90.0),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: isToday
-                                    ? [const Color(0xFF0288D1), const Color(0xFF38BDF8)]
-                                    : (isDark
-                                        ? [const Color(0xFF334155), const Color(0xFF475569)]
-                                        : [Colors.blue.shade200, Colors.blue.shade100]),
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              dayData['dayLabel'] as String,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                                color: isToday
-                                    ? (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900)
-                                    : (isDark ? const Color(0xFF64748B) : Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
+          WeeklyBarChart(
+            last7Days: last7Days,
+            isDark: isDark,
           ),
           const SizedBox(height: 16),
 
@@ -196,7 +109,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildStatCard(
+                child: StatCard(
                   title: 'Günlük Ortalama',
                   value: '$averageIntake ml',
                   subtitle: 'aktif günlerde',
@@ -207,7 +120,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildStatCard(
+                child: StatCard(
                   title: 'Mevcut Seri',
                   value: '$streak Gün',
                   subtitle: 'hedefe ulaşma',
@@ -316,7 +229,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     itemCount: badges.length,
                     itemBuilder: (context, index) {
                       final badge = badges[index];
-                      return _buildBadgeCard(badge, isDark);
+                      return BadgeCard(badge: badge, isDark: isDark);
                     },
                   ),
                 ],
@@ -372,107 +285,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 final dateKey = groupedLogs.keys.elementAt(index);
                 final dayLogs = groupedLogs[dateKey]!;
 
-                final parsedDate = DateTime.parse(dateKey);
-                final formattedHeaderDate = DateFormat('dd MMMM yyyy, EEEE', 'tr_TR').format(parsedDate);
-                final isDateToday = dateKey == DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-                final totalForDay = dayLogs.fold(0, (sum, log) => sum + log.amountMl);
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0, bottom: 8.0, left: 4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            isDateToday ? 'Bugün' : formattedHeaderDate,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: isDateToday
-                                  ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800)
-                                  : (isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600),
-                            ),
-                          ),
-                          Text(
-                            'Toplam: $totalForDay ml',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
-                        ),
-                      ),
-                      color: isDark ? const Color(0xFF1C2541) : Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: Column(
-                          children: dayLogs.map((log) {
-                            final timeString = DateFormat('HH:mm').format(log.timestamp);
-                            final isBeverageDifferent = log.rawAmountMl != log.amountMl;
-
-                            return Column(
-                              children: [
-                                ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: isDark
-                                        ? const Color(0xFF0B132B)
-                                        : Colors.blue.shade50,
-                                    child: Text(
-                                      log.beverage.icon,
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    '${log.amountMl} ml ${log.beverage.name}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-                                      fontSize: 13.5,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    isBeverageDifferent
-                                        ? '$timeString  •  (${log.rawAmountMl} ml içildi, net hidrasyon)'
-                                        : timeString,
-                                    style: TextStyle(
-                                      color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                  trailing: IconButton(
-                                    icon: Icon(
-                                      Icons.delete_outline_rounded,
-                                      color: Colors.red.shade300,
-                                      size: 20,
-                                    ),
-                                    onPressed: () => _confirmDeleteLog(context, log.id, provider, isDark),
-                                  ),
-                                ),
-                                if (log != dayLogs.last)
-                                  Divider(
-                                    height: 1,
-                                    color: isDark ? const Color(0xFF3A506B).withValues(alpha: 0.5) : Colors.blue.shade50,
-                                  ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ],
+                return DailyLogGroup(
+                  dateKey: dateKey,
+                  dayLogs: dayLogs,
+                  provider: provider,
+                  isDark: isDark,
                 );
               },
             ),
@@ -482,185 +299,4 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildBadgeCard(BadgeItem badge, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-      decoration: BoxDecoration(
-        color: badge.isUnlocked
-            ? (isDark ? const Color(0xFF0F2644) : Colors.amber.shade50.withValues(alpha: 0.4))
-            : (isDark ? const Color(0xFF0B132B) : Colors.grey.shade50),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: badge.isUnlocked
-              ? (isDark ? const Color(0xFF38BDF8) : Colors.amber.shade300)
-              : (isDark ? const Color(0xFF3A506B).withValues(alpha: 0.4) : Colors.grey.shade200),
-          width: badge.isUnlocked ? 1.4 : 1.0,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            badge.icon,
-            style: TextStyle(
-              fontSize: 26,
-              color: badge.isUnlocked ? null : Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            badge.title,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.bold,
-              color: badge.isUnlocked
-                  ? (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900)
-                  : (isDark ? const Color(0xFF64748B) : Colors.grey),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            badge.isUnlocked ? 'Kazanıldı' : badge.progressLabel,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: badge.isUnlocked ? FontWeight.bold : FontWeight.w500,
-              color: badge.isUnlocked
-                  ? (isDark ? Colors.amber.shade300 : Colors.amber.shade800)
-                  : (isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600),
-            ),
-          ),
-          if (!badge.isUnlocked) ...[
-            const SizedBox(height: 4),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: badge.currentProgress,
-                minHeight: 3,
-                backgroundColor: isDark ? const Color(0xFF3A506B) : Colors.grey.shade200,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  isDark ? const Color(0xFF38BDF8) : Colors.blue.shade400,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  void _confirmDeleteLog(BuildContext context, String logId, WaterProvider provider, bool isDark) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
-          title: Text(
-            'Kaydı Sil?',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
-            ),
-          ),
-          content: Text(
-            'Bu su tüketim kaydını silmek istediğinizden emin misiniz?',
-            style: TextStyle(
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Vazgeç', style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                provider.deleteLog(logId);
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade400,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Sil'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildStatCard({
-    required String title,
-    required String value,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required bool isDark,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C2541) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black26 : Colors.blue.shade900.withValues(alpha: 0.01),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-                ),
-              ),
-              Icon(icon, color: color, size: 20),
-            ],
-          ),
-          const SizedBox(height: 12),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-              ),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 10,
-              color: isDark ? const Color(0xFF64748B) : Colors.grey.shade400,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

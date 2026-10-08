@@ -153,7 +153,7 @@ struct WaterQuickLogWidgetEntryView: View {
                         Text("+\(entry.preset1) ml").font(.system(size: 10, weight: .bold)).foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white)
+                    .background(Color.white.opacity(0.55))
                     .cornerRadius(12)
                 }
 
@@ -163,7 +163,7 @@ struct WaterQuickLogWidgetEntryView: View {
                         Text("+\(entry.preset2) ml").font(.system(size: 10, weight: .bold)).foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white)
+                    .background(Color.white.opacity(0.55))
                     .cornerRadius(12)
                 }
 
@@ -173,7 +173,7 @@ struct WaterQuickLogWidgetEntryView: View {
                         Text("+\(entry.preset3) ml").font(.system(size: 10, weight: .bold)).foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white)
+                    .background(Color.white.opacity(0.55))
                     .cornerRadius(12)
                 }
             }
@@ -231,7 +231,7 @@ struct WaterProgressWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterProgressWidgetEntryView(entry: entry)
-                .containerBackground(Color(red: 0.96, green: 0.97, blue: 0.99), for: .widget)
+                .containerBackground(Color.white.opacity(0.28), for: .widget)
         }
         .configurationDisplayName("HydroSoft Su Durumu")
         .description("Günlük tüketilen su, kalan hedef ve ilerleme yüzdesini gösterir.")
@@ -245,7 +245,7 @@ struct WaterQuickLogWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterQuickLogWidgetEntryView(entry: entry)
-                .containerBackground(Color(red: 0.96, green: 0.97, blue: 0.99), for: .widget)
+                .containerBackground(Color.white.opacity(0.28), for: .widget)
         }
         .configurationDisplayName("Hızlı Su Ekle")
         .description("Bardak veya şişe sembolüne basarak tek dokunuşla su içtiğinizi kaydedin.")
@@ -259,7 +259,7 @@ struct WaterMiniWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterMiniWidgetEntryView(entry: entry)
-                .containerBackground(Color(red: 0.96, green: 0.97, blue: 0.99), for: .widget)
+                .containerBackground(Color.white.opacity(0.28), for: .widget)
         }
         .configurationDisplayName("Mini Su Sayacı")
         .description("Kilit ekranı için dairesel veya kompakt su göstergesi.")

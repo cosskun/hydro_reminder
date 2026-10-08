@@ -58,8 +58,17 @@ class AlarmService {
       const AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
+      // iOS (Darwin) Initialization settings
+      const DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+
       const InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid,
+        iOS: initializationSettingsDarwin,
       );
 
       // Initialize the plugin with named settings parameter
@@ -77,6 +86,10 @@ class AlarmService {
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
           _notificationsPlugin.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
+
+      final IOSFlutterLocalNotificationsPlugin? iosImplementation =
+          _notificationsPlugin.resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
 
       // Explicitly create high-priority notification channel for Android 8.0+
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -112,9 +125,14 @@ class AlarmService {
       await androidImplementation?.createNotificationChannel(summaryChannel);
       await androidImplementation?.createNotificationChannel(tipsChannel);
 
-      // Request permissions on Android 13+ / 14+
+      // Request permissions on Android 13+ / 14+ and iOS
       await androidImplementation?.requestNotificationsPermission();
       await androidImplementation?.requestExactAlarmsPermission();
+      await iosImplementation?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
       // Check if the app was launched by a notification (Cold Start)
       final NotificationAppLaunchDetails? launchDetails =
@@ -239,6 +257,19 @@ class AlarmService {
           styleInformation: BigTextStyleInformation(''),
         );
 
+        const darwinDetails = DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          sound: 'sound_water_drop.wav',
+          interruptionLevel: InterruptionLevel.timeSensitive,
+        );
+
+        const notificationDetails = NotificationDetails(
+          android: androidDetails,
+          iOS: darwinDetails,
+        );
+
         try {
           // Attempt alarmClock mode (wakes up phone from deep sleep/Doze mode)
           await _notificationsPlugin.zonedSchedule(
@@ -246,7 +277,7 @@ class AlarmService {
             title: title,
             body: body,
             scheduledDate: scheduledDate,
-            notificationDetails: const NotificationDetails(android: androidDetails),
+            notificationDetails: notificationDetails,
             androidScheduleMode: AndroidScheduleMode.alarmClock,
             matchDateTimeComponents: DateTimeComponents.time, // Daily repeat
             payload: 'alarm_${alarm.id}',
@@ -259,7 +290,7 @@ class AlarmService {
               title: title,
               body: body,
               scheduledDate: scheduledDate,
-              notificationDetails: const NotificationDetails(android: androidDetails),
+              notificationDetails: notificationDetails,
               androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
               matchDateTimeComponents: DateTimeComponents.time,
               payload: 'alarm_${alarm.id}',
@@ -327,13 +358,26 @@ class AlarmService {
       styleInformation: BigTextStyleInformation(''),
     );
 
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'sound_water_drop.wav',
+      interruptionLevel: InterruptionLevel.active,
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
     try {
       await _notificationsPlugin.zonedSchedule(
         id: _endOfDayNotificationId,
         title: title,
         body: body,
         scheduledDate: scheduledDate,
-        notificationDetails: const NotificationDetails(android: androidDetails),
+        notificationDetails: notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: 'summary_end_of_day',
@@ -345,7 +389,7 @@ class AlarmService {
           title: title,
           body: body,
           scheduledDate: scheduledDate,
-          notificationDetails: const NotificationDetails(android: androidDetails),
+          notificationDetails: notificationDetails,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           matchDateTimeComponents: DateTimeComponents.time,
           payload: 'summary_end_of_day',
@@ -373,13 +417,26 @@ class AlarmService {
       visibility: NotificationVisibility.public,
     );
 
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'sound_water_drop.wav',
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
     try {
       await _notificationsPlugin.zonedSchedule(
         id: 999,
         title: 'Su Zamanı Geldi! 💧',
         body: 'Kapatılamayan alarm testi. Bir bardak su içelim!',
         scheduledDate: scheduledDate,
-        notificationDetails: const NotificationDetails(android: androidDetails),
+        notificationDetails: notificationDetails,
         androidScheduleMode: AndroidScheduleMode.alarmClock,
         payload: 'alarm_test_id',
       );
@@ -390,7 +447,7 @@ class AlarmService {
           title: 'Su Zamanı Geldi! 💧',
           body: 'Kapatılamayan alarm testi. Bir bardak su içelim!',
           scheduledDate: scheduledDate,
-          notificationDetails: const NotificationDetails(android: androidDetails),
+          notificationDetails: notificationDetails,
           androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           payload: 'alarm_test_id',
         );
@@ -418,7 +475,19 @@ class AlarmService {
       visibility: NotificationVisibility.public,
     );
 
-    const NotificationDetails details = NotificationDetails(android: androidDetails);
+    const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'sound_water_drop.wav',
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
     await _notificationsPlugin.show(
       id: 999,
       title: 'Test Uyarısı 💧',
@@ -458,7 +527,18 @@ class AlarmService {
       styleInformation: BigTextStyleInformation(''),
     );
 
-    const NotificationDetails details = NotificationDetails(android: androidDetails);
+    const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'sound_water_drop.wav',
+      interruptionLevel: InterruptionLevel.active,
+    );
+
+    const NotificationDetails details = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
 
     await _notificationsPlugin.show(
       id: _sleepTipNotificationId,
@@ -472,20 +552,40 @@ class AlarmService {
   // Check if system notifications are enabled
   Future<bool> checkPermissionStatus() async {
     if (kIsWeb) return true;
-    final status = await _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.areNotificationsEnabled();
-    return status ?? false;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final status = await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.areNotificationsEnabled();
+      return status ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final status = await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.checkPermissions();
+      return status?.isEnabled ?? true;
+    }
+    return true;
   }
 
   // Request notifications permission from the user
   Future<bool> requestPermission() async {
     if (kIsWeb) return true;
-    final androidImpl = _notificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    final notifStatus = await androidImpl?.requestNotificationsPermission();
-    await androidImpl?.requestExactAlarmsPermission();
-    return notifStatus ?? false;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final androidImpl = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final notifStatus = await androidImpl?.requestNotificationsPermission();
+      await androidImpl?.requestExactAlarmsPermission();
+      return notifStatus ?? false;
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final iosImpl = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+      final notifStatus = await iosImpl?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      return notifStatus ?? false;
+    }
+    return true;
   }
 
   // Cancel all notifications

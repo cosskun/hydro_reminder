@@ -32,10 +32,8 @@ jobs:
       - name: Install Flutter Dependencies
         run: flutter pub get
 
-      - name: Build CocoaPods
-        run: |
-          cd ios
-          pod install
+      - name: Prepare Flutter iOS Workspace
+        run: flutter build ios --release --no-codesign
 
       - name: Run Fastlane & Deploy to TestFlight
         env:

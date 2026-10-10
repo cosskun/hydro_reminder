@@ -16,6 +16,22 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Custom graceful error handling
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      child: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(16),
+        alignment: Alignment.center,
+        child: const Text(
+          'Bir arayüz yükleme sorunu oluştu.',
+          style: TextStyle(color: Colors.blueGrey, fontSize: 13),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  };
+
   // Set system status bar to transparent with dark icons for light theme
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

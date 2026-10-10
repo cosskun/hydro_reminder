@@ -47,11 +47,17 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Hydro Reminder requires camera access to scan bottle QR codes and update hydration logs.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Hydro Reminder requires location access to provide weather-adjusted hydration reminders.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Hydro Reminder requires location access to provide weather-adjusted hydration reminders.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Hydro Reminder requires access to sync your water intake data with Apple Health.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Hydro Reminder requires access to update your water intake data in Apple Health.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Hydro Reminder requires photo library access to export data.</string>
+	<string>Hydro Reminder requires photo library access to export data and custom avatars.</string>
 </dict>
 </plist>

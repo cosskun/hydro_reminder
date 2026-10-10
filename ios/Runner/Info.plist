@@ -47,5 +47,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Hydro Reminder requires access to sync your water intake data with Apple Health.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Hydro Reminder requires access to update your water intake data in Apple Health.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Hydro Reminder requires photo library access to export data.</string>
 </dict>
 </plist>

@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -11,6 +13,8 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
@@ -41,13 +45,19 @@
 	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 		<key>UISceneConfigurations</key>
 		<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 					<key>UISceneClassName</key>
 					<string>UIWindowScene</string>
 					<key>UISceneConfigurationName</key>
@@ -85,40 +95,48 @@
 		<string>remote-notification</string>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
-	<string>HydroSoft, günlük aktivite ve adım verilerinize göre su tüketimi hedefinizi optimize etmek için Sağlık verilerini okur.</string>
+	<string>HydroSoft, gÃ¼nlÃ¼k aktivite ve adÄ±m verilerinize gÃ¶re su tÃ¼ketimi hedefinizi optimize etmek iÃ§in SaÄŸlÄ±k verilerini okur.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>HydroSoft, içtiğiniz su kayıtlarını otomatik olarak Apple Sağlık uygulamasına senkronize etmek için bu izni kullanır.</string>
+	<string>HydroSoft, iÃ§tiÄŸiniz su kayÄ±tlarÄ±nÄ± otomatik olarak Apple SaÄŸlÄ±k uygulamasÄ±na senkronize etmek iÃ§in bu izni kullanÄ±r.</string>
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 			<key>UIApplicationShortcutItemType</key>
 			<string>hydroreminder://log?amount=200</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>+200 ml Bardak 🥛</string>
+			<string>+200 ml Bardak ğŸ¥›</string>
 			<key>UIApplicationShortcutItemIconType</key>
 			<string>UIApplicationShortcutIconTypeAdd</string>
 		</dict>
 		<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 			<key>UIApplicationShortcutItemType</key>
 			<string>hydroreminder://log?amount=330</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>+330 ml Küçük Şişe 🥤</string>
+			<string>+330 ml KÃ¼Ã§Ã¼k ÅiÅŸe ğŸ¥¤</string>
 			<key>UIApplicationShortcutItemIconType</key>
 			<string>UIApplicationShortcutIconTypeAdd</string>
 		</dict>
 		<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 			<key>UIApplicationShortcutItemType</key>
 			<string>hydroreminder://log?amount=500</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>+500 ml Büyük Şişe 🌊</string>
+			<string>+500 ml BÃ¼yÃ¼k ÅiÅŸe ğŸŒŠ</string>
 			<key>UIApplicationShortcutItemIconType</key>
 			<string>UIApplicationShortcutIconTypeAdd</string>
 		</dict>
 		<dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 			<key>UIApplicationShortcutItemType</key>
 			<string>hydroreminder://stats</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>İstatistikler 📊</string>
+			<string>Ä°statistikler ğŸ“Š</string>
 			<key>UIApplicationShortcutItemIconType</key>
 			<string>UIApplicationShortcutIconTypeSearch</string>
 		</dict>

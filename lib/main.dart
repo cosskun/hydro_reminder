@@ -60,6 +60,9 @@ void main() async {
         ),
       );
     },
+    onNavigate: (tabIndex) {
+      mainNavigationKey.currentState?.setTabIndex(tabIndex);
+    },
   );
 
   runApp(

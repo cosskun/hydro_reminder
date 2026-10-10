@@ -69,7 +69,6 @@ class QuickPresetsCard extends StatelessWidget {
       title: 'Hızlı Su Ekleme Miktarları',
       titleTrailing: const Icon(Icons.local_drink_outlined, color: Color(0xFF38BDF8)),
       children: [
-        const SizedBox(height: -8),
         Text(
           'Ana ekrandaki hızlı su ekleme butonlarının (ml) değerlerini özelleştirin.',
           style: TextStyle(

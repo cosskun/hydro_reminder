@@ -18,7 +18,6 @@ class DangerZoneCard extends StatelessWidget {
       title: 'Tehlikeli Alan',
       isDangerZone: true,
       children: [
-        const SizedBox(height: -8),
         Text(
           'Uygulamadaki tüm kayıtları ve ayarları kalıcı olarak silip temiz kurulum sayfasına geri dönebilirsiniz.',
           style: TextStyle(

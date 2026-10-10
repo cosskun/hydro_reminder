@@ -9,6 +9,7 @@ import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
 import '../services/sound_service.dart';
 import '../services/widget_service.dart';
+import '../services/health_service.dart';
 
 class WaterProvider with ChangeNotifier {
   final StorageService _storageService = StorageService();
@@ -50,6 +51,18 @@ class WaterProvider with ChangeNotifier {
   bool _isEndOfDayEnabled = true;
   int _endOfDayHour = 22;
   int _endOfDayMinute = 0;
+
+  // iOS Specific Siri & Back Tap Integration State
+  bool _isSiriShortcutsEnabled = true;
+  bool _isBackTapEnabled = true;
+
+  // Apple Health (HealthKit) Integration State
+  bool _isAppleHealthSyncEnabled = false;
+  bool _isAppleHealthAutoGoalEnabled = false;
+  int _todayHealthSteps = 0;
+
+  // Ongoing Live Progress Notification State (Android & iOS)
+  bool _isOngoingNotificationEnabled = false;
 
   // Customizable Quick Add Presets
   List<int> _quickPresets = [200, 330, 500];
@@ -99,6 +112,12 @@ class WaterProvider with ChangeNotifier {
   bool get isWorkoutBoostActive => _isWorkoutBoostActive;
   bool get isHotWeatherBoostActive => _isHotWeatherBoostActive;
   BadgeItem? get newlyUnlockedBadge => _newlyUnlockedBadge;
+  bool get isSiriShortcutsEnabled => _isSiriShortcutsEnabled;
+  bool get isBackTapEnabled => _isBackTapEnabled;
+  bool get isAppleHealthSyncEnabled => _isAppleHealthSyncEnabled;
+  bool get isAppleHealthAutoGoalEnabled => _isAppleHealthAutoGoalEnabled;
+  int get todayHealthSteps => _todayHealthSteps;
+  bool get isOngoingNotificationEnabled => _isOngoingNotificationEnabled;
 
   // Effective Daily Target (Base Goal + Daily Boosts)
   int get dailyGoal {
@@ -270,9 +289,130 @@ class WaterProvider with ChangeNotifier {
     _unlockedBadges = await _storageService.getUnlockedBadges();
     await _checkAndUnlockBadges(suppressPopup: true);
 
+    // iOS Shortcuts
+    final iosShortcuts = await _storageService.getIosShortcutsSettings();
+    _isSiriShortcutsEnabled = iosShortcuts['isSiriEnabled'] ?? true;
+    _isBackTapEnabled = iosShortcuts['isBackTapEnabled'] ?? true;
+
+    // Apple Health (HealthKit)
+    final healthSettings = await _storageService.getAppleHealthSettings();
+    _isAppleHealthSyncEnabled = healthSettings['isEnabled'] ?? false;
+    _isAppleHealthAutoGoalEnabled = healthSettings['isAutoGoalEnabled'] ?? false;
+    if (_isAppleHealthSyncEnabled) {
+      try {
+        _todayHealthSteps = await HealthService().getTodaySteps();
+      } catch (_) {}
+    }
+
+    // Ongoing Live Progress Notification
+    _isOngoingNotificationEnabled = await _storageService.getOngoingNotificationSetting();
+
     await _syncWidgets();
     await _syncEndOfDaySummary();
+    await _syncOngoingNotification();
     notifyListeners();
+  }
+
+  // Update iOS Siri & Back Tap Integration Settings
+  Future<void> updateIosShortcutsSettings({
+    bool? isSiriEnabled,
+    bool? isBackTapEnabled,
+  }) async {
+    if (isSiriEnabled != null) _isSiriShortcutsEnabled = isSiriEnabled;
+    if (isBackTapEnabled != null) _isBackTapEnabled = isBackTapEnabled;
+    notifyListeners();
+
+    await _storageService.saveIosShortcutsSettings(
+      isSiriEnabled: _isSiriShortcutsEnabled,
+      isBackTapEnabled: _isBackTapEnabled,
+    );
+  }
+
+  // Update Apple Health (HealthKit) Settings
+  Future<bool> updateAppleHealthSettings({
+    bool? isEnabled,
+    bool? isAutoGoalEnabled,
+  }) async {
+    if (isEnabled != null) {
+      if (isEnabled) {
+        final granted = await HealthService().requestAuthorization();
+        if (!granted) {
+          _isAppleHealthSyncEnabled = false;
+          notifyListeners();
+          return false;
+        }
+      }
+      _isAppleHealthSyncEnabled = isEnabled;
+    }
+    if (isAutoGoalEnabled != null) {
+      _isAppleHealthAutoGoalEnabled = isAutoGoalEnabled;
+    }
+    if (_isAppleHealthSyncEnabled) {
+      try {
+        _todayHealthSteps = await HealthService().getTodaySteps();
+      } catch (_) {}
+    }
+    notifyListeners();
+
+    await _storageService.saveAppleHealthSettings(
+      isEnabled: _isAppleHealthSyncEnabled,
+      isAutoGoalEnabled: _isAppleHealthAutoGoalEnabled,
+    );
+    return true;
+  }
+
+  // Sync today's water logs to Apple Health
+  Future<int> syncTodayLogsToAppleHealth() async {
+    if (!_isAppleHealthSyncEnabled) return 0;
+    int count = 0;
+    final now = DateTime.now();
+    final todayLogs = _logs.where((l) =>
+      l.timestamp.year == now.year &&
+      l.timestamp.month == now.month &&
+      l.timestamp.day == now.day
+    );
+    for (final log in todayLogs) {
+      final success = await HealthService().writeWaterLog(
+        amountMl: log.amountMl,
+        timestamp: log.timestamp,
+      );
+      if (success) count++;
+    }
+    return count;
+  }
+
+  // Refresh step count from Apple Health
+  Future<void> refreshHealthSteps() async {
+    if (_isAppleHealthSyncEnabled) {
+      try {
+        _todayHealthSteps = await HealthService().getTodaySteps();
+        notifyListeners();
+      } catch (_) {}
+    }
+  }
+
+  // Update Ongoing Live Progress Notification Setting
+  Future<void> updateOngoingNotificationSetting(bool isEnabled) async {
+    _isOngoingNotificationEnabled = isEnabled;
+    notifyListeners();
+    await _storageService.saveOngoingNotificationSetting(isEnabled);
+    await _syncOngoingNotification();
+  }
+
+  // Sync Live Ongoing Notification in Notification Drawer
+  Future<void> _syncOngoingNotification() async {
+    try {
+      final percentInt = (todayPercentage * 100).round();
+      await AlarmService().updateOngoingProgressNotification(
+        isEnabled: _isOngoingNotificationEnabled && _isNotificationsEnabled,
+        todayConsumed: todayConsumed,
+        dailyGoal: dailyGoal,
+        percentage: percentInt,
+        preset1: preset1,
+        preset2: preset2,
+        preset3: preset3,
+      );
+    } catch (_) {}
   }
 
   void _checkAndResetBoostsIfNewDay() {
@@ -306,6 +446,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _syncWidgets();
       await _syncEndOfDaySummary();
+      await _syncOngoingNotification();
     } catch (_) {}
   }
 
@@ -326,6 +467,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _syncWidgets();
       await _syncEndOfDaySummary();
+      await _syncOngoingNotification();
     } catch (_) {}
   }
 
@@ -485,6 +627,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _syncEndOfDaySummary();
       await _syncWidgets();
+      await _syncOngoingNotification();
     } catch (_) {}
   }
 
@@ -525,6 +668,13 @@ class WaterProvider with ChangeNotifier {
       await _checkAndUnlockBadges();
       await _syncEndOfDaySummary();
       await _syncWidgets();
+      await _syncOngoingNotification();
+      if (_isAppleHealthSyncEnabled) {
+        unawaited(HealthService().writeWaterLog(
+          amountMl: effectiveMl,
+          timestamp: newLog.timestamp,
+        ));
+      }
     } catch (e) {
       debugPrint('Error syncing water log: $e');
     }
@@ -538,6 +688,7 @@ class WaterProvider with ChangeNotifier {
       await _storageService.saveWaterLogs(_logs);
       await _syncEndOfDaySummary();
       await _syncWidgets();
+      await _syncOngoingNotification();
     } catch (_) {}
   }
 
@@ -589,6 +740,7 @@ class WaterProvider with ChangeNotifier {
       } else {
         await AlarmService().rescheduleAllAlarms(_alarms);
         await _syncEndOfDaySummary();
+        await _syncOngoingNotification();
       }
     } catch (_) {}
   }
@@ -622,6 +774,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _storageService.saveQuickPresets(presets);
       await _syncWidgets();
+      await _syncOngoingNotification();
     } catch (_) {}
   }
 
@@ -657,6 +810,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _storageService.savePresets(p1, p2, p3);
       await _syncWidgets();
+      await _syncOngoingNotification();
     } catch (_) {}
   }
 

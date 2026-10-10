@@ -1,0 +1,53 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shortcut_cup_200"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_cup"
+        android:shortcutShortLabel="@string/shortcut_cup_short"
+        android:shortcutLongLabel="@string/shortcut_cup_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
+            android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
+            android:data="hydroreminder://log?amount=200" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_bottle_330"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_bottle"
+        android:shortcutShortLabel="@string/shortcut_bottle_short"
+        android:shortcutLongLabel="@string/shortcut_bottle_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
+            android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
+            android:data="hydroreminder://log?amount=330" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_bottle_500"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_wave"
+        android:shortcutShortLabel="@string/shortcut_wave_short"
+        android:shortcutLongLabel="@string/shortcut_wave_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
+            android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
+            android:data="hydroreminder://log?amount=500" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_history_stats"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_stats"
+        android:shortcutShortLabel="@string/shortcut_stats_short"
+        android:shortcutLongLabel="@string/shortcut_stats_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
+            android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
+            android:data="hydroreminder://stats" />
+    </shortcut>
+</shortcuts>

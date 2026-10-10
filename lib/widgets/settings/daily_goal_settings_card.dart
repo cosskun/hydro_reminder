@@ -47,7 +47,6 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
         ),
       ),
       children: [
-        const SizedBox(height: -10),
         Text(
           'İstediğiniz günlük hedef miktarını serbestçe belirleyin veya otomatik hesaplama seçeneğini kullanın.',
           style: TextStyle(

@@ -19,10 +19,15 @@ class WidgetService {
 
   StreamSubscription<Uri?>? _widgetClickSubscription;
   Function(int amount)? _onWaterLogged;
+  Function(int tabIndex)? _onNavigate;
 
   // Initialize widget service, app groups, and deep link listeners
-  Future<void> initialize({required Function(int amount) onWaterLogged}) async {
+  Future<void> initialize({
+    required Function(int amount) onWaterLogged,
+    Function(int tabIndex)? onNavigate,
+  }) async {
     _onWaterLogged = onWaterLogged;
+    _onNavigate = onNavigate;
 
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       try {
@@ -56,9 +61,9 @@ class WidgetService {
     }
   }
 
-  // Handle incoming deep link from widget
+  // Handle incoming deep link from widget or app shortcuts
   void _handleWidgetUri(Uri uri) {
-    debugPrint('Widget deep link received: $uri');
+    debugPrint('Widget / Shortcut deep link received: $uri');
     if (uri.scheme == 'hydroreminder') {
       if (uri.host == 'log' || uri.path.contains('log')) {
         final amountStr = uri.queryParameters['amount'];
@@ -68,6 +73,8 @@ class WidgetService {
             _onWaterLogged?.call(amount);
           }
         }
+      } else if (uri.host == 'stats' || uri.path.contains('stats') || uri.host == 'history') {
+        _onNavigate?.call(1); // 1 = History / İstatistikler tab
       }
     }
   }

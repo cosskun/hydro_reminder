@@ -45,6 +45,7 @@ dependencies:
   audioplayers: ^6.1.2
   file_picker: ^10.0.0
   home_widget: ^0.9.1
+  health: ^13.3.1
 
 dev_dependencies:
   flutter_test:

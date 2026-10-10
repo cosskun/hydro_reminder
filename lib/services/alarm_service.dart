@@ -32,8 +32,13 @@ class AlarmService {
   static const String _tipsChannelName = 'HydroSoft Sağlık İpuçları';
   static const String _tipsChannelDesc = 'Sağlıklı su tüketimi ve uyku hatırlatıcıları';
 
+  static const String _ongoingChannelId = 'hydro_ongoing_progress';
+  static const String _ongoingChannelName = 'HydroSoft Canlı İlerleme';
+  static const String _ongoingChannelDesc = 'Bildirim çubuğunda sabit canlı su takip paneli';
+
   static const int _endOfDayNotificationId = 8888;
   static const int _sleepTipNotificationId = 7777;
+  static const int _ongoingNotificationId = 9999;
 
   // Initialize notifications, channel, permissions, and timezone settings
   Future<void> initialize(WaterProvider provider) async {
@@ -75,6 +80,15 @@ class AlarmService {
       await _notificationsPlugin.initialize(
         settings: initializationSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
+          final actionId = response.actionId;
+          if (actionId != null && actionId.startsWith('action_log_')) {
+            final amount = int.tryParse(actionId.substring(11));
+            if (amount != null && amount > 0) {
+              _provider?.addWater(amount);
+            }
+            return;
+          }
+
           final payload = response.payload;
           if (payload != null && payload.startsWith('alarm_')) {
             final alarmId = payload.substring(6); // Remove prefix
@@ -121,9 +135,20 @@ class AlarmService {
         enableVibration: true,
       );
 
+      const AndroidNotificationChannel ongoingChannel = AndroidNotificationChannel(
+        _ongoingChannelId,
+        _ongoingChannelName,
+        description: _ongoingChannelDesc,
+        importance: Importance.low,
+        playSound: false,
+        enableVibration: false,
+        showBadge: false,
+      );
+
       await androidImplementation?.createNotificationChannel(channel);
       await androidImplementation?.createNotificationChannel(summaryChannel);
       await androidImplementation?.createNotificationChannel(tipsChannel);
+      await androidImplementation?.createNotificationChannel(ongoingChannel);
 
       // Request permissions on Android 13+ / 14+ and iOS
       await androidImplementation?.requestNotificationsPermission();
@@ -614,5 +639,83 @@ class AlarmService {
   Future<void> rescheduleAllAlarms(List<AlarmSetting> alarms) async {
     if (kIsWeb) return;
     await syncNotifications(alarms);
+  }
+
+  // Show or Update Ongoing Live Hydration Panel Notification
+  Future<void> updateOngoingProgressNotification({
+    required bool isEnabled,
+    required int todayConsumed,
+    required int dailyGoal,
+    required int percentage,
+    required int preset1,
+    required int preset2,
+    required int preset3,
+  }) async {
+    if (kIsWeb) return;
+    if (!isEnabled) {
+      await cancelOngoingNotification();
+      return;
+    }
+
+    try {
+      final safeGoal = dailyGoal > 0 ? dailyGoal : 2500;
+      final percentClamped = percentage.clamp(0, 100);
+      final remaining = (safeGoal - todayConsumed).clamp(0, safeGoal);
+
+      final androidDetails = AndroidNotificationDetails(
+        _ongoingChannelId,
+        _ongoingChannelName,
+        channelDescription: _ongoingChannelDesc,
+        importance: Importance.low,
+        priority: Priority.low,
+        ongoing: true,
+        autoCancel: false,
+        onlyAlertOnce: true,
+        showProgress: true,
+        maxProgress: safeGoal,
+        progress: todayConsumed.clamp(0, safeGoal),
+        showWhen: false,
+        actions: <AndroidNotificationAction>[
+          AndroidNotificationAction(
+            'action_log_$preset1',
+            '+$preset1 ml',
+            showsUserInterface: true,
+            cancelNotification: false,
+          ),
+          AndroidNotificationAction(
+            'action_log_$preset2',
+            '+$preset2 ml',
+            showsUserInterface: true,
+            cancelNotification: false,
+          ),
+          AndroidNotificationAction(
+            'action_log_$preset3',
+            '+$preset3 ml',
+            showsUserInterface: true,
+            cancelNotification: false,
+          ),
+        ],
+      );
+
+      final notificationDetails = NotificationDetails(android: androidDetails);
+
+      await _notificationsPlugin.show(
+        id: _ongoingNotificationId,
+        title: 'HydroSoft • Günlük Hedef: $safeGoal ml (%$percentClamped)',
+        body: 'Bugün: $todayConsumed ml  |  Kalan: $remaining ml',
+        notificationDetails: notificationDetails,
+        payload: 'ongoing_panel',
+      );
+    } catch (e) {
+      debugPrint('Error updating ongoing notification: $e');
+    }
+  }
+
+  // Cancel Ongoing Live Notification
+  Future<void> cancelOngoingNotification() async {
+    if (kIsWeb) return;
+    try {
+      await _notificationsPlugin.cancel(id: _ongoingNotificationId);
+    } catch (_) {}
   }
 }

@@ -91,7 +91,7 @@ class NotificationSettingsCard extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
           ),
           value: provider.isNotificationsEnabled,
-          activeColor: const Color(0xFF0288D1),
+          activeThumbColor: const Color(0xFF0288D1),
           onChanged: (val) {
             provider.updateNotificationSettings(
               isEnabled: val,
@@ -116,7 +116,7 @@ class NotificationSettingsCard extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
           ),
           value: provider.isSoundEnabled,
-          activeColor: const Color(0xFF0288D1),
+          activeThumbColor: const Color(0xFF0288D1),
           onChanged: provider.isNotificationsEnabled
               ? (val) {
                   provider.updateNotificationSettings(
@@ -143,7 +143,7 @@ class NotificationSettingsCard extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
           ),
           value: provider.isVibrationEnabled,
-          activeColor: const Color(0xFF0288D1),
+          activeThumbColor: const Color(0xFF0288D1),
           onChanged: provider.isNotificationsEnabled
               ? (val) {
                   provider.updateNotificationSettings(
@@ -153,6 +153,43 @@ class NotificationSettingsCard extends StatelessWidget {
                   );
                 }
               : null,
+        ),
+        const Divider(height: 16, thickness: 0.5),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            children: [
+              Text(
+                'Canlı İlerleme Bildirimi',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0288D1).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'Sabit Panel',
+                  style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF0288D1)),
+                ),
+              ),
+            ],
+          ),
+          subtitle: Text(
+            'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.',
+            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+          ),
+          value: provider.isOngoingNotificationEnabled,
+          activeThumbColor: const Color(0xFF0288D1),
+          onChanged: (val) {
+            provider.updateOngoingNotificationSetting(val);
+          },
         ),
       ],
     );

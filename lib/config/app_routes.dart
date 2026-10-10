@@ -28,19 +28,30 @@ class AppRouter extends StatelessWidget {
       return const OnboardingScreen();
     }
 
-    return const MainNavigationLayout();
+    return MainNavigationLayout(key: mainNavigationKey);
   }
 }
+
+final GlobalKey<MainNavigationLayoutState> mainNavigationKey =
+    GlobalKey<MainNavigationLayoutState>();
 
 class MainNavigationLayout extends StatefulWidget {
   const MainNavigationLayout({super.key});
 
   @override
-  State<MainNavigationLayout> createState() => _MainNavigationLayoutState();
+  State<MainNavigationLayout> createState() => MainNavigationLayoutState();
 }
 
-class _MainNavigationLayoutState extends State<MainNavigationLayout> {
+class MainNavigationLayoutState extends State<MainNavigationLayout> {
   int _currentIndex = 0;
+
+  void setTabIndex(int index) {
+    if (index >= 0 && index < _screens.length) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -116,9 +127,9 @@ class _MainNavigationLayoutState extends State<MainNavigationLayout> {
         ],
       ),
       body: SafeArea(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: _screens[_currentIndex],
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
         ),
       ),
       bottomNavigationBar: Container(

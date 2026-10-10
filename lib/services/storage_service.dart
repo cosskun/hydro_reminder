@@ -36,6 +36,11 @@ class StorageService {
   static const String _keyBoostDate = 'daily_boost_date';
   static const String _keyWorkoutBoost = 'is_workout_boost_active';
   static const String _keyHotWeatherBoost = 'is_hot_weather_boost_active';
+  static const String _keyIsSiriShortcutsEnabled = 'ios_siri_shortcuts_enabled';
+  static const String _keyIsBackTapEnabled = 'ios_back_tap_enabled';
+  static const String _keyAppleHealthEnabled = 'apple_health_sync_enabled';
+  static const String _keyAppleHealthAutoGoal = 'apple_health_auto_goal_enabled';
+  static const String _keyIsOngoingNotificationEnabled = 'ongoing_notification_enabled';
 
   // Save profile information
   Future<void> saveProfile({
@@ -284,6 +289,56 @@ class StorageService {
       'isWorkout': prefs.getBool(_keyWorkoutBoost) ?? false,
       'isHotWeather': prefs.getBool(_keyHotWeatherBoost) ?? false,
     };
+  }
+
+  // Save iOS Shortcuts & Back Tap Settings
+  Future<void> saveIosShortcutsSettings({
+    required bool isSiriEnabled,
+    required bool isBackTapEnabled,
+  }) async {
+    final prefs = _prefsSync;
+    await prefs.setBool(_keyIsSiriShortcutsEnabled, isSiriEnabled);
+    await prefs.setBool(_keyIsBackTapEnabled, isBackTapEnabled);
+  }
+
+  // Get iOS Shortcuts & Back Tap Settings
+  Future<Map<String, bool>> getIosShortcutsSettings() async {
+    final prefs = _prefsSync;
+    return {
+      'isSiriEnabled': prefs.getBool(_keyIsSiriShortcutsEnabled) ?? true,
+      'isBackTapEnabled': prefs.getBool(_keyIsBackTapEnabled) ?? true,
+    };
+  }
+
+  // Save Apple Health Settings
+  Future<void> saveAppleHealthSettings({
+    required bool isEnabled,
+    required bool isAutoGoalEnabled,
+  }) async {
+    final prefs = _prefsSync;
+    await prefs.setBool(_keyAppleHealthEnabled, isEnabled);
+    await prefs.setBool(_keyAppleHealthAutoGoal, isAutoGoalEnabled);
+  }
+
+  // Get Apple Health Settings
+  Future<Map<String, bool>> getAppleHealthSettings() async {
+    final prefs = _prefsSync;
+    return {
+      'isEnabled': prefs.getBool(_keyAppleHealthEnabled) ?? false,
+      'isAutoGoalEnabled': prefs.getBool(_keyAppleHealthAutoGoal) ?? false,
+    };
+  }
+
+  // Save Ongoing Notification Setting
+  Future<void> saveOngoingNotificationSetting(bool isEnabled) async {
+    final prefs = _prefsSync;
+    await prefs.setBool(_keyIsOngoingNotificationEnabled, isEnabled);
+  }
+
+  // Get Ongoing Notification Setting
+  Future<bool> getOngoingNotificationSetting() async {
+    final prefs = _prefsSync;
+    return prefs.getBool(_keyIsOngoingNotificationEnabled) ?? false;
   }
 
   // Clear all data

@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
@@ -8,6 +10,8 @@ import '../widgets/settings/profile_settings_card.dart';
 import '../widgets/settings/notification_settings_card.dart';
 import '../widgets/settings/end_of_day_settings_card.dart';
 import '../widgets/settings/quick_presets_card.dart';
+import '../widgets/settings/ios_shortcuts_settings_card.dart';
+import '../widgets/settings/android_features_settings_card.dart';
 import '../widgets/settings/danger_zone_card.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -334,6 +338,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onSave: _savePresets,
           ),
           const SizedBox(height: 24),
+
+          if (!kIsWeb && (Platform.isIOS || defaultTargetPlatform == TargetPlatform.iOS)) ...[
+            const IosShortcutsSettingsCard(),
+            const SizedBox(height: 24),
+          ],
+
+          if (!kIsWeb && (Platform.isAndroid || defaultTargetPlatform == TargetPlatform.android)) ...[
+            const AndroidFeaturesSettingsCard(),
+            const SizedBox(height: 24),
+          ],
           
           Container(
             padding: const EdgeInsets.all(16),

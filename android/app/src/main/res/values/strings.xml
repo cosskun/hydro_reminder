@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HydroSoft</string>
+    <string name="shortcut_cup_short">+200 ml Bardak</string>
+    <string name="shortcut_cup_long">200 ml Su Ekle (Bardak)</string>
+    <string name="shortcut_bottle_short">+330 ml Şişe</string>
+    <string name="shortcut_bottle_long">330 ml Su Ekle (Küçük Şişe)</string>
+    <string name="shortcut_wave_short">+500 ml Büyük</string>
+    <string name="shortcut_wave_long">500 ml Su Ekle (Büyük Şişe)</string>
+    <string name="shortcut_stats_short">İstatistikler</string>
+    <string name="shortcut_stats_long">Su Tüketim İstatistikleri</string>
+</resources>

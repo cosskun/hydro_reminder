@@ -16,7 +16,6 @@ class EndOfDaySettingsCard extends StatelessWidget {
       title: 'Gün Sonu Özet Bildirimi',
       titleTrailing: const Text('🌙', style: TextStyle(fontSize: 20)),
       children: [
-        const SizedBox(height: -8),
         Text(
           'Günün belirlediğiniz saatinde o gün içtiğiniz ve hedefinize ulaşmak için kalan su miktarını bildirim olarak iletir.',
           style: TextStyle(
@@ -41,7 +40,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
           ),
           value: provider.isEndOfDayEnabled,
-          activeColor: const Color(0xFF0288D1),
+          activeThumbColor: const Color(0xFF0288D1),
           onChanged: (val) {
             provider.updateEndOfDaySettings(
               isEnabled: val,

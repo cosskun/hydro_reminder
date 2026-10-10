@@ -37,7 +37,7 @@ class AppearanceSettingsCard extends StatelessWidget {
             ),
           ),
           value: provider.isDarkMode,
-          activeColor: const Color(0xFF38BDF8),
+          activeThumbColor: const Color(0xFF38BDF8),
           onChanged: (val) {
             provider.updateThemeMode(val ? ThemeMode.dark : ThemeMode.light);
           },
@@ -61,7 +61,7 @@ class AppearanceSettingsCard extends StatelessWidget {
             ),
           ),
           value: provider.isSoundEffectsEnabled,
-          activeColor: const Color(0xFF38BDF8),
+          activeThumbColor: const Color(0xFF38BDF8),
           onChanged: (val) {
             provider.updateSoundEffectsEnabled(val);
           },

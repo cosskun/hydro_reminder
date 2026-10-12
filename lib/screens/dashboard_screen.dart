@@ -196,11 +196,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
                           ),
                         ),
-                        Text(
-                          'Basılı tutarak kaldırabilirsiniz',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            color: isDark ? const Color(0xFF64748B) : Colors.grey.shade500,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            'Basılı tutarak kaldırabilirsiniz',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              color: isDark ? const Color(0xFF64748B) : Colors.grey.shade500,
+                            ),
                           ),
                         ),
                       ],

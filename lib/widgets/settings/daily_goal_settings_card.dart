@@ -74,31 +74,38 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
           ),
         ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 6,
-          children: [2000, 2500, 3000, 3500].map((amount) {
-            return ActionChip(
-              label: Text('$amount ml'),
-              labelStyle: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-              ),
-              backgroundColor: isDark
-                  ? const Color(0xFF0B132B)
-                  : Colors.blue.shade50.withValues(alpha: 0.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(
-                  color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+        Row(
+          children: [2000, 2500, 3000].map((amount) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: ActionChip(
+                  label: Center(
+                    child: Text(
+                      '$amount ml',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                      ),
+                    ),
+                  ),
+                  backgroundColor: isDark
+                      ? const Color(0xFF0B132B)
+                      : Colors.blue.shade50.withValues(alpha: 0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      widget.dailyGoalController.text = amount.toString();
+                    });
+                  },
                 ),
               ),
-              onPressed: () {
-                setState(() {
-                  widget.dailyGoalController.text = amount.toString();
-                });
-              },
             );
           }).toList(),
         ),

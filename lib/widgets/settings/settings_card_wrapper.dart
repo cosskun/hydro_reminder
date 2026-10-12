@@ -21,18 +21,17 @@ class SettingsCardWrapper extends StatelessWidget {
 
     Color bgColor = isDark ? const Color(0xFF1C2541) : Colors.white;
     Color borderColor = isDark ? const Color(0xFF3A506B) : Colors.blue.shade50;
-    Color shadowColor = isDark ? Colors.black26 : Colors.blue.shade900.withOpacity(0.03);
+    Color shadowColor = isDark ? Colors.black26 : Colors.blue.shade900.withValues(alpha: 0.03);
     Color titleColor = isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900;
 
     if (isDangerZone) {
-      bgColor = isDark ? const Color(0xFF3B1219) : Colors.red.shade50.withOpacity(0.3);
-      borderColor = isDark ? Colors.red.shade900 : Colors.red.shade100.withOpacity(0.5);
+      bgColor = isDark ? const Color(0xFF3B1219) : Colors.red.shade50.withValues(alpha: 0.3);
+      borderColor = isDark ? Colors.red.shade900 : Colors.red.shade100.withValues(alpha: 0.5);
       titleColor = isDark ? Colors.red.shade300 : Colors.red.shade800;
       shadowColor = Colors.transparent;
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(24),
@@ -47,21 +46,32 @@ class SettingsCardWrapper extends StatelessWidget {
                 ),
               ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      child: Material(
+        type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
           if (titleTrailing != null)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: titleColor,
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: titleColor,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 titleTrailing!,
               ],
             )
@@ -78,6 +88,8 @@ class SettingsCardWrapper extends StatelessWidget {
           ...children,
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 }

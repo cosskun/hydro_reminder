@@ -60,7 +60,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
                       decoration: BoxDecoration(
                         color: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(16),
@@ -71,17 +71,19 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Saat Seçin:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: isDark ? const Color(0xFF94A3B8) : Colors.black87,
+                          Flexible(
+                            child: Text(
+                              'Saat Seçin:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFF94A3B8) : Colors.black87,
+                              ),
                             ),
                           ),
                           Text(
                             '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 22,
                               fontWeight: FontWeight.w900,
                               color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800,
                             ),
@@ -140,24 +142,26 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                           width: isSelected ? 1.5 : 1.0,
                         ),
                       ),
-                      child: ListTile(
-                        dense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                        leading: Text(preset.icon, style: const TextStyle(fontSize: 20)),
-                        title: Text(
-                          preset.name,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: isSelected
-                                ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade900)
-                                : (isDark ? const Color(0xFFF1F5F9) : Colors.black87),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                          leading: Text(preset.icon, style: const TextStyle(fontSize: 20)),
+                          title: Text(
+                            preset.name,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              color: isSelected
+                                  ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade900)
+                                  : (isDark ? const Color(0xFFF1F5F9) : Colors.black87),
+                            ),
                           ),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
                               icon: Icon(
                                 isPlaying ? Icons.stop_circle_rounded : Icons.play_circle_fill_rounded,
                                 color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade600,
@@ -205,8 +209,9 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                           });
                         },
                       ),
-                    );
-                  }),
+                    ),
+                  );
+                }),
 
                   const SizedBox(height: 6),
 

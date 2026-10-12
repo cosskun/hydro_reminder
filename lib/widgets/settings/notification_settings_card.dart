@@ -76,120 +76,224 @@ class NotificationSettingsCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Su Hatırlatıcı Bildirimleri',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-            ),
-          ),
-          subtitle: Text(
-            'Gün içindeki tüm hatırlatıcıları açar/kapatır.',
-            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
-          ),
-          value: provider.isNotificationsEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: (val) {
+        InkWell(
+          onTap: () {
             provider.updateNotificationSettings(
-              isEnabled: val,
+              isEnabled: !provider.isNotificationsEnabled,
               sound: provider.isSoundEnabled,
               vibration: provider.isVibrationEnabled,
             );
           },
-        ),
-        const Divider(height: 16, thickness: 0.5),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Sesli Uyarı',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Su Hatırlatıcı Bildirimleri',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Gün içindeki tüm hatırlatıcıları açar/kapatır.',
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isNotificationsEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: (val) {
+                    provider.updateNotificationSettings(
+                      isEnabled: val,
+                      sound: provider.isSoundEnabled,
+                      vibration: provider.isVibrationEnabled,
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-          subtitle: Text(
-            'Alarm çaldığında zil sesi çalar.',
-            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
-          ),
-          value: provider.isSoundEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: provider.isNotificationsEnabled
-              ? (val) {
+        ),
+        const Divider(height: 16, thickness: 0.5),
+        InkWell(
+          onTap: provider.isNotificationsEnabled
+              ? () {
                   provider.updateNotificationSettings(
                     isEnabled: provider.isNotificationsEnabled,
-                    sound: val,
+                    sound: !provider.isSoundEnabled,
                     vibration: provider.isVibrationEnabled,
                   );
                 }
               : null,
-        ),
-        const Divider(height: 16, thickness: 0.5),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Titreşim',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sesli Uyarı',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Alarm çaldığında zil sesi çalar.',
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isSoundEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: provider.isNotificationsEnabled
+                      ? (val) {
+                          provider.updateNotificationSettings(
+                            isEnabled: provider.isNotificationsEnabled,
+                            sound: val,
+                            vibration: provider.isVibrationEnabled,
+                          );
+                        }
+                      : null,
+                ),
+              ],
             ),
           ),
-          subtitle: Text(
-            'Alarm çaldığında telefon titrer.',
-            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
-          ),
-          value: provider.isVibrationEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: provider.isNotificationsEnabled
-              ? (val) {
+        ),
+        const Divider(height: 16, thickness: 0.5),
+        InkWell(
+          onTap: provider.isNotificationsEnabled
+              ? () {
                   provider.updateNotificationSettings(
                     isEnabled: provider.isNotificationsEnabled,
                     sound: provider.isSoundEnabled,
-                    vibration: val,
+                    vibration: !provider.isVibrationEnabled,
                   );
                 }
               : null,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Titreşim',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Alarm çaldığında telefon titrer.',
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isVibrationEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: provider.isNotificationsEnabled
+                      ? (val) {
+                          provider.updateNotificationSettings(
+                            isEnabled: provider.isNotificationsEnabled,
+                            sound: provider.isSoundEnabled,
+                            vibration: val,
+                          );
+                        }
+                      : null,
+                ),
+              ],
+            ),
+          ),
         ),
         const Divider(height: 16, thickness: 0.5),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Row(
-            children: [
-              Text(
-                'Canlı İlerleme Bildirimi',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0288D1).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'Sabit Panel',
-                  style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF0288D1)),
-                ),
-              ),
-            ],
-          ),
-          subtitle: Text(
-            'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.',
-            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
-          ),
-          value: provider.isOngoingNotificationEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: (val) {
-            provider.updateOngoingNotificationSetting(val);
+        InkWell(
+          onTap: () {
+            provider.updateOngoingNotificationSetting(!provider.isOngoingNotificationEnabled);
           },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Canlı İlerleme Bildirimi',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF0288D1).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'Sabit Panel',
+                              style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF0288D1)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.',
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isOngoingNotificationEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: (val) {
+                    provider.updateOngoingNotificationSetting(val);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );

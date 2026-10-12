@@ -25,29 +25,54 @@ class EndOfDaySettingsCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Gün Sonu Özeti',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-            ),
-          ),
-          subtitle: Text(
-            provider.isEndOfDayEnabled ? 'Her gün belirlenen saatte iletilecek' : 'Kapalı',
-            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
-          ),
-          value: provider.isEndOfDayEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: (val) {
+        InkWell(
+          onTap: () {
             provider.updateEndOfDaySettings(
-              isEnabled: val,
+              isEnabled: !provider.isEndOfDayEnabled,
               hour: provider.endOfDayHour,
               minute: provider.endOfDayMinute,
             );
           },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Gün Sonu Özeti',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        provider.isEndOfDayEnabled ? 'Her gün belirlenen saatte iletilecek' : 'Kapalı',
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isEndOfDayEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: (val) {
+                    provider.updateEndOfDaySettings(
+                      isEnabled: val,
+                      hour: provider.endOfDayHour,
+                      minute: provider.endOfDayMinute,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         if (provider.isEndOfDayEnabled) ...[
           const Divider(height: 16, thickness: 0.5),
@@ -80,24 +105,31 @@ class EndOfDaySettingsCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: 20,
-                        color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Bildirim Saati',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 20,
+                          color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Bildirim Saati',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(

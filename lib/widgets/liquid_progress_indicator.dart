@@ -36,6 +36,9 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -44,14 +47,16 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
           height: widget.size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: const Color(0xFFF0F9FF),
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0F9FF),
             border: Border.all(
-              color: Colors.blue.shade200,
+              color: isDark ? const Color(0xFF38BDF8).withValues(alpha: 0.6) : Colors.blue.shade200,
               width: 4,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.shade100.withValues(alpha: 0.5),
+                color: isDark
+                    ? const Color(0xFF38BDF8).withValues(alpha: 0.15)
+                    : Colors.blue.shade100.withValues(alpha: 0.5),
                 blurRadius: 15,
                 spreadRadius: 2,
               ),
@@ -63,6 +68,7 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
               painter: _LiquidPainter(
                 progress: widget.progress,
                 animationValue: _animationController.value,
+                isDark: isDark,
               ),
             ),
           ),
@@ -87,10 +93,12 @@ class _CircleClipper extends CustomClipper<Path> {
 class _LiquidPainter extends CustomPainter {
   final double progress;
   final double animationValue;
+  final bool isDark;
 
   _LiquidPainter({
     required this.progress,
     required this.animationValue,
+    this.isDark = false,
   });
 
   @override
@@ -138,7 +146,9 @@ class _LiquidPainter extends CustomPainter {
       text: TextSpan(
         text: '${(progress * 100).toInt()}%',
         style: TextStyle(
-          color: progress > 0.45 ? Colors.white : Colors.blue.shade800,
+          color: progress > 0.45
+              ? Colors.white
+              : (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800),
           fontSize: (size.width * 0.18).clamp(20.0, 44.0),
           fontWeight: FontWeight.w900,
           shadows: [
@@ -165,6 +175,7 @@ class _LiquidPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _LiquidPainter oldDelegate) {
     return oldDelegate.progress != progress ||
-        oldDelegate.animationValue != animationValue;
+        oldDelegate.animationValue != animationValue ||
+        oldDelegate.isDark != isDark;
   }
 }

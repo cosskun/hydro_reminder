@@ -351,28 +351,49 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         const SizedBox(height: 16),
 
         // 1. Siri Voice Assistant Switch
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Siri ile Sesli Komut',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-            ),
-          ),
-          subtitle: Text(
-            '"Hey Siri, 250 ml su içtim" diyerek eller serbest su ekleyin.',
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-            ),
-          ),
-          value: provider.isSiriShortcutsEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: (val) {
-            provider.updateIosShortcutsSettings(isSiriEnabled: val);
+        InkWell(
+          onTap: () {
+            provider.updateIosShortcutsSettings(isSiriEnabled: !provider.isSiriShortcutsEnabled);
           },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Siri ile Sesli Komut',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '"Hey Siri, 250 ml su içtim" diyerek eller serbest su ekleyin.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isSiriShortcutsEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: (val) {
+                    provider.updateIosShortcutsSettings(isSiriEnabled: val);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         if (provider.isSiriShortcutsEnabled)
           Padding(
@@ -386,7 +407,6 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 style: TextButton.styleFrom(
                   foregroundColor: const Color(0xFF0288D1),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  visualDensity: VisualDensity.compact,
                 ),
               ),
             ),
@@ -395,28 +415,49 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         const Divider(height: 16, thickness: 0.5),
 
         // 2. Back Tap & Action Button Switch
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Arkaya Dokunma & Eylem Düğmesi',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-            ),
-          ),
-          subtitle: Text(
-            'Telefonun arkasına çift vurarak veya Eylem Düğmesine basarak hızlı su menüsünü açın.',
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-            ),
-          ),
-          value: provider.isBackTapEnabled,
-          activeThumbColor: const Color(0xFF0288D1),
-          onChanged: (val) {
-            provider.updateIosShortcutsSettings(isBackTapEnabled: val);
+        InkWell(
+          onTap: () {
+            provider.updateIosShortcutsSettings(isBackTapEnabled: !provider.isBackTapEnabled);
           },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Arkaya Dokunma & Eylem Düğmesi',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Telefonun arkasına çift vurarak veya Eylem Düğmesine basarak hızlı su menüsünü açın.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isBackTapEnabled,
+                  activeThumbColor: const Color(0xFF0288D1),
+                  onChanged: (val) {
+                    provider.updateIosShortcutsSettings(isBackTapEnabled: val);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         if (provider.isBackTapEnabled)
           Padding(
@@ -430,7 +471,6 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 style: TextButton.styleFrom(
                   foregroundColor: const Color(0xFF0288D1),
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  visualDensity: VisualDensity.compact,
                 ),
               ),
             ),
@@ -439,34 +479,11 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         const Divider(height: 16, thickness: 0.5),
 
         // 3. Apple Health (HealthKit) Switch
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Row(
-            children: [
-              Text(
-                'Apple Sağlık (HealthKit)',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-                ),
-              ),
-              const SizedBox(width: 6),
-              const Icon(Icons.favorite_rounded, size: 15, color: Color(0xFFE11D48)),
-            ],
-          ),
-          subtitle: Text(
-            'İçtiğiniz suları Apple Sağlık uygulamasına (Dietary Water) otomatik senkronize edin.',
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-            ),
-          ),
-          value: provider.isAppleHealthSyncEnabled,
-          activeThumbColor: const Color(0xFFE11D48),
-          onChanged: (val) async {
-            final success = await provider.updateAppleHealthSettings(isEnabled: val);
-            if (!success && val && context.mounted) {
+        InkWell(
+          onTap: () async {
+            final newVal = !provider.isAppleHealthSyncEnabled;
+            final success = await provider.updateAppleHealthSettings(isEnabled: newVal);
+            if (!success && newVal && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Apple Sağlık erişim izni verilmedi veya iptal edildi.'),
@@ -475,6 +492,63 @@ class IosShortcutsSettingsCard extends StatelessWidget {
               );
             }
           },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Apple Sağlık (HealthKit)',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const Icon(Icons.favorite_rounded, size: 15, color: Color(0xFFE11D48)),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'İçtiğiniz suları Apple Sağlık uygulamasına (Dietary Water) otomatik senkronize edin.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isAppleHealthSyncEnabled,
+                  activeThumbColor: const Color(0xFFE11D48),
+                  onChanged: (val) async {
+                    final success = await provider.updateAppleHealthSettings(isEnabled: val);
+                    if (!success && val && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Apple Sağlık erişim izni verilmedi veya iptal edildi.'),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         if (provider.isAppleHealthSyncEnabled) ...[
           Padding(
@@ -489,7 +563,6 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFFE11D48),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      visualDensity: VisualDensity.compact,
                     ),
                   ),
                 ),

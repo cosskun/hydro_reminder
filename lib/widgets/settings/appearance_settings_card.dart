@@ -19,52 +19,90 @@ class AppearanceSettingsCard extends StatelessWidget {
         color: const Color(0xFF38BDF8),
       ),
       children: [
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Gece Mavisi Karanlık Tema',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+        InkWell(
+          onTap: () => provider.updateThemeMode(provider.isDarkMode ? ThemeMode.light : ThemeMode.dark),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Gece Mavisi Karanlık Tema',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Gözü yormayan derin lacivert ve gece mavisi arayüz.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isDarkMode,
+                  activeThumbColor: const Color(0xFF38BDF8),
+                  onChanged: (val) {
+                    provider.updateThemeMode(val ? ThemeMode.dark : ThemeMode.light);
+                  },
+                ),
+              ],
             ),
           ),
-          subtitle: Text(
-            'Gözü yormayan derin lacivert ve gece mavisi arayüz.',
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-            ),
-          ),
-          value: provider.isDarkMode,
-          activeThumbColor: const Color(0xFF38BDF8),
-          onChanged: (val) {
-            provider.updateThemeMode(val ? ThemeMode.dark : ThemeMode.light);
-          },
         ),
         const Divider(height: 16, thickness: 0.5),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(
-            'Su Ekleme Ses & Titreşim Efektleri',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+        InkWell(
+          onTap: () => provider.updateSoundEffectsEnabled(!provider.isSoundEffectsEnabled),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Su Ekleme Ses & Titreşim Efektleri',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Su eklerken yudumlama sesi ve rozet kazanınca kutlama melodisi çalar.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isSoundEffectsEnabled,
+                  activeThumbColor: const Color(0xFF38BDF8),
+                  onChanged: (val) {
+                    provider.updateSoundEffectsEnabled(val);
+                  },
+                ),
+              ],
             ),
           ),
-          subtitle: Text(
-            'Su eklerken yudumlama sesi ve rozet kazanınca kutlama melodisi çalar.',
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-            ),
-          ),
-          value: provider.isSoundEffectsEnabled,
-          activeThumbColor: const Color(0xFF38BDF8),
-          onChanged: (val) {
-            provider.updateSoundEffectsEnabled(val);
-          },
         ),
       ],
     );

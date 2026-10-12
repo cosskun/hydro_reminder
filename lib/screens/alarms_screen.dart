@@ -23,12 +23,16 @@ class AlarmsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Hatırlatıcı Alarmlar ⏰',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+              Expanded(
+                child: Text(
+                  'Hatırlatıcı Alarmlar ⏰',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                  ),
                 ),
               ),
               IconButton(

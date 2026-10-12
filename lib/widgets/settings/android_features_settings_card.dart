@@ -417,34 +417,11 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
         const Divider(height: 20, thickness: 0.5),
 
         // 3. Google Health Connect Switch
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Row(
-            children: [
-              Text(
-                'Google Health Connect',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-                ),
-              ),
-              const SizedBox(width: 6),
-              const Icon(Icons.favorite_rounded, size: 15, color: Color(0xFF10B981)),
-            ],
-          ),
-          subtitle: Text(
-            'İçilen suları ve akıllı saat adımlarını Health Connect ile eşitleyin.',
-            style: TextStyle(
-              fontSize: 11,
-              color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
-            ),
-          ),
-          value: provider.isAppleHealthSyncEnabled,
-          activeThumbColor: const Color(0xFF10B981),
-          onChanged: (val) async {
-            final success = await provider.updateAppleHealthSettings(isEnabled: val);
-            if (!success && val && context.mounted) {
+        InkWell(
+          onTap: () async {
+            final newVal = !provider.isAppleHealthSyncEnabled;
+            final success = await provider.updateAppleHealthSettings(isEnabled: newVal);
+            if (!success && newVal && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Health Connect izni verilmedi veya iptal edildi.'),
@@ -453,6 +430,63 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
               );
             }
           },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Google Health Connect',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const Icon(Icons.favorite_rounded, size: 15, color: Color(0xFF10B981)),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'İçilen suları ve akıllı saat adımlarını Health Connect ile eşitleyin.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isAppleHealthSyncEnabled,
+                  activeThumbColor: const Color(0xFF10B981),
+                  onChanged: (val) async {
+                    final success = await provider.updateAppleHealthSettings(isEnabled: val);
+                    if (!success && val && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Health Connect izni verilmedi veya iptal edildi.'),
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         if (provider.isAppleHealthSyncEnabled) ...[
           Padding(
@@ -467,7 +501,6 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF10B981),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      visualDensity: VisualDensity.compact,
                     ),
                   ),
                 ),

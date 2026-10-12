@@ -5,13 +5,25 @@ import '../models/alarm_setting.dart';
 import '../models/user_profile.dart';
 
 class StorageService {
+  static final StorageService _instance = StorageService._internal();
+  factory StorageService() => _instance;
+  StorageService._internal();
+
   SharedPreferences? _prefs;
 
   Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
+    _prefs ??= await SharedPreferences.getInstance();
   }
 
-  SharedPreferences get _prefsSync => _prefs!;
+  SharedPreferences get _prefsSync {
+    if (_prefs == null) {
+      // Lazy fallback warning/safeguard
+      throw StateError(
+        'StorageService._prefsSync accessed before init() was called. Ensure StorageService.init() is awaited during app launch or testing.',
+      );
+    }
+    return _prefs!;
+  }
 
   static const String _keyGender = 'user_gender';
   static const String _keyAge = 'user_age';

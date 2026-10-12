@@ -167,8 +167,10 @@ void showCustomAddBeverageDialog(BuildContext context) {
                     },
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    alignment: WrapAlignment.center,
                     children: [
                       OutlinedButton(
                         onPressed: () {
@@ -185,7 +187,6 @@ void showCustomAddBeverageDialog(BuildContext context) {
                         ),
                         child: const Text('-50 ml', style: TextStyle(fontSize: 12)),
                       ),
-                      const SizedBox(width: 6),
                       OutlinedButton(
                         onPressed: () {
                           setState(() {
@@ -199,7 +200,6 @@ void showCustomAddBeverageDialog(BuildContext context) {
                         ),
                         child: const Text('+50 ml', style: TextStyle(fontSize: 12)),
                       ),
-                      const SizedBox(width: 6),
                       OutlinedButton(
                         onPressed: () {
                           setState(() {

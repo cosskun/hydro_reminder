@@ -1,5 +1,5 @@
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart' show kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
@@ -339,12 +339,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 24),
 
-          if (!kIsWeb && (Platform.isIOS || defaultTargetPlatform == TargetPlatform.iOS)) ...[
+          if (!kIsWeb && (theme.platform == TargetPlatform.iOS || Platform.isIOS)) ...[
             const IosShortcutsSettingsCard(),
             const SizedBox(height: 24),
           ],
 
-          if (!kIsWeb && (Platform.isAndroid || defaultTargetPlatform == TargetPlatform.android)) ...[
+          if (!kIsWeb && (theme.platform == TargetPlatform.android || Platform.isAndroid)) ...[
             const AndroidFeaturesSettingsCard(),
             const SizedBox(height: 24),
           ],

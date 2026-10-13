@@ -7,7 +7,11 @@ cd /d "%~dp0"
 
 REM Flutter komutunu tespit et
 set "FLUTTER_CMD="
-if exist "%USERPROFILE%\.puro\envs\stable\flutter\bin\flutter.bat" (
+if exist "%USERPROFILE%\flutter\bin\flutter.bat" (
+    set "FLUTTER_CMD=%USERPROFILE%\flutter\bin\flutter.bat"
+) else if exist "C:\flutter\bin\flutter.bat" (
+    set "FLUTTER_CMD=C:\flutter\bin\flutter.bat"
+) else if exist "%USERPROFILE%\.puro\envs\stable\flutter\bin\flutter.bat" (
     set "FLUTTER_CMD=%USERPROFILE%\.puro\envs\stable\flutter\bin\flutter.bat"
 ) else (
     where flutter >nul 2>nul
@@ -17,10 +21,6 @@ if exist "%USERPROFILE%\.puro\envs\stable\flutter\bin\flutter.bat" (
         where puro >nul 2>nul
         if %errorlevel% equ 0 (
             set "FLUTTER_CMD=puro flutter"
-        ) else if exist "%USERPROFILE%\flutter\bin\flutter.bat" (
-            set "FLUTTER_CMD=%USERPROFILE%\flutter\bin\flutter.bat"
-        ) else if exist "C:\flutter\bin\flutter.bat" (
-            set "FLUTTER_CMD=C:\flutter\bin\flutter.bat"
         ) else if exist "C:\src\flutter\bin\flutter.bat" (
             set "FLUTTER_CMD=C:\src\flutter\bin\flutter.bat"
         ) else (
@@ -35,8 +35,8 @@ echo =======================================================
 echo               HYDROSOFT BASLATICI
 echo =======================================================
 echo.
-echo  [1] Web Tarayicida Baslat (TAVSIYE EDILEN - Hizli & Sorunsuz)
-echo  [2] Chrome ile Baslat (Debug Mod - flutter run -d chrome)
+echo  [1] Google Chrome ile Baslat (TAVSIYE EDILEN - Hizli ve Otomatik)
+echo  [2] Web Sunucusu ile Baslat (flutter run -d web-server)
 echo  [3] Microsoft Edge ile Baslat (flutter run -d edge)
 echo  [4] Windows Masaustu Olarak Baslat (flutter run -d windows)
 echo  [5] Bagli Cihazlari Listele (flutter devices)
@@ -48,8 +48,8 @@ echo =======================================================
 set "SECIM=1"
 set /p "SECIM=Lutfen bir secim yapin [Varsayilan: 1]: "
 
-if "%SECIM%"=="1" goto RUN_WEBSERVER
-if "%SECIM%"=="2" goto RUN_CHROME
+if "%SECIM%"=="1" goto RUN_CHROME
+if "%SECIM%"=="2" goto RUN_WEBSERVER
 if "%SECIM%"=="3" goto RUN_EDGE
 if "%SECIM%"=="4" goto RUN_WINDOWS
 if "%SECIM%"=="5" goto LIST_DEVICES
@@ -58,27 +58,25 @@ if "%SECIM%"=="7" goto CLEAN_PROJECT
 if "%SECIM%"=="0" goto CIKIS
 goto GECERSIZ
 
+:RUN_CHROME
+echo.
+echo [*] HydroSoft Chrome uzerinde baslatiliyor (Release mod - En Hizli)...
+echo.
+cmd /c "%FLUTTER_CMD% run -d chrome --release"
+goto BITTI
+
 :RUN_WEBSERVER
 echo.
 echo [*] HydroSoft Web Sunucusu baslatiliyor (http://localhost:8080)...
-echo [*] Tarayiciniz birkac saniye icinde otomatik olarak acilacaktir.
 echo.
-start "" "http://localhost:8080"
-cmd /c "%FLUTTER_CMD% run -d web-server --web-port=8080 --web-hostname=localhost"
-goto BITTI
-
-:RUN_CHROME
-echo.
-echo [*] HydroSoft Chrome Debug modunda baslatiliyor...
-echo.
-cmd /c "%FLUTTER_CMD% run -d chrome"
+cmd /c "%FLUTTER_CMD% run -d web-server --release --web-port=8080 --web-hostname=localhost"
 goto BITTI
 
 :RUN_EDGE
 echo.
-echo [*] HydroSoft Microsoft Edge uzerinde baslatiliyor...
+echo [*] HydroSoft Microsoft Edge uzerinde baslatiliyor (Release mod)...
 echo.
-cmd /c "%FLUTTER_CMD% run -d edge"
+cmd /c "%FLUTTER_CMD% run -d edge --release"
 goto BITTI
 
 :RUN_WINDOWS

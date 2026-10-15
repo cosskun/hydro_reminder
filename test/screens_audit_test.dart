@@ -354,8 +354,35 @@ void main() {
       expect(find.text('Su İçtim'), findsOneWidget);
       expect(find.text('+250 ml'), findsOneWidget);
 
-      // Tap giant button (Su İçtim)
+      // Tap giant button (Su İçtim) within 5 seconds -> triggers anti-cheat warning
       await tester.tap(find.text('Su İçtim'));
+      await tester.pump(const Duration(milliseconds: 200));
+
+      // Assert full-screen warning UI elements appear
+      expect(find.text('HIZLI ONAY KORUMASI'), findsOneWidget);
+      expect(find.text('Suyu Gerçekten İçtiniz mi?'), findsOneWidget);
+      expect(find.text('Sistemi geçiştirmek için suyu içmeden bastınız!'), findsOneWidget);
+      expect(find.text('Lütfen suyunuzu içiniz.'), findsOneWidget);
+
+      // Tap 'Alarm Ekranına Dön' to test navigation back
+      await tester.tap(find.text('Alarm Ekranına Dön'));
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('Su Zamanı'), findsOneWidget);
+      expect(find.text('Su İçtim'), findsOneWidget);
+
+      // Re-trigger warning
+      await tester.tap(find.text('Su İçtim'));
+      await tester.pump(const Duration(milliseconds: 200));
+
+      // Advance clock by 5 seconds to complete countdown
+      for (int i = 0; i < 5; i++) {
+        await tester.pump(const Duration(seconds: 1));
+      }
+
+      expect(find.text('Su içme süresi tamamlandı ✅'), findsOneWidget);
+      final confirmBtn = find.text('Şimdi Suyumu İçtim (+250 ml)');
+      expect(confirmBtn, findsOneWidget);
+      await tester.tap(confirmBtn);
       await tester.pump(const Duration(milliseconds: 200));
 
       expect(tester.takeException(), isNull);

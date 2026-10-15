@@ -122,3 +122,13 @@ class WidgetConstants {
   static const String iosQuickLogWidget = 'WaterQuickLogWidget';
   static const String iosMiniWidget = 'WaterMiniWidget';
 }
+
+class AlarmConstants {
+  static const int minDrinkDurationSeconds = 5;
+  static const int defaultDismissAmountMl = 250;
+  static const String cheatWarningTitle = 'Suyu Gerçekten İçtiniz mi?';
+  static const String cheatWarningMessage = 'Sistemi geçiştirmek için suyu içmeden bastınız!';
+  static const String cheatWarningAction = 'Lütfen suyunuzu içiniz.';
+  static const String cheatWarningExplanation =
+      'Bir bardak (250 ml) suyu sağlıklı bir şekilde tüketmek en az 5 saniye sürer. Vücudunuzun hidrasyon sağlığı için lütfen acele etmeyin ve suyunuzu yudumlayarak için.';
+}

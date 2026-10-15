@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
+import '../config/app_constants.dart';
+import '../widgets/alarms/alarm_cheat_warning_view.dart';
 
 class AlarmActiveScreen extends StatefulWidget {
   const AlarmActiveScreen({super.key});
@@ -15,10 +17,15 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
   late AnimationController _pulseController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _glowAnimation;
+  late final DateTime _openedAt;
+
+  bool _showCheatWarning = false;
+  int _cheatRemainingSeconds = AlarmConstants.minDrinkDurationSeconds;
 
   @override
   void initState() {
     super.initState();
+    _openedAt = DateTime.now();
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
@@ -43,6 +50,27 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
   Widget build(BuildContext context) {
     final provider = Provider.of<WaterProvider>(context);
     final alarmLabel = provider.activeAlarm?.label ?? 'Su Zamanı';
+
+    if (_showCheatWarning) {
+      return AlarmCheatWarningView(
+        initialRemainingSeconds: _cheatRemainingSeconds,
+        onConfirmed: () {
+          provider.dismissAlarm(PresetConstants.dismissAmountMl);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Harika! Su içimi başarıyla kaydedildi. 💧😎'),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.blueAccent,
+            ),
+          );
+        },
+        onReturn: () {
+          setState(() {
+            _showCheatWarning = false;
+          });
+        },
+      );
+    }
 
     return PopScope(
       canPop: false, // Disables standard Android back button
@@ -185,8 +213,20 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                     ),
                                     child: ElevatedButton(
                                       onPressed: () {
+                                        final triggeredAt = provider.alarmTriggeredAt ?? _openedAt;
+                                        final elapsedSeconds = DateTime.now().difference(triggeredAt).inSeconds;
+
+                                        if (elapsedSeconds < AlarmConstants.minDrinkDurationSeconds) {
+                                          final remaining = AlarmConstants.minDrinkDurationSeconds - elapsedSeconds;
+                                          setState(() {
+                                            _showCheatWarning = true;
+                                            _cheatRemainingSeconds = remaining > 0 ? remaining : 1;
+                                          });
+                                          return;
+                                        }
+
                                         // Log 250ml water intake and close alarm
-                                        provider.dismissAlarm(250);
+                                        provider.dismissAlarm(PresetConstants.dismissAmountMl);
                                         
                                         // Show snackbar feedback in main context
                                         ScaffoldMessenger.of(context).showSnackBar(

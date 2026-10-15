@@ -5,6 +5,7 @@ import '../models/water_log.dart';
 import '../models/alarm_setting.dart';
 import '../models/beverage_type.dart';
 import '../models/badge_item.dart';
+import '../config/app_constants.dart';
 import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
 import '../services/sound_service.dart';
@@ -40,6 +41,7 @@ class WaterProvider with ChangeNotifier {
   // Active Alarm State
   bool _isAlarmActive = false;
   AlarmSetting? _activeAlarm;
+  DateTime? _alarmTriggeredAt;
   Timer? _vibrationTimer;
 
   // Global Notification Settings State
@@ -96,6 +98,14 @@ class WaterProvider with ChangeNotifier {
   bool get hasCompletedOnboarding => _hasCompletedOnboarding;
   bool get isAlarmActive => _isAlarmActive;
   AlarmSetting? get activeAlarm => _activeAlarm;
+  DateTime? get alarmTriggeredAt => _alarmTriggeredAt;
+
+  // Check if enough time has passed (min 5 seconds) for realistic water intake
+  bool canDismissAlarm() {
+    if (_alarmTriggeredAt == null) return true;
+    return DateTime.now().difference(_alarmTriggeredAt!).inSeconds >=
+        AlarmConstants.minDrinkDurationSeconds;
+  }
   bool get isNotificationsEnabled => _isNotificationsEnabled;
   bool get isSoundEnabled => _isSoundEnabled;
   bool get isVibrationEnabled => _isVibrationEnabled;
@@ -903,6 +913,7 @@ class WaterProvider with ChangeNotifier {
   void triggerAlarm(AlarmSetting alarm) {
     _isAlarmActive = true;
     _activeAlarm = alarm;
+    _alarmTriggeredAt = DateTime.now();
 
     if (_isSoundEnabled) {
       SoundService().playAlarmSound(
@@ -923,6 +934,7 @@ class WaterProvider with ChangeNotifier {
   void dismissAlarm(int amountMl) {
     _isAlarmActive = false;
     _activeAlarm = null;
+    _alarmTriggeredAt = null;
 
     SoundService().stopSound();
     _stopVibrationLoop();
@@ -967,6 +979,7 @@ class WaterProvider with ChangeNotifier {
     _isSoundEffectsEnabled = true;
     _isWorkoutBoostActive = false;
     _isHotWeatherBoostActive = false;
+    _alarmTriggeredAt = null;
     _unlockedBadges.clear();
     _newlyUnlockedBadge = null;
 

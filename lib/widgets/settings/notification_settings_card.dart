@@ -209,7 +209,7 @@ class NotificationSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Alarm çaldığında telefon titrer.',
+                        'Telefon sessiz moddayken bile güçlü ritmik titreşimle uyarır.',
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],

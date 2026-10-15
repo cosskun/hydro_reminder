@@ -944,14 +944,27 @@ class WaterProvider with ChangeNotifier {
 
   void _startVibrationLoop() {
     _vibrationTimer?.cancel();
-    HapticFeedback.vibrate();
-    _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+    _pulseAlarmVibration();
+    _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1400), (timer) {
       if (_isAlarmActive && _isVibrationEnabled) {
-        HapticFeedback.vibrate();
+        _pulseAlarmVibration();
       } else {
         timer.cancel();
       }
     });
+  }
+
+  void _pulseAlarmVibration() {
+    try {
+      // Vibrate motor + Taptic Engine heavy impact for strong physical feedback even on silent
+      HapticFeedback.vibrate();
+      HapticFeedback.heavyImpact();
+      Future.delayed(const Duration(milliseconds: 250), () {
+        if (_isAlarmActive && _isVibrationEnabled) {
+          HapticFeedback.heavyImpact();
+        }
+      });
+    } catch (_) {}
   }
 
   void _stopVibrationLoop() {

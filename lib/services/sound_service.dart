@@ -57,6 +57,17 @@ class SoundService {
   }) async {
     try {
       await _alarmPlayer.stop();
+
+      // Configure audio session category to playback so alarm can ring even if phone is on silent
+      try {
+        await _alarmPlayer.setAudioContext(
+          AudioContextConfig(
+            respectSilence: false,
+            stayAwake: false,
+          ).build(),
+        );
+      } catch (_) {}
+
       if (loop) {
         await _alarmPlayer.setReleaseMode(ReleaseMode.loop);
       } else {

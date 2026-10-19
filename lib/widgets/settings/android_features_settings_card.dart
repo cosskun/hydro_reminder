@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/water_provider.dart';
+import '../../services/widget_service.dart';
 import 'settings_card_wrapper.dart';
 
 class AndroidFeaturesSettingsCard extends StatelessWidget {
@@ -416,7 +417,94 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
 
         const Divider(height: 20, thickness: 0.5),
 
-        // 3. Google Health Connect Switch
+        // 3. Home Screen & Lock Screen Widgets (3 Designs + 1-Click Pin)
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0B132B) : const Color(0xFFF0F9FF),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+              width: 0.8,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0288D1).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.widgets_rounded,
+                      color: Color(0xFF0288D1),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '📱 Ana Ekran & Kilit Ekranı Widget\'ları',
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '3 farklı boyuttaki widget\'ı tek tıkla ana ekranınıza sabitleyin veya ana ekrana basılı tutup Widget\'lar menüsünden ekleyin.',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _buildWidgetPinRow(
+                context,
+                emoji: '💧',
+                title: 'Geniş İlerleme & Hızlı Ekle (4x2)',
+                subtitle: 'Günlük doluluk çubuğu + 3 hızlı su ekleme butonu',
+                providerName: WidgetService.androidProgressWidget,
+                isDark: isDark,
+              ),
+              const SizedBox(height: 8),
+              _buildWidgetPinRow(
+                context,
+                emoji: '⚡',
+                title: 'Hızlı Su Ekleme Çubuğu (4x1)',
+                subtitle: 'Kompakt yatay bar ve tek tıkla su ekleme',
+                providerName: WidgetService.androidQuickLogWidget,
+                isDark: isDark,
+              ),
+              const SizedBox(height: 8),
+              _buildWidgetPinRow(
+                context,
+                emoji: '🎯',
+                title: 'Mini Su Yüzdesi (2x2)',
+                subtitle: 'Kare mini yüzde ve kalan su göstergesi',
+                providerName: WidgetService.androidMiniWidget,
+                isDark: isDark,
+              ),
+            ],
+          ),
+        ),
+
+        const Divider(height: 20, thickness: 0.5),
+
+        // 4. Google Health Connect Switch
         InkWell(
           onTap: () async {
             final newVal = !provider.isAppleHealthSyncEnabled;
@@ -585,4 +673,85 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
       ),
     );
   }
+
+  static Widget _buildWidgetPinRow(
+    BuildContext context, {
+    required String emoji,
+    required String title,
+    required String subtitle,
+    required String providerName,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : Colors.grey.shade200,
+          width: 0.7,
+        ),
+      ),
+      child: Row(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 20)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          ElevatedButton.icon(
+            onPressed: () async {
+              final pinned = await WidgetService().pinAndroidWidget(providerName);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      pinned
+                          ? '📌 "$title" için ana ekrana ekleme penceresi açıldı!'
+                          : 'Telefonunuzun ana ekranında boş bir yere basılı tutup "Widget\'lar > HydroSoft" menüsünden ekleyebilirsiniz.',
+                    ),
+                    backgroundColor: pinned ? const Color(0xFF10B981) : const Color(0xFF0288D1),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.add_to_home_screen_rounded, size: 13),
+            label: const Text('Ekle', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF10B981),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
+

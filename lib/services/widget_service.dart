@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 
 class WidgetService {
   static final WidgetService _instance = WidgetService._internal();
   factory WidgetService() => _instance;
   WidgetService._internal();
+
+  static const MethodChannel _platformChannel =
+      MethodChannel('com.antigravity.hydroReminder/alarm_haptics');
 
   static const String appGroupId = 'group.com.antigravity.hydroReminder';
   static const String androidProgressWidget = 'WaterProgressWidgetProvider';
@@ -16,6 +20,20 @@ class WidgetService {
   static const String iosProgressWidget = 'WaterProgressWidget';
   static const String iosQuickLogWidget = 'WaterQuickLogWidget';
   static const String iosMiniWidget = 'WaterMiniWidget';
+
+  // Request Android 8.0+ Launcher to pin a specific widget directly to the Home Screen
+  Future<bool> pinAndroidWidget(String providerName) async {
+    if (kIsWeb || !Platform.isAndroid) return false;
+    try {
+      final pinned = await _platformChannel.invokeMethod<bool>(
+        'pinHomeWidget',
+        {'provider': providerName},
+      );
+      return pinned ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
 
   StreamSubscription<Uri?>? _widgetClickSubscription;
   Function(int amount)? _onWaterLogged;

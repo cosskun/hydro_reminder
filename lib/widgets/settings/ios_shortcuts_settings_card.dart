@@ -615,7 +615,175 @@ class IosShortcutsSettingsCard extends StatelessWidget {
               ),
             ),
         ],
+
+        const Divider(height: 20, thickness: 0.5),
+
+        // 4. iOS Home Screen & Lock Screen Interactive Widgets (3 Widget Designs)
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0B132B) : const Color(0xFFF0F9FF),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark ? const Color(0xFF1E3A8A) : Colors.lightBlue.shade200,
+              width: 0.9,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.widgets_rounded, size: 18, color: Color(0xFF0288D1)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Ana Ekran & Kilit Ekranı Widget\'ları (3 Tasarım)',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'iOS 17+ Etkileşimli Widget (AppIntents) teknolojisiyle uygulamayı açmadan iPhone Ana Ekranından veya Kilit Ekranından tek dokunuşla su ekleyebilirsiniz:',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
+                  height: 1.35,
+                ),
+              ),
+              const SizedBox(height: 10),
+              _buildCommandTile(
+                '💧',
+                '1. Geniş İlerleme & Hızlı Ekle (Orta - 4x2 / Küçük - 2x2)',
+                'Günlük ml ilerlemesi, yüzde halkası ve uygulamayı açmadan su ekleyen 3 adet etkileşimli (+200/+330/+500 ml) buton.',
+                isDark,
+              ),
+              const SizedBox(height: 8),
+              _buildCommandTile(
+                '⚡',
+                '2. Hızlı Su Ekleme Barı (Ana Ekran Kompakt)',
+                'Minimalist tasarım ile bardak, şişe ve matara kısayollarına anında erişim.',
+                isDark,
+              ),
+              const SizedBox(height: 8),
+              _buildCommandTile(
+                '🔒',
+                '3. iPhone Kilit Ekranı & StandBy Widget\'ları',
+                'Kilit ekranında saatin hemen altında dairesel su halkası (Circular), detaylı su çubuğu (Rectangular) ve üst satır özeti (Inline).',
+                isDark,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showIosWidgetGuideModal(context, isDark),
+                  icon: const Icon(Icons.help_outline_rounded, size: 15),
+                  label: const Text(
+                    'iPhone Ana Ekran & Kilit Ekranına Nasıl Eklenir?',
+                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF0288D1),
+                    side: const BorderSide(color: Color(0xFF0288D1), width: 1),
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
+
+  void _showIosWidgetGuideModal(BuildContext context, bool isDark) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text('📱', style: TextStyle(fontSize: 24)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'iPhone Widget Kurulum Kılavuzu',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'Ana Ekrana Ekleme:',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildStepTile('1', 'iPhone Ana Ekranında boş bir alana simgeler titreyene kadar basılı tutun.', isDark),
+                const SizedBox(height: 8),
+                _buildStepTile('2', 'Sol üst köşedeki "+" (Düzenle > Araç Takımı Ekle) butonuna dokunun.', isDark),
+                const SizedBox(height: 8),
+                _buildStepTile('3', 'Listeden "HydroSoft"u seçip Küçük veya Orta boy etkileşimli widget\'ı ekleyin.', isDark),
+                const SizedBox(height: 14),
+                Text(
+                  'Kilit Ekranına Ekleme:',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildStepTile('1', 'Kilit Ekranına basılı tutup alttaki "Özelleştir > Kilit Ekranı" seçeneğine dokunun.', isDark),
+                const SizedBox(height: 8),
+                _buildStepTile('2', 'Saatin altındaki "Araç Takımı Ekle" kutusuna dokunup "HydroSoft" su halkasını seçin.', isDark),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0288D1),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Text('Tamam', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
+

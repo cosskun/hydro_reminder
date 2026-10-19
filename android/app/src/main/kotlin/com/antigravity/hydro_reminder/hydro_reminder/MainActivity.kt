@@ -57,9 +57,32 @@ class MainActivity: FlutterFragmentActivity() {
                         val opened = openHealthConnectSettingsPage()
                         result.success(opened)
                     }
+                    "pinHomeWidget" -> {
+                        val providerName = call.argument<String>("provider") ?: "WaterProgressWidgetProvider"
+                        val pinned = requestPinWidget(providerName)
+                        result.success(pinned)
+                    }
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    private fun requestPinWidget(providerName: String): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+        try {
+            val appWidgetManager = android.appwidget.AppWidgetManager.getInstance(this)
+            if (!appWidgetManager.isRequestPinAppWidgetSupported) return false
+
+            val targetClass = when (providerName) {
+                "WaterQuickLogWidgetProvider" -> WaterQuickLogWidgetProvider::class.java
+                "WaterMiniWidgetProvider" -> WaterMiniWidgetProvider::class.java
+                else -> WaterProgressWidgetProvider::class.java
+            }
+            val providerComponent = android.content.ComponentName(this, targetClass)
+            return appWidgetManager.requestPinAppWidget(providerComponent, null, null)
+        } catch (_: Exception) {
+            return false
+        }
     }
 
     private fun openAppNotificationSettings() {

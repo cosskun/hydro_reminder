@@ -82,6 +82,7 @@
         <!-- HydroSoft AppWidgets Providers -->
         <receiver
             android:name=".WaterProgressWidgetProvider"
+            android:label="💧 Günlük İlerleme ve Hızlı Ekle (4x2)"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -93,6 +94,7 @@
 
         <receiver
             android:name=".WaterQuickLogWidgetProvider"
+            android:label="⚡ Hızlı Su Ekleme Çubuğu (4x1)"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -104,6 +106,7 @@
 
         <receiver
             android:name=".WaterMiniWidgetProvider"
+            android:label="🎯 Mini Su Yüzdesi (2x2)"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

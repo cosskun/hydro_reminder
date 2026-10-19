@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../config/app_routes.dart';
 import '../../providers/water_provider.dart';
 import '../../services/widget_service.dart';
 import 'settings_card_wrapper.dart';
@@ -389,10 +390,11 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Ana ekranda HydroSoft ikonuna uzun basarak anında erişin.',
+                          'Ana ekranda HydroSoft ikonuna uzun basarak veya aşağıdaki kısayol butonlarına dokunarak anında çalıştırın (ana ekrana sabitlemek için basılı tutun):',
                           style: TextStyle(
                             fontSize: 11,
                             color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                            height: 1.3,
                           ),
                         ),
                       ],
@@ -405,10 +407,76 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildShortcutChip('🥛', '+200 ml Bardak', isDark),
-                  _buildShortcutChip('🥤', '+330 ml Şişe', isDark),
-                  _buildShortcutChip('🌊', '+500 ml Büyük', isDark),
-                  _buildShortcutChip('📊', 'İstatistikler', isDark),
+                  _buildShortcutChip(
+                    context,
+                    emoji: '🥛',
+                    label: '+200 ml Bardak',
+                    shortcutId: 'shortcut_cup_200',
+                    isDark: isDark,
+                    onTap: () async {
+                      await provider.addWater(200);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('💧 +200 ml Bardak su başarıyla eklendi!'),
+                            backgroundColor: Color(0xFF0288D1),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  _buildShortcutChip(
+                    context,
+                    emoji: '🥤',
+                    label: '+330 ml Şişe',
+                    shortcutId: 'shortcut_bottle_330',
+                    isDark: isDark,
+                    onTap: () async {
+                      await provider.addWater(330);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('💧 +330 ml Şişe su başarıyla eklendi!'),
+                            backgroundColor: Color(0xFF0288D1),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  _buildShortcutChip(
+                    context,
+                    emoji: '🌊',
+                    label: '+500 ml Büyük',
+                    shortcutId: 'shortcut_bottle_500',
+                    isDark: isDark,
+                    onTap: () async {
+                      await provider.addWater(500);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('💧 +500 ml Büyük su başarıyla eklendi!'),
+                            backgroundColor: Color(0xFF0288D1),
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  _buildShortcutChip(
+                    context,
+                    emoji: '📊',
+                    label: 'İstatistikler',
+                    shortcutId: 'shortcut_history_stats',
+                    isDark: isDark,
+                    onTap: () {
+                      mainNavigationKey.currentState?.setTabIndex(1);
+                    },
+                  ),
                 ],
               ),
             ],
@@ -645,31 +713,67 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
     );
   }
 
-  static Widget _buildShortcutChip(String emoji, String label, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDark ? const Color(0xFF334155) : Colors.grey.shade300,
-          width: 0.6,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 13)),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155),
+  static Widget _buildShortcutChip(
+    BuildContext context, {
+    required String emoji,
+    required String label,
+    required String shortcutId,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: isDark ? const Color(0xFF1E293B) : Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: () async {
+          final pinned = await WidgetService().pinAndroidShortcut(shortcutId);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  pinned
+                      ? '📌 "$label" kısayolu için ana ekrana ekleme penceresi açıldı!'
+                      : 'Ana ekranda HydroSoft ikonuna basılı tutup "$label" kısayolunu sürükleyerek ana ekrana bırakabilirsiniz.',
+                ),
+                backgroundColor: pinned ? const Color(0xFF10B981) : const Color(0xFF0288D1),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        },
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isDark ? const Color(0xFF38BDF8).withValues(alpha: 0.4) : Colors.blue.shade200,
+              width: 0.9,
             ),
           ),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0288D1),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.touch_app_rounded,
+                size: 12,
+                color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

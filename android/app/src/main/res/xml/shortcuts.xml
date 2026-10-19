@@ -6,7 +6,7 @@
         android:shortcutShortLabel="@string/shortcut_cup_short"
         android:shortcutLongLabel="@string/shortcut_cup_long">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="es.antonborri.home_widget.action.LAUNCH"
             android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
             android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
             android:data="hydroreminder://log?amount=200" />
@@ -19,7 +19,7 @@
         android:shortcutShortLabel="@string/shortcut_bottle_short"
         android:shortcutLongLabel="@string/shortcut_bottle_long">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="es.antonborri.home_widget.action.LAUNCH"
             android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
             android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
             android:data="hydroreminder://log?amount=330" />
@@ -32,7 +32,7 @@
         android:shortcutShortLabel="@string/shortcut_wave_short"
         android:shortcutLongLabel="@string/shortcut_wave_long">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="es.antonborri.home_widget.action.LAUNCH"
             android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
             android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
             android:data="hydroreminder://log?amount=500" />
@@ -45,9 +45,10 @@
         android:shortcutShortLabel="@string/shortcut_stats_short"
         android:shortcutLongLabel="@string/shortcut_stats_long">
         <intent
-            android:action="android.intent.action.VIEW"
+            android:action="es.antonborri.home_widget.action.LAUNCH"
             android:targetPackage="com.antigravity.hydro_reminder.hydro_reminder"
             android:targetClass="com.antigravity.hydro_reminder.hydro_reminder.MainActivity"
             android:data="hydroreminder://stats" />
     </shortcut>
 </shortcuts>
+

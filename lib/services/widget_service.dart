@@ -35,9 +35,25 @@ class WidgetService {
     }
   }
 
+  // Request Android 8.0+ Launcher to pin a specific App Shortcut directly to the Home Screen
+  Future<bool> pinAndroidShortcut(String shortcutId) async {
+    if (kIsWeb || !Platform.isAndroid) return false;
+    try {
+      final pinned = await _platformChannel.invokeMethod<bool>(
+        'pinAppShortcut',
+        {'shortcutId': shortcutId},
+      );
+      return pinned ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   StreamSubscription<Uri?>? _widgetClickSubscription;
   Function(int amount)? _onWaterLogged;
   Function(int tabIndex)? _onNavigate;
+  String? _lastHandledUri;
+  DateTime? _lastHandledTime;
 
   // Initialize widget service, app groups, and deep link listeners
   Future<void> initialize({
@@ -48,10 +64,39 @@ class WidgetService {
     _onNavigate = onNavigate;
 
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      // Listen for runtime Android App Shortcut intents forwarded from MainActivity.onNewIntent
+      _platformChannel.setMethodCallHandler((call) async {
+        if (call.method == 'onShortcutUri') {
+          final uriStr = call.arguments as String?;
+          if (uriStr != null && uriStr.isNotEmpty) {
+            final parsed = Uri.tryParse(uriStr);
+            if (parsed != null) {
+              _handleWidgetUri(parsed);
+            }
+          }
+        }
+      });
+
       try {
         await HomeWidget.setAppGroupId(appGroupId);
       } catch (e) {
         debugPrint('HomeWidget setAppGroupId error: $e');
+      }
+
+      // Handle cold start from native Android App Shortcut
+      if (Platform.isAndroid) {
+        try {
+          final initialShortcutStr =
+              await _platformChannel.invokeMethod<String>('consumeInitialShortcutUri');
+          if (initialShortcutStr != null && initialShortcutStr.isNotEmpty) {
+            final parsed = Uri.tryParse(initialShortcutStr);
+            if (parsed != null) {
+              _handleWidgetUri(parsed);
+            }
+          }
+        } catch (e) {
+          debugPrint('consumeInitialShortcutUri error: $e');
+        }
       }
 
       // Handle cold start from widget click
@@ -79,8 +124,18 @@ class WidgetService {
     }
   }
 
-  // Handle incoming deep link from widget or app shortcuts
+  // Handle incoming deep link from widget or app shortcuts (with deduplication)
   void _handleWidgetUri(Uri uri) {
+    final now = DateTime.now();
+    final uriString = uri.toString();
+    if (_lastHandledUri == uriString &&
+        _lastHandledTime != null &&
+        now.difference(_lastHandledTime!).inMilliseconds < 1500) {
+      return;
+    }
+    _lastHandledUri = uriString;
+    _lastHandledTime = now;
+
     debugPrint('Widget / Shortcut deep link received: $uri');
     if (uri.scheme == 'hydroreminder') {
       if (uri.host == 'log' || uri.path.contains('log')) {

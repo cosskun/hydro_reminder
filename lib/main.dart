@@ -52,32 +52,50 @@ void main() async {
   // Initialize and run our background alarm checking and notification service
   await AlarmService().initialize(waterProvider);
 
-  // Initialize home screen and lock screen widget listener
+  // Initialize home screen and lock screen widget & shortcut listener
   await WidgetService().initialize(
     onWaterLogged: (amount) async {
       await waterProvider.addWater(amount);
-      rootScaffoldMessengerKey.currentState?.showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Text('💧 ', style: TextStyle(fontSize: 18)),
-              Expanded(
-                child: Text(
-                  '$amount ml su başarıyla kaydedildi!',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+      void showConfirmation() {
+        rootScaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Text('💧 ', style: TextStyle(fontSize: 18)),
+                Expanded(
+                  child: Text(
+                    '$amount ml su başarıyla kaydedildi!',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            backgroundColor: const Color(0xFF0288D1),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 3),
           ),
-          backgroundColor: const Color(0xFF0288D1),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+        );
+      }
+
+      if (rootScaffoldMessengerKey.currentState != null) {
+        showConfirmation();
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Future.delayed(const Duration(milliseconds: 250), showConfirmation);
+        });
+      }
     },
     onNavigate: (tabIndex) {
-      mainNavigationKey.currentState?.setTabIndex(tabIndex);
+      if (mainNavigationKey.currentState != null) {
+        mainNavigationKey.currentState?.setTabIndex(tabIndex);
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Future.delayed(const Duration(milliseconds: 250), () {
+            mainNavigationKey.currentState?.setTabIndex(tabIndex);
+          });
+        });
+      }
     },
   );
 

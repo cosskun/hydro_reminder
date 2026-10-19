@@ -15,9 +15,12 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterFragmentActivity() {
     private val hapticsChannelName = "com.antigravity.hydroReminder/alarm_haptics"
+    private var methodChannel: MethodChannel? = null
+    private var pendingShortcutUri: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        extractShortcutUri(intent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
@@ -33,11 +36,32 @@ class MainActivity: FlutterFragmentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val uriStr = extractShortcutUri(intent)
+        if (uriStr != null && methodChannel != null) {
+            pendingShortcutUri = null
+            methodChannel?.invokeMethod("onShortcutUri", uriStr)
+        }
+    }
+
+    private fun extractShortcutUri(intent: android.content.Intent?): String? {
+        val data = intent?.data ?: return null
+        if (data.scheme == "hydroreminder") {
+            val uriStr = data.toString()
+            pendingShortcutUri = uriStr
+            return uriStr
+        }
+        return null
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, hapticsChannelName)
-            .setMethodCallHandler { call, result ->
+        val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, hapticsChannelName)
+        methodChannel = channel
+        channel.setMethodCallHandler { call, result ->
                 when (call.method) {
                     "vibrateAlarm" -> {
                         triggerHardwareAlarmVibration()
@@ -62,9 +86,54 @@ class MainActivity: FlutterFragmentActivity() {
                         val pinned = requestPinWidget(providerName)
                         result.success(pinned)
                     }
+                    "pinAppShortcut" -> {
+                        val shortcutId = call.argument<String>("shortcutId") ?: "shortcut_cup_200"
+                        val pinned = requestPinAppShortcut(shortcutId)
+                        result.success(pinned)
+                    }
+                    "consumeInitialShortcutUri" -> {
+                        val uri = pendingShortcutUri
+                        pendingShortcutUri = null
+                        result.success(uri)
+                    }
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    private fun requestPinAppShortcut(shortcutId: String): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+        try {
+            val shortcutManager = getSystemService(android.content.pm.ShortcutManager::class.java) ?: return false
+            if (!shortcutManager.isRequestPinShortcutSupported) return false
+
+            val existing = (shortcutManager.manifestShortcuts + shortcutManager.dynamicShortcuts)
+                .firstOrNull { it.id == shortcutId }
+
+            val shortcutInfo = existing ?: run {
+                val (shortLabel, iconRes, dataUri) = when (shortcutId) {
+                    "shortcut_bottle_330" -> Triple("+330 ml Şişe", R.drawable.ic_shortcut_bottle, "hydroreminder://log?amount=330")
+                    "shortcut_bottle_500" -> Triple("+500 ml Büyük", R.drawable.ic_shortcut_wave, "hydroreminder://log?amount=500")
+                    "shortcut_history_stats" -> Triple("İstatistikler", R.drawable.ic_shortcut_stats, "hydroreminder://stats")
+                    else -> Triple("+200 ml Bardak", R.drawable.ic_shortcut_cup, "hydroreminder://log?amount=200")
+                }
+                val shortcutIntent = android.content.Intent(
+                    "es.antonborri.home_widget.action.LAUNCH",
+                    android.net.Uri.parse(dataUri),
+                    this,
+                    MainActivity::class.java
+                )
+                android.content.pm.ShortcutInfo.Builder(this, shortcutId)
+                    .setShortLabel(shortLabel)
+                    .setIcon(android.graphics.drawable.Icon.createWithResource(this, iconRes))
+                    .setIntent(shortcutIntent)
+                    .build()
+            }
+
+            return shortcutManager.requestPinShortcut(shortcutInfo, null)
+        } catch (_: Exception) {
+            return false
+        }
     }
 
     private fun requestPinWidget(providerName: String): Boolean {

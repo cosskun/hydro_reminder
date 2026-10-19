@@ -31,7 +31,7 @@ class AlarmService with WidgetsBindingObserver {
   static const String _summaryChannelName = 'HydroSoft Gün Sonu Özeti';
   static const String _summaryChannelDesc = 'Günlük içilen ve kalan su miktarı özeti';
 
-  static const String _tipsChannelId = 'hydro_tips_channel';
+  static const String _tipsChannelId = 'hydro_tips_channel_v2';
   static const String _tipsChannelName = 'HydroSoft Sağlık İpuçları';
   static const String _tipsChannelDesc = 'Sağlıklı su tüketimi ve uyku hatırlatıcıları';
 
@@ -138,9 +138,8 @@ class AlarmService with WidgetsBindingObserver {
         _tipsChannelId,
         _tipsChannelName,
         description: _tipsChannelDesc,
-        importance: Importance.high,
+        importance: Importance.max,
         playSound: true,
-        sound: RawResourceAndroidNotificationSound('sound_water_drop'),
         enableVibration: true,
       );
 
@@ -638,8 +637,17 @@ class AlarmService with WidgetsBindingObserver {
   }
 
   // Send Sleep & Water tip notification directly to phone notification shade (not full screen)
-  Future<void> sendSleepTipNotification({int? consumedMl, int? remainingMl, int? dailyGoalMl}) async {
-    if (kIsWeb) return;
+  Future<bool> sendSleepTipNotification({int? consumedMl, int? remainingMl, int? dailyGoalMl}) async {
+    if (kIsWeb) return true;
+
+    bool hasPerm = await checkPermissionStatus();
+    if (!hasPerm) {
+      hasPerm = await requestPermission();
+    }
+    if (!hasPerm) {
+      await openNotificationSettings();
+      return false;
+    }
 
     final consumed = consumedMl ?? _provider?.todayConsumed ?? 0;
     final remaining = remainingMl ?? _provider?.dailyRemainingMl ?? 0;
@@ -654,39 +662,47 @@ class AlarmService with WidgetsBindingObserver {
       body = 'Bugün $consumed ml su içtiniz ($remaining ml kaldı). Kaliteli bir uyku için yatmadan önce ihtiyacınız kadar su almayı unutmayın! 🌙💧';
     }
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       _tipsChannelId,
       _tipsChannelName,
       channelDescription: _tipsChannelDesc,
-      importance: Importance.high,
+      icon: '@mipmap/ic_launcher',
+      importance: Importance.max,
       priority: Priority.high,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('sound_water_drop'),
       enableVibration: true,
-      fullScreenIntent: false, // Standard heads-up notification in notification bar, not full screen
-      styleInformation: BigTextStyleInformation(''),
+      fullScreenIntent: false,
+      styleInformation: BigTextStyleInformation(body),
     );
 
     const DarwinNotificationDetails darwinDetails = DarwinNotificationDetails(
       presentAlert: true,
+      presentBanner: true,
+      presentList: true,
       presentBadge: true,
       presentSound: true,
       sound: 'sound_water_drop.wav',
-      interruptionLevel: InterruptionLevel.active,
+      interruptionLevel: InterruptionLevel.timeSensitive,
     );
 
-    const NotificationDetails details = NotificationDetails(
+    final NotificationDetails details = NotificationDetails(
       android: androidDetails,
       iOS: darwinDetails,
     );
 
-    await _notificationsPlugin.show(
-      id: _sleepTipNotificationId,
-      title: 'Sağlıklı Uyku ve Su İpucu 🌙💤',
-      body: body,
-      notificationDetails: details,
-      payload: 'sleep_tip_notification',
-    );
+    try {
+      await _notificationsPlugin.show(
+        id: _sleepTipNotificationId,
+        title: 'Sağlıklı Uyku ve Su İpucu 🌙💤',
+        body: body,
+        notificationDetails: details,
+        payload: 'sleep_tip_notification',
+      );
+      return true;
+    } catch (e) {
+      debugPrint('sendSleepTipNotification error: $e');
+      return false;
+    }
   }
 
   // Check if system notifications are enabled

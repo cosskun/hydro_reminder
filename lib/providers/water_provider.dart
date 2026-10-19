@@ -852,12 +852,16 @@ class WaterProvider with ChangeNotifier {
   }
 
   // Send Sleep Hygiene Tip Notification directly with live calculated values
-  Future<void> sendSleepTipNotification() async {
-    await AlarmService().sendSleepTipNotification(
+  Future<bool> sendSleepTipNotification() async {
+    final sent = await AlarmService().sendSleepTipNotification(
       consumedMl: todayConsumed,
       remainingMl: dailyRemainingMl,
       dailyGoalMl: dailyGoal,
     );
+    if (!sent) {
+      _pendingNotificationPermissionFromSettings = true;
+    }
+    return sent;
   }
 
   // Global Notification Settings (checks OS permission first when enabling)

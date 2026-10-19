@@ -26,12 +26,24 @@ class EndOfDaySettingsCard extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         InkWell(
-          onTap: () {
-            provider.updateEndOfDaySettings(
-              isEnabled: !provider.isEndOfDayEnabled,
+          onTap: () async {
+            final targetVal = !provider.isEndOfDayEnabled;
+            final granted = await provider.updateEndOfDaySettings(
+              isEnabled: targetVal,
               hour: provider.endOfDayHour,
               minute: provider.endOfDayMinute,
             );
+            if (targetVal && !granted && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Gün sonu özetini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                  ),
+                  backgroundColor: Colors.orange,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -52,7 +64,9 @@ class EndOfDaySettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        provider.isEndOfDayEnabled ? 'Her gün belirlenen saatte iletilecek' : 'Kapalı',
+                        provider.isEndOfDayEnabled && provider.isNotificationsEnabled
+                            ? 'Her gün belirlenen saatte iletilecek'
+                            : 'Kapalı',
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],
@@ -60,21 +74,32 @@ class EndOfDaySettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Switch(
-                  value: provider.isEndOfDayEnabled,
+                  value: provider.isEndOfDayEnabled && provider.isNotificationsEnabled,
                   activeThumbColor: const Color(0xFF0288D1),
-                  onChanged: (val) {
-                    provider.updateEndOfDaySettings(
+                  onChanged: (val) async {
+                    final granted = await provider.updateEndOfDaySettings(
                       isEnabled: val,
                       hour: provider.endOfDayHour,
                       minute: provider.endOfDayMinute,
                     );
+                    if (val && !granted && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Gün sonu özetini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                          ),
+                          backgroundColor: Colors.orange,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
             ),
           ),
         ),
-        if (provider.isEndOfDayEnabled) ...[
+        if (provider.isEndOfDayEnabled && provider.isNotificationsEnabled) ...[
           const Divider(height: 16, thickness: 0.5),
           InkWell(
             onTap: () async {
@@ -165,15 +190,29 @@ class EndOfDaySettingsCard extends StatelessWidget {
         ],
         const Divider(height: 24, thickness: 0.5),
         InkWell(
-          onTap: () {
-            provider.sendSleepTipNotification();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Uyku & Su bildirimi bildirim çubuğunuza gönderildi! 🌙'),
-                duration: Duration(seconds: 2),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
+          onTap: () async {
+            final sent = await provider.sendSleepTipNotification();
+            if (!context.mounted) return;
+            if (sent) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Uyku & Su bildirimi bildirim çubuğunuza gönderildi! 🌙'),
+                  duration: Duration(seconds: 2),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Bildirim gönderilemedi! Lütfen telefon ayarlarından bildirim iznini açın.',
+                  ),
+                  backgroundColor: Colors.orange,
+                  duration: Duration(seconds: 3),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
           },
           borderRadius: BorderRadius.circular(12),
           child: Container(

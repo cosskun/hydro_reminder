@@ -54,7 +54,7 @@ class SoundService {
     ),
   ];
 
-  // Trigger native hardware vibration + Taptic Engine burst (works in Silent Mode)
+  // Trigger native hardware vibration + Taptic Engine burst (works in Silent Mode on both iOS & Android)
   Future<void> triggerAlarmVibration() async {
     try {
       await _alarmPlayer.stop();
@@ -63,7 +63,9 @@ class SoundService {
     try {
       HapticFeedback.vibrate();
       HapticFeedback.heavyImpact();
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      if (!kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.iOS ||
+              defaultTargetPlatform == TargetPlatform.android)) {
         await _hapticsChannel.invokeMethod('vibrateAlarm');
       }
     } catch (_) {}
@@ -77,6 +79,17 @@ class SoundService {
   }) async {
     try {
       await _alarmPlayer.stop();
+
+      // On Android, check if the device ringer is in Silent or Vibrate mode so we mute audio and only vibrate (matching iOS)
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        try {
+          final isSilent =
+              await _hapticsChannel.invokeMethod<bool>('isSilentMode');
+          if (isSilent == true) {
+            return;
+          }
+        } catch (_) {}
+      }
 
       // Respect silent switch on iOS so silent mode mutes audio and never blocks hardware vibration
       try {

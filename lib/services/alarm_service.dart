@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -8,7 +9,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import '../providers/water_provider.dart';
 import '../models/alarm_setting.dart';
 
-class AlarmService {
+class AlarmService with WidgetsBindingObserver {
   static final AlarmService _instance = AlarmService._internal();
   factory AlarmService() => _instance;
   AlarmService._internal();
@@ -16,6 +17,7 @@ class AlarmService {
   WaterProvider? _provider;
   Timer? _checkTimer;
   String _lastTriggeredKey = '';
+  final Set<String> _triggeredAlarmKeys = {};
 
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -44,6 +46,11 @@ class AlarmService {
   Future<void> initialize(WaterProvider provider) async {
     _provider = provider;
 
+    try {
+      WidgetsBinding.instance.removeObserver(this);
+      WidgetsBinding.instance.addObserver(this);
+    } catch (_) {}
+
     if (kIsWeb) {
       startChecking();
       return;
@@ -69,6 +76,11 @@ class AlarmService {
         requestAlertPermission: true,
         requestBadgePermission: true,
         requestSoundPermission: true,
+        defaultPresentAlert: true,
+        defaultPresentBanner: true,
+        defaultPresentList: true,
+        defaultPresentSound: true,
+        defaultPresentBadge: true,
       );
 
       const InitializationSettings initializationSettings = InitializationSettings(
@@ -188,10 +200,26 @@ class AlarmService {
     startChecking();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Immediately check on app resume so full-screen alarm pops up with 0ms delay!
+      checkAlarmsNow(includeRecentMissed: true);
+    }
+  }
+
+  void markAlarmHandledForToday(String alarmId) {
+    final now = DateTime.now();
+    _triggeredAlarmKeys.add('${now.year}-${now.month}-${now.day}-$alarmId');
+  }
+
   // Trigger alarm overlay if notification is tapped
   void _triggerAlarmFromPayload(String alarmId) {
     if (_provider == null) return;
-    
+
+    markAlarmHandledForToday(alarmId);
+    unawaited(cancelAlarmFollowUps(alarmId));
+
     final alarmIndex = _provider!.alarms.indexWhere((a) => a.id == alarmId);
     if (alarmIndex != -1) {
       _provider!.triggerAlarm(_provider!.alarms[alarmIndex]);
@@ -208,26 +236,67 @@ class AlarmService {
     }
   }
 
-  // Foreground Timer checking (runs when app is open)
-  void startChecking() {
-    if (_checkTimer != null) return;
+  // Immediate check for due or recently fired unacknowledged alarms
+  void checkAlarmsNow({bool includeRecentMissed = false}) {
+    if (_provider == null || _provider!.isAlarmActive) return;
 
-    _checkTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      if (_provider == null) return;
-      
-      final now = DateTime.now();
-      final currentKey = '${now.day}-${now.hour}-${now.minute}';
+    final now = DateTime.now();
+    final currentMinuteKey =
+        '${now.year}-${now.month}-${now.day}-${now.hour}-${now.minute}';
 
-      // Avoid double triggering in the same minute
-      if (_lastTriggeredKey == currentKey) return;
+    for (final alarm in _provider!.alarms) {
+      if (!alarm.isEnabled) continue;
 
-      for (final alarm in _provider!.alarms) {
-        if (alarm.isEnabled && alarm.hour == now.hour && alarm.minute == now.minute) {
-          _lastTriggeredKey = currentKey;
+      final alarmDayKey = '${now.year}-${now.month}-${now.day}-${alarm.id}';
+      if (_triggeredAlarmKeys.contains(alarmDayKey)) continue;
+
+      // 1. Exact minute match while app is open
+      if (alarm.hour == now.hour && alarm.minute == now.minute) {
+        if (_lastTriggeredKey != currentMinuteKey) {
+          _lastTriggeredKey = currentMinuteKey;
+          _triggeredAlarmKeys.add(alarmDayKey);
+          unawaited(cancelAlarmFollowUps(alarm.id));
           _provider!.triggerAlarm(alarm);
-          break;
+          return;
         }
       }
+
+      // 2. Recent alarm within last 15 minutes when user opens app after seeing notification
+      if (includeRecentMissed) {
+        final alarmTimeToday = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          alarm.hour,
+          alarm.minute,
+        );
+        final diffSeconds = now.difference(alarmTimeToday).inSeconds;
+        if (diffSeconds >= 0 && diffSeconds <= 900) {
+          final hasDrankSinceAlarm = _provider!.logs.any(
+            (log) => !log.timestamp.isBefore(alarmTimeToday),
+          );
+          if (!hasDrankSinceAlarm) {
+            _lastTriggeredKey = currentMinuteKey;
+            _triggeredAlarmKeys.add(alarmDayKey);
+            unawaited(cancelAlarmFollowUps(alarm.id));
+            _provider!.triggerAlarm(alarm);
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  // Foreground Timer checking (runs when app is open)
+  void startChecking() {
+    // Run immediately so user never sees Dashboard first when opening at alarm time
+    checkAlarmsNow(includeRecentMissed: true);
+
+    if (_checkTimer != null) return;
+
+    // 1-second precision timer (instead of 15s) for instant full-screen trigger
+    _checkTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      checkAlarmsNow(includeRecentMissed: false);
     });
   }
 
@@ -237,14 +306,29 @@ class AlarmService {
     _checkTimer = null;
   }
 
+  // Cancel follow-up burst notifications for an alarm
+  Future<void> cancelAlarmFollowUps(dynamic id) async {
+    if (kIsWeb) return;
+    try {
+      final baseId = id.hashCode;
+      await _notificationsPlugin.cancel(id: baseId + 10001);
+      await _notificationsPlugin.cancel(id: baseId + 20002);
+      await _notificationsPlugin.cancel(id: baseId + 30003);
+    } catch (_) {}
+  }
+
   // Synchronize Flutter local scheduled notifications with active alarms
   Future<void> syncNotifications(List<AlarmSetting> alarms) async {
     if (kIsWeb) return;
 
     try {
-      // Clear all previously scheduled notifications except end-of-day summary
+      // Clear all previously scheduled notifications and follow-up rings
       for (final alarm in alarms) {
-        await _notificationsPlugin.cancel(id: alarm.id.hashCode);
+        final baseId = alarm.id.hashCode;
+        await _notificationsPlugin.cancel(id: baseId);
+        await _notificationsPlugin.cancel(id: baseId + 10001);
+        await _notificationsPlugin.cancel(id: baseId + 20002);
+        await _notificationsPlugin.cancel(id: baseId + 30003);
       }
     } catch (_) {
       // In test or unsupported environments where plugin platform instance isn't registered
@@ -254,8 +338,9 @@ class AlarmService {
     for (final alarm in alarms) {
       if (alarm.isEnabled) {
         final id = alarm.id.hashCode;
-        final title = 'Su Zamanı Geldi! 💧';
-        final body = '${alarm.label} saati geldi. Bir bardak su içelim!';
+        final title = '🚨 Su Zamanı Geldi! 💧';
+        final body =
+            '${alarm.label} saati geldi! Tam ekran alarmı kapatmak için dokunun ve suyunuzu için.';
 
         final now = tz.TZDateTime.now(tz.local);
         var scheduledDate = tz.TZDateTime(
@@ -289,6 +374,8 @@ class AlarmService {
 
         const darwinDetails = DarwinNotificationDetails(
           presentAlert: true,
+          presentBanner: true,
+          presentList: true,
           presentBadge: true,
           presentSound: true,
           sound: 'sound_water_drop.wav',
@@ -312,6 +399,28 @@ class AlarmService {
             matchDateTimeComponents: DateTimeComponents.time, // Daily repeat
             payload: 'alarm_${alarm.id}',
           );
+
+          // On iOS, schedule persistent follow-up alarm rings (+12s, +24s, +36s)
+          // so if the app is closed, it continues ringing & vibrating like a real alarm until opened
+          if (defaultTargetPlatform == TargetPlatform.iOS) {
+            final followUpOffsets = [12, 24, 36];
+            final followUpIds = [id + 10001, id + 20002, id + 30003];
+            for (int i = 0; i < followUpOffsets.length; i++) {
+              final followUpDate =
+                  scheduledDate.add(Duration(seconds: followUpOffsets[i]));
+              await _notificationsPlugin.zonedSchedule(
+                id: followUpIds[i],
+                title: '⏰ Su Alarmı Çalıyor! (${alarm.label})',
+                body:
+                    'Henüz suyunuzu içmediniz! Tam ekran alarmı açmak ve onaylamak için dokunun. 💧',
+                scheduledDate: followUpDate,
+                notificationDetails: const NotificationDetails(iOS: darwinDetails),
+                androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+                matchDateTimeComponents: DateTimeComponents.time,
+                payload: 'alarm_${alarm.id}',
+              );
+            }
+          }
         } catch (e) {
           try {
             // Fallback to exactAllowWhileIdle if alarmClock fails
@@ -639,6 +748,7 @@ class AlarmService {
     if (kIsWeb) return;
     try {
       await _notificationsPlugin.cancel(id: id.hashCode);
+      await cancelAlarmFollowUps(id);
     } catch (_) {}
   }
 

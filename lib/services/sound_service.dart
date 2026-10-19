@@ -1,5 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class PresetSound {
   final String name;
@@ -17,6 +19,9 @@ class SoundService {
   static final SoundService _instance = SoundService._internal();
   factory SoundService() => _instance;
   SoundService._internal();
+
+  static const MethodChannel _hapticsChannel =
+      MethodChannel('com.antigravity.hydroReminder/alarm_haptics');
 
   final AudioPlayer _alarmPlayer = AudioPlayer();
   final AudioPlayer _effectPlayer = AudioPlayer();
@@ -49,6 +54,21 @@ class SoundService {
     ),
   ];
 
+  // Trigger native hardware vibration + Taptic Engine burst (works in Silent Mode)
+  Future<void> triggerAlarmVibration() async {
+    try {
+      await _alarmPlayer.stop();
+    } catch (_) {}
+
+    try {
+      HapticFeedback.vibrate();
+      HapticFeedback.heavyImpact();
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        await _hapticsChannel.invokeMethod('vibrateAlarm');
+      }
+    } catch (_) {}
+  }
+
   // Play alarm sound (looping or single)
   Future<void> playAlarmSound({
     required String soundPath,
@@ -58,11 +78,11 @@ class SoundService {
     try {
       await _alarmPlayer.stop();
 
-      // Configure audio session category to playback so alarm can ring even if phone is on silent
+      // Respect silent switch on iOS so silent mode mutes audio and never blocks hardware vibration
       try {
         await _alarmPlayer.setAudioContext(
           AudioContextConfig(
-            respectSilence: false,
+            respectSilence: true,
             stayAwake: false,
           ).build(),
         );

@@ -845,6 +845,12 @@ class WaterProvider with ChangeNotifier {
       isCustomSound: isCustomSound,
     );
 
+    final now = DateTime.now();
+    final alarmTimeToday = DateTime(now.year, now.month, now.day, hour, minute);
+    if (now.difference(alarmTimeToday).inSeconds > 60) {
+      AlarmService().markAlarmHandledForToday(alarm.id);
+    }
+
     _alarms.add(alarm);
     await _storageService.saveAlarms(_alarms);
     if (_isNotificationsEnabled) {
@@ -873,6 +879,11 @@ class WaterProvider with ChangeNotifier {
         soundPath: soundPath,
         isCustomSound: isCustomSound,
       );
+      final now = DateTime.now();
+      final alarmTimeToday = DateTime(now.year, now.month, now.day, hour, minute);
+      if (now.difference(alarmTimeToday).inSeconds > 60) {
+        AlarmService().markAlarmHandledForToday(id);
+      }
       _alarms[index] = updated;
       await _storageService.saveAlarms(_alarms);
       if (_isNotificationsEnabled && updated.isEnabled) {
@@ -915,26 +926,25 @@ class WaterProvider with ChangeNotifier {
     _activeAlarm = alarm;
     _alarmTriggeredAt = DateTime.now();
 
-    if (_isSoundEnabled) {
-      SoundService().playAlarmSound(
-        soundPath: alarm.soundPath,
-        isCustomSound: alarm.isCustomSound,
-        loop: true,
-      );
-    }
+    AlarmService().markAlarmHandledForToday(alarm.id);
+    unawaited(AlarmService().cancelAlarmFollowUps(alarm.id));
 
-    if (_isVibrationEnabled) {
-      _startVibrationLoop();
-    }
+    _startAlarmLoop(alarm);
 
     notifyListeners();
   }
 
   // Dismiss alarm ONLY when user confirmed they drank water
   void dismissAlarm(int amountMl) {
+    final dismissedId = _activeAlarm?.id;
     _isAlarmActive = false;
     _activeAlarm = null;
     _alarmTriggeredAt = null;
+
+    if (dismissedId != null) {
+      AlarmService().markAlarmHandledForToday(dismissedId);
+      unawaited(AlarmService().cancelAlarmFollowUps(dismissedId));
+    }
 
     SoundService().stopSound();
     _stopVibrationLoop();
@@ -942,29 +952,45 @@ class WaterProvider with ChangeNotifier {
     addWater(amountMl);
   }
 
-  void _startVibrationLoop() {
+  void _startAlarmLoop(AlarmSetting alarm) {
     _vibrationTimer?.cancel();
-    _pulseAlarmVibration();
-    _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1400), (timer) {
-      if (_isAlarmActive && _isVibrationEnabled) {
-        _pulseAlarmVibration();
+    _pulseAlarmCycle(alarm);
+    _vibrationTimer = Timer.periodic(const Duration(milliseconds: 1600), (timer) {
+      if (_isAlarmActive) {
+        _pulseAlarmCycle(alarm);
       } else {
         timer.cancel();
       }
     });
   }
 
-  void _pulseAlarmVibration() {
-    try {
-      // Vibrate motor + Taptic Engine heavy impact for strong physical feedback even on silent
-      HapticFeedback.vibrate();
-      HapticFeedback.heavyImpact();
+  Future<void> _pulseAlarmCycle(AlarmSetting alarm) async {
+    if (!_isAlarmActive) return;
+
+    if (_isVibrationEnabled) {
+      // 1. Trigger native hardware vibration & Taptic burst BEFORE audio chime so iOS audio buffer never suppresses vibration
+      await SoundService().triggerAlarmVibration();
       Future.delayed(const Duration(milliseconds: 250), () {
         if (_isAlarmActive && _isVibrationEnabled) {
-          HapticFeedback.heavyImpact();
+          try {
+            HapticFeedback.heavyImpact();
+          } catch (_) {}
         }
       });
-    } catch (_) {}
+    }
+
+    if (_isSoundEnabled && _isAlarmActive) {
+      // 2. Play alarm chime after 320ms vibration window (respects Silent Switch on iOS)
+      Future.delayed(Duration(milliseconds: _isVibrationEnabled ? 320 : 0), () {
+        if (_isAlarmActive && _isSoundEnabled) {
+          SoundService().playAlarmSound(
+            soundPath: alarm.soundPath,
+            isCustomSound: alarm.isCustomSound,
+            loop: false,
+          );
+        }
+      });
+    }
   }
 
   void _stopVibrationLoop() {

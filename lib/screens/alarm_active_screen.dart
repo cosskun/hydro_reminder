@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/water_provider.dart';
 import '../config/app_constants.dart';
+import '../services/sound_service.dart';
 import '../widgets/alarms/alarm_cheat_warning_view.dart';
 
 class AlarmActiveScreen extends StatefulWidget {
@@ -38,6 +39,15 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
     _glowAnimation = Tween<double>(begin: 10, end: 30).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final provider = Provider.of<WaterProvider>(context, listen: false);
+        if (provider.isVibrationEnabled) {
+          SoundService().triggerAlarmVibration();
+        }
+      }
+    });
   }
 
   @override

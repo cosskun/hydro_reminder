@@ -184,8 +184,8 @@ struct HydroAppShortcutsProvider: AppShortcutsProvider {
             intent: LogWaterIntent(),
             phrases: [
                 "\(.applicationName) ile su ekle",
-                "\(.applicationName) ile \(\.$amount) ml su içtim",
                 "\(.applicationName) ile bir bardak su kaydet",
+                "\(.applicationName) ile su içtim",
                 "\(.applicationName) su içtim"
             ],
             shortTitle: "Sesle Su Ekle",

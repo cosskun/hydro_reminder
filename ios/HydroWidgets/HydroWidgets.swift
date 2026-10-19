@@ -442,6 +442,19 @@ struct WaterMiniWidgetEntryView: View {
     }
 }
 
+extension View {
+    @ViewBuilder
+    func widgetBackground(_ backgroundView: some View) -> some View {
+        if #available(iOSApplicationExtension 17.0, *) {
+            containerBackground(for: .widget) {
+                backgroundView
+            }
+        } else {
+            background(backgroundView)
+        }
+    }
+}
+
 // Widget Configurations
 struct WaterProgressWidget: Widget {
     let kind: String = "WaterProgressWidget"
@@ -449,9 +462,7 @@ struct WaterProgressWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterProgressWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    duolingoGradient(for: entry.percentage)
-                }
+                .widgetBackground(duolingoGradient(for: entry.percentage))
         }
         .configurationDisplayName("🔥 HydroSoft Seri & Maskot")
         .description("Duolingo tarzı günlük seri, 5 günlük su takvimi, canlı maskot ve hızlı su ekleme.")
@@ -465,9 +476,7 @@ struct WaterQuickLogWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterQuickLogWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    duolingoGradient(for: entry.percentage)
-                }
+                .widgetBackground(duolingoGradient(for: entry.percentage))
         }
         .configurationDisplayName("⚡ Hızlı Su Ekleme Barı")
         .description("Bardak veya şişe sembolüne basarak tek dokunuşla su içtiğinizi kaydedin.")
@@ -481,9 +490,7 @@ struct WaterMiniWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterMiniWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    duolingoGradient(for: entry.percentage)
-                }
+                .widgetBackground(duolingoGradient(for: entry.percentage))
         }
         .configurationDisplayName("🐳 Mini Maskot & Kilit Ekranı")
         .description("Ana ekran ve kilit ekranı için emojili mini maskot ve su halkası.")

@@ -120,7 +120,7 @@ def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profi
   end
 
   UI.message("Creating HydroWidgets WidgetKit Extension target in Runner.xcodeproj...")
-  widget_target = project.new_target(:app_extension, "HydroWidgets", :ios, "16.0")
+  widget_target = project.new_target(:app_extension, "HydroWidgets", :ios, "17.0")
 
   widget_group = project.main_group.find_subpath("HydroWidgets", true)
   widget_group.set_source_tree("<group>")
@@ -149,7 +149,7 @@ def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profi
     config.build_settings["INFOPLIST_FILE"] = "HydroWidgets/Info.plist"
     config.build_settings["GENERATE_INFOPLIST_FILE"] = "NO"
     config.build_settings["SWIFT_VERSION"] = "5.0"
-    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = "16.0"
+    config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = "17.0"
     config.build_settings["TARGETED_DEVICE_FAMILY"] = "1,2"
     config.build_settings["SKIP_INSTALL"] = "YES"
     config.build_settings["CLANG_ENABLE_MODULES"] = "YES"

@@ -12,6 +12,7 @@ import '../widgets/settings/end_of_day_settings_card.dart';
 import '../widgets/settings/quick_presets_card.dart';
 import '../widgets/settings/ios_shortcuts_settings_card.dart';
 import '../widgets/settings/android_features_settings_card.dart';
+import '../widgets/settings/legal_privacy_settings_card.dart';
 import '../widgets/settings/danger_zone_card.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObserver {
   late String _selectedGender;
   late TextEditingController _ageController;
   late TextEditingController _weightController;
@@ -35,16 +36,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermission();
-  }
-
-  Future<void> _checkPermission() async {
-    final status = await AlarmService().checkPermissionStatus();
-    if (mounted) {
-      setState(() {
-        _hasNotificationPermission = status;
-      });
-    }
   }
 
   @override
@@ -65,6 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _ageController.dispose();
     _weightController.dispose();
     _dailyGoalController.dispose();
@@ -72,6 +66,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _preset2Controller.dispose();
     _preset3Controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPermission();
+    }
+  }
+
+  Future<void> _checkPermission() async {
+    final status = await AlarmService().checkPermissionStatus();
+    if (mounted) {
+      setState(() {
+        _hasNotificationPermission = status;
+      });
+      final provider = Provider.of<WaterProvider>(context, listen: false);
+      await provider.syncNotificationPermissionFromOS(status);
+    }
   }
 
   void _saveDailyGoal() {
@@ -321,9 +333,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             hasNotificationPermission: _hasNotificationPermission,
             onRequestPermission: () async {
               final result = await AlarmService().requestPermission();
-              setState(() {
-                _hasNotificationPermission = result;
-              });
+              if (!result) {
+                await AlarmService().openNotificationSettings();
+              }
+              await _checkPermission();
             },
           ),
           const SizedBox(height: 24),
@@ -348,6 +361,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const AndroidFeaturesSettingsCard(),
             const SizedBox(height: 24),
           ],
+
+          const LegalPrivacySettingsCard(),
+          const SizedBox(height: 24),
           
           Container(
             padding: const EdgeInsets.all(16),

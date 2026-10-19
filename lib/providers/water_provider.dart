@@ -58,10 +58,12 @@ class WaterProvider with ChangeNotifier {
   bool _isSiriShortcutsEnabled = true;
   bool _isBackTapEnabled = true;
 
-  // Apple Health (HealthKit) Integration State
+  // Apple Health (HealthKit) / Google Health Connect Integration State
   bool _isAppleHealthSyncEnabled = false;
   bool _isAppleHealthAutoGoalEnabled = false;
   int _todayHealthSteps = 0;
+  bool _pendingHealthPermissionFromSettings = false;
+  bool _pendingNotificationPermissionFromSettings = false;
 
   // Ongoing Live Progress Notification State (Android & iOS)
   bool _isOngoingNotificationEnabled = false;
@@ -338,19 +340,94 @@ class WaterProvider with ChangeNotifier {
     );
   }
 
-  // Update Apple Health (HealthKit) Settings
+  // Synchronize notification state when OS permission is revoked or granted in system settings
+  Future<void> syncNotificationPermissionFromOS(bool hasOsPermission) async {
+    if (!hasOsPermission) {
+      if (_isNotificationsEnabled || _isOngoingNotificationEnabled) {
+        _isNotificationsEnabled = false;
+        _isOngoingNotificationEnabled = false;
+        await _storageService.saveNotificationSettings(
+          isEnabled: false,
+          sound: _isSoundEnabled,
+          vibration: _isVibrationEnabled,
+        );
+        await _storageService.saveOngoingNotificationSetting(false);
+        await AlarmService().cancelAllNotifications();
+        notifyListeners();
+      }
+    } else if (_pendingNotificationPermissionFromSettings) {
+      _pendingNotificationPermissionFromSettings = false;
+      _isNotificationsEnabled = true;
+      await _storageService.saveNotificationSettings(
+        isEnabled: true,
+        sound: _isSoundEnabled,
+        vibration: _isVibrationEnabled,
+      );
+      await AlarmService().rescheduleAllAlarms(_alarms);
+      await _syncEndOfDaySummary();
+      await _syncOngoingNotification();
+      notifyListeners();
+    }
+  }
+
+  // Synchronize both Notification and Health Connect permissions when user returns from system settings
+  Future<void> syncSystemPermissionsOnResume() async {
+    try {
+      if (_hasCompletedOnboarding) {
+        final hasNotifPerm = await AlarmService().checkPermissionStatus();
+        await syncNotificationPermissionFromOS(hasNotifPerm);
+      }
+
+      if (_pendingHealthPermissionFromSettings) {
+        final hasHealthPerm = await HealthService().hasPermissions();
+        if (hasHealthPerm == true) {
+          _pendingHealthPermissionFromSettings = false;
+          _isAppleHealthSyncEnabled = true;
+          await _storageService.saveAppleHealthSettings(
+            isEnabled: true,
+            isAutoGoalEnabled: _isAppleHealthAutoGoalEnabled,
+          );
+          _todayHealthSteps = await HealthService().getTodaySteps();
+          notifyListeners();
+        }
+      } else if (_isAppleHealthSyncEnabled) {
+        final hasHealthPerm = await HealthService().hasPermissions();
+        if (hasHealthPerm == false) {
+          _isAppleHealthSyncEnabled = false;
+          await _storageService.saveAppleHealthSettings(
+            isEnabled: false,
+            isAutoGoalEnabled: _isAppleHealthAutoGoalEnabled,
+          );
+          notifyListeners();
+        } else {
+          _todayHealthSteps = await HealthService().getTodaySteps();
+          notifyListeners();
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Update Apple Health (HealthKit) / Google Health Connect Settings
   Future<bool> updateAppleHealthSettings({
     bool? isEnabled,
     bool? isAutoGoalEnabled,
   }) async {
     if (isEnabled != null) {
       if (isEnabled) {
+        _pendingHealthPermissionFromSettings = true;
         final granted = await HealthService().requestAuthorization();
         if (!granted) {
           _isAppleHealthSyncEnabled = false;
+          await _storageService.saveAppleHealthSettings(
+            isEnabled: false,
+            isAutoGoalEnabled: _isAppleHealthAutoGoalEnabled,
+          );
           notifyListeners();
           return false;
         }
+        _pendingHealthPermissionFromSettings = false;
+      } else {
+        _pendingHealthPermissionFromSettings = false;
       }
       _isAppleHealthSyncEnabled = isEnabled;
     }
@@ -401,12 +478,35 @@ class WaterProvider with ChangeNotifier {
     }
   }
 
-  // Update Ongoing Live Progress Notification Setting
-  Future<void> updateOngoingNotificationSetting(bool isEnabled) async {
+  // Update Ongoing Live Progress Notification Setting (checks OS permission first if enabling)
+  Future<bool> updateOngoingNotificationSetting(bool isEnabled) async {
+    if (isEnabled) {
+      bool hasPerm = await AlarmService().checkPermissionStatus();
+      if (!hasPerm) {
+        hasPerm = await AlarmService().requestPermission();
+      }
+      if (!hasPerm) {
+        _pendingNotificationPermissionFromSettings = true;
+        _isOngoingNotificationEnabled = false;
+        await _storageService.saveOngoingNotificationSetting(false);
+        await AlarmService().openNotificationSettings();
+        notifyListeners();
+        return false;
+      }
+      if (!_isNotificationsEnabled) {
+        _isNotificationsEnabled = true;
+        await _storageService.saveNotificationSettings(
+          isEnabled: true,
+          sound: _isSoundEnabled,
+          vibration: _isVibrationEnabled,
+        );
+      }
+    }
     _isOngoingNotificationEnabled = isEnabled;
     notifyListeners();
     await _storageService.saveOngoingNotificationSetting(isEnabled);
     await _syncOngoingNotification();
+    return true;
   }
 
   // Sync Live Ongoing Notification in Notification Drawer
@@ -609,6 +709,7 @@ class WaterProvider with ChangeNotifier {
     required int age,
     required double weight,
   }) async {
+    final wasOnboardingCompleted = _hasCompletedOnboarding;
     _gender = gender;
     _age = age;
     _weight = weight;
@@ -624,7 +725,39 @@ class WaterProvider with ChangeNotifier {
     );
 
     try {
-      await _syncEndOfDaySummary();
+      if (!wasOnboardingCompleted) {
+        final granted = await AlarmService().requestPermission();
+        if (!granted) {
+          _isNotificationsEnabled = false;
+          _isEndOfDayEnabled = false;
+          _isOngoingNotificationEnabled = false;
+          await _storageService.saveNotificationSettings(
+            isEnabled: false,
+            sound: _isSoundEnabled,
+            vibration: _isVibrationEnabled,
+          );
+          await _storageService.saveEndOfDaySettings(
+            isEnabled: false,
+            hour: _endOfDayHour,
+            minute: _endOfDayMinute,
+          );
+          await _storageService.saveOngoingNotificationSetting(false);
+          await AlarmService().cancelAllNotifications();
+          notifyListeners();
+        } else {
+          _isNotificationsEnabled = true;
+          await _storageService.saveNotificationSettings(
+            isEnabled: true,
+            sound: _isSoundEnabled,
+            vibration: _isVibrationEnabled,
+          );
+          await AlarmService().rescheduleAllAlarms(_alarms);
+          await _syncEndOfDaySummary();
+          notifyListeners();
+        }
+      } else {
+        await _syncEndOfDaySummary();
+      }
       await _syncWidgets();
     } catch (_) {}
   }
@@ -727,12 +860,37 @@ class WaterProvider with ChangeNotifier {
     );
   }
 
-  // Global Notification Settings
-  Future<void> updateNotificationSettings({
+  // Global Notification Settings (checks OS permission first when enabling)
+  Future<bool> updateNotificationSettings({
     required bool isEnabled,
     required bool sound,
     required bool vibration,
   }) async {
+    if (isEnabled) {
+      bool hasPerm = await AlarmService().checkPermissionStatus();
+      if (!hasPerm) {
+        hasPerm = await AlarmService().requestPermission();
+      }
+      if (!hasPerm) {
+        _pendingNotificationPermissionFromSettings = true;
+        _isNotificationsEnabled = false;
+        _isOngoingNotificationEnabled = false;
+        await _storageService.saveNotificationSettings(
+          isEnabled: false,
+          sound: sound,
+          vibration: vibration,
+        );
+        await _storageService.saveOngoingNotificationSetting(false);
+        await AlarmService().cancelAllNotifications();
+        await AlarmService().openNotificationSettings();
+        notifyListeners();
+        return false;
+      }
+      _pendingNotificationPermissionFromSettings = false;
+    } else {
+      _pendingNotificationPermissionFromSettings = false;
+    }
+
     _isNotificationsEnabled = isEnabled;
     _isSoundEnabled = sound;
     _isVibrationEnabled = vibration;
@@ -753,14 +911,34 @@ class WaterProvider with ChangeNotifier {
         await _syncOngoingNotification();
       }
     } catch (_) {}
+    return true;
   }
 
   // End of Day notification settings
-  Future<void> updateEndOfDaySettings({
+  Future<bool> updateEndOfDaySettings({
     required bool isEnabled,
     required int hour,
     required int minute,
   }) async {
+    if (isEnabled) {
+      bool hasPerm = await AlarmService().checkPermissionStatus();
+      if (!hasPerm) {
+        hasPerm = await AlarmService().requestPermission();
+      }
+      if (!hasPerm) {
+        _pendingNotificationPermissionFromSettings = true;
+        _isEndOfDayEnabled = false;
+        await _storageService.saveEndOfDaySettings(
+          isEnabled: false,
+          hour: hour,
+          minute: minute,
+        );
+        await AlarmService().openNotificationSettings();
+        notifyListeners();
+        return false;
+      }
+    }
+
     _isEndOfDayEnabled = isEnabled;
     _endOfDayHour = hour;
     _endOfDayMinute = minute;
@@ -775,6 +953,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _syncEndOfDaySummary();
     } catch (_) {}
+    return true;
   }
 
   // Update quick preset amounts list

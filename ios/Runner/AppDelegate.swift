@@ -38,6 +38,11 @@ import AVFoundation
           impactGenerator.impactOccurred()
 
           result(true)
+        } else if call.method == "openNotificationSettings" {
+          if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+          }
+          result(true)
         } else {
           result(FlutterMethodNotImplemented)
         }

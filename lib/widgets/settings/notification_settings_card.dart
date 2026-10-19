@@ -77,12 +77,25 @@ class NotificationSettingsCard extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         InkWell(
-          onTap: () {
-            provider.updateNotificationSettings(
-              isEnabled: !provider.isNotificationsEnabled,
+          onTap: () async {
+            final targetVal = !provider.isNotificationsEnabled;
+            final granted = await provider.updateNotificationSettings(
+              isEnabled: targetVal,
               sound: provider.isSoundEnabled,
               vibration: provider.isVibrationEnabled,
             );
+            onRequestPermission();
+            if (targetVal && !granted && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Bildirimleri açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                  ),
+                  backgroundColor: Colors.orange,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -111,14 +124,26 @@ class NotificationSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Switch(
-                  value: provider.isNotificationsEnabled,
+                  value: provider.isNotificationsEnabled && hasNotificationPermission,
                   activeThumbColor: const Color(0xFF0288D1),
-                  onChanged: (val) {
-                    provider.updateNotificationSettings(
+                  onChanged: (val) async {
+                    final granted = await provider.updateNotificationSettings(
                       isEnabled: val,
                       sound: provider.isSoundEnabled,
                       vibration: provider.isVibrationEnabled,
                     );
+                    onRequestPermission();
+                    if (val && !granted && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Bildirimleri açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                          ),
+                          backgroundColor: Colors.orange,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
@@ -235,8 +260,21 @@ class NotificationSettingsCard extends StatelessWidget {
         ),
         const Divider(height: 16, thickness: 0.5),
         InkWell(
-          onTap: () {
-            provider.updateOngoingNotificationSetting(!provider.isOngoingNotificationEnabled);
+          onTap: () async {
+            final targetVal = !provider.isOngoingNotificationEnabled;
+            final granted = await provider.updateOngoingNotificationSetting(targetVal);
+            onRequestPermission();
+            if (targetVal && !granted && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                  ),
+                  backgroundColor: Colors.orange,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -285,10 +323,22 @@ class NotificationSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Switch(
-                  value: provider.isOngoingNotificationEnabled,
+                  value: provider.isOngoingNotificationEnabled && hasNotificationPermission,
                   activeThumbColor: const Color(0xFF0288D1),
-                  onChanged: (val) {
-                    provider.updateOngoingNotificationSetting(val);
+                  onChanged: (val) async {
+                    final granted = await provider.updateOngoingNotificationSetting(val);
+                    onRequestPermission();
+                    if (val && !granted && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                          ),
+                          backgroundColor: Colors.orange,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   },
                 ),
               ],

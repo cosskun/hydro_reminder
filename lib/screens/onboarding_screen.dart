@@ -97,11 +97,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 const SizedBox(height: 18),
                 const Text(
-                  'Bu hedef, vücut kütleniz ve biyolojik gereksinimleriniz doğrultusunda bilimsel olarak hesaplanmıştır.',
+                  'Bu hedef, EFSA ve WHO kılavuzları doğrultusunda vücut kütlenize göre hesaplanmıştır.\n(Bilgilendirme amaçlıdır; tıbbi tavsiye yerine geçmez. Özel sağlık durumunuz varsa doktorunuza danışınız.)',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     color: Colors.grey,
+                    height: 1.35,
                   ),
                 ),
                 const SizedBox(height: 24),

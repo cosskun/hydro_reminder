@@ -9,11 +9,11 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.WindowManager
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterFragmentActivity() {
     private val hapticsChannelName = "com.antigravity.hydroReminder/alarm_haptics"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +49,54 @@ class MainActivity: FlutterActivity() {
                             audioManager.ringerMode != AudioManager.RINGER_MODE_NORMAL
                         result.success(isSilent)
                     }
+                    "openNotificationSettings" -> {
+                        openAppNotificationSettings()
+                        result.success(true)
+                    }
+                    "openHealthConnectSettings" -> {
+                        val opened = openHealthConnectSettingsPage()
+                        result.success(opened)
+                    }
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    private fun openAppNotificationSettings() {
+        try {
+            val intent = android.content.Intent().apply {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    action = android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName)
+                } else {
+                    action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = android.net.Uri.fromParts("package", packageName, null)
+                }
+                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun openHealthConnectSettingsPage(): Boolean {
+        val actions = listOf(
+            "android.health.connect.action.MANAGE_HEALTH_PERMISSIONS",
+            "androidx.health.ACTION_HEALTH_CONNECT_SETTINGS",
+            "android.health.connect.action.HEALTH_HOME_SETTINGS"
+        )
+        for (actionName in actions) {
+            try {
+                val intent = android.content.Intent(actionName).apply {
+                    putExtra(android.content.Intent.EXTRA_PACKAGE_NAME, packageName)
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+                return true
+            } catch (_: Exception) {
+            }
+        }
+        return false
     }
 
     private fun triggerHardwareAlarmVibration() {

@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:health/health.dart';
 
 class HealthService {
   static final HealthService _instance = HealthService._internal();
   factory HealthService() => _instance;
   HealthService._internal();
+
+  static const MethodChannel _platformChannel =
+      MethodChannel('com.antigravity.hydroReminder/alarm_haptics');
 
   final Health _health = Health();
   bool _isConfigured = false;
@@ -38,28 +42,80 @@ class HealthService {
     }
   }
 
+  /// Opens native Health Connect permission screen on Android
+  Future<bool> openHealthConnectSettings() async {
+    if (kIsWeb || !Platform.isAndroid) return false;
+    try {
+      final opened = await _platformChannel
+          .invokeMethod<bool>('openHealthConnectSettings');
+      return opened ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// Request HealthKit / Health Connect authorization
   Future<bool> requestAuthorization() async {
     if (!isSupported) return false;
     try {
       await init();
+
+      if (Platform.isAndroid) {
+        final sdkStatus = await _health.getHealthConnectSdkStatus();
+        if (sdkStatus != HealthConnectSdkStatus.sdkAvailable) {
+          await _health.installHealthConnect();
+          return false;
+        }
+      }
+
+      final startTime = DateTime.now();
       final authorized = await _health.requestAuthorization(
         _requestedTypes,
         permissions: _permissions,
       );
-      return authorized;
+      final elapsedMs = DateTime.now().difference(startTime).inMilliseconds;
+
+      if (authorized) {
+        return true;
+      }
+
+      // Check if water permission was granted even if optional step/calorie permission was skipped
+      final waterGranted = await hasPermissions();
+      if (waterGranted == true) {
+        return true;
+      }
+
+      // On Android 14+, if the permission dialog was previously dismissed twice,
+      // the OS silently suppresses the dialog (< 450ms). Open Health Connect permissions directly.
+      if (Platform.isAndroid && elapsedMs < 450) {
+        await openHealthConnectSettings();
+      }
+
+      return false;
     } catch (e) {
       debugPrint('HealthService requestAuthorization error: $e');
+      if (Platform.isAndroid) {
+        await openHealthConnectSettings();
+      }
       return false;
     }
   }
 
-  /// Check if permissions are already granted
+  /// Check if core hydration permissions are already granted
   Future<bool?> hasPermissions() async {
     if (!isSupported) return false;
     try {
       await init();
-      return await _health.hasPermissions(_requestedTypes, permissions: _permissions);
+      if (Platform.isAndroid) {
+        final sdkStatus = await _health.getHealthConnectSdkStatus();
+        if (sdkStatus != HealthConnectSdkStatus.sdkAvailable) {
+          return false;
+        }
+      }
+      return await _health.hasPermissions(
+        const [HealthDataType.WATER],
+        permissions: const [HealthDataAccess.READ_WRITE],
+      );
     } catch (e) {
       debugPrint('HealthService hasPermissions error: $e');
       return false;

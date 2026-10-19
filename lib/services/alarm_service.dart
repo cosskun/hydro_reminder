@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -70,12 +71,12 @@ class AlarmService with WidgetsBindingObserver {
       const AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
-      // iOS (Darwin) Initialization settings
+      // iOS (Darwin) Initialization settings - do not prompt before onboarding completes
       const DarwinInitializationSettings initializationSettingsDarwin =
           DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
+        requestAlertPermission: false,
+        requestBadgePermission: false,
+        requestSoundPermission: false,
         defaultPresentAlert: true,
         defaultPresentBanner: true,
         defaultPresentList: true,
@@ -112,10 +113,6 @@ class AlarmService with WidgetsBindingObserver {
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
           _notificationsPlugin.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
-
-      final IOSFlutterLocalNotificationsPlugin? iosImplementation =
-          _notificationsPlugin.resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>();
 
       // Explicitly create high-priority notification channel for Android 8.0+
       const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -162,14 +159,23 @@ class AlarmService with WidgetsBindingObserver {
       await androidImplementation?.createNotificationChannel(tipsChannel);
       await androidImplementation?.createNotificationChannel(ongoingChannel);
 
-      // Request permissions on Android 13+ / 14+ and iOS
-      await androidImplementation?.requestNotificationsPermission();
-      await androidImplementation?.requestExactAlarmsPermission();
-      await iosImplementation?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      // Only check/request permissions if onboarding was already completed
+      if (provider.hasCompletedOnboarding) {
+        final hasPerm = await checkPermissionStatus();
+        if (!hasPerm) {
+          await provider.syncNotificationPermissionFromOS(false);
+        } else if (provider.isNotificationsEnabled) {
+          await syncNotifications(provider.alarms);
+          await scheduleEndOfDayNotification(
+            isEnabled: provider.isEndOfDayEnabled,
+            hour: provider.endOfDayHour,
+            minute: provider.endOfDayMinute,
+            remainingMl: provider.dailyRemainingMl,
+            consumedMl: provider.todayConsumed,
+            dailyGoalMl: provider.dailyGoal,
+          );
+        }
+      }
 
       // Check if the app was launched by a notification (Cold Start)
       final NotificationAppLaunchDetails? launchDetails =
@@ -181,17 +187,6 @@ class AlarmService with WidgetsBindingObserver {
           _triggerAlarmFromPayload(alarmId);
         }
       }
-
-      // Initial sync of existing alarms and end-of-day summary notification
-      await syncNotifications(provider.alarms);
-      await scheduleEndOfDayNotification(
-        isEnabled: provider.isEndOfDayEnabled,
-        hour: provider.endOfDayHour,
-        minute: provider.endOfDayMinute,
-        remainingMl: provider.dailyRemainingMl,
-        consumedMl: provider.todayConsumed,
-        dailyGoalMl: provider.dailyGoal,
-      );
     } catch (e) {
       debugPrint('AlarmService initialization error: $e');
     }
@@ -203,6 +198,8 @@ class AlarmService with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      // Sync OS permissions (Notifications & Health Connect / HealthKit) when returning from system settings
+      unawaited(_provider?.syncSystemPermissionsOnResume());
       // Immediately check on app resume so full-screen alarm pops up with 0ms delay!
       checkAlarmsNow(includeRecentMissed: true);
     }
@@ -238,7 +235,11 @@ class AlarmService with WidgetsBindingObserver {
 
   // Immediate check for due or recently fired unacknowledged alarms
   void checkAlarmsNow({bool includeRecentMissed = false}) {
-    if (_provider == null || _provider!.isAlarmActive) return;
+    if (_provider == null ||
+        _provider!.isAlarmActive ||
+        !_provider!.isNotificationsEnabled) {
+      return;
+    }
 
     final now = DateTime.now();
     final currentMinuteKey =
@@ -733,6 +734,15 @@ class AlarmService with WidgetsBindingObserver {
       return true;
     }
     return true;
+  }
+
+  // Open OS Notification Settings page when permission was previously denied
+  Future<void> openNotificationSettings() async {
+    if (kIsWeb) return;
+    try {
+      const channel = MethodChannel('com.antigravity.hydroReminder/alarm_haptics');
+      await channel.invokeMethod('openNotificationSettings');
+    } catch (_) {}
   }
 
   // Cancel all notifications

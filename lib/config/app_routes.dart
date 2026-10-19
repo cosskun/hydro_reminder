@@ -64,10 +64,9 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
   Future<void> _checkPermissionsSilently() async {
     final alarmService = AlarmService();
     final isGranted = await alarmService.checkPermissionStatus();
-    if (!isGranted) {
-      // Requests native OS permission prompt smoothly without blocking modal
-      await alarmService.requestPermission();
-    }
+    if (!mounted) return;
+    final provider = Provider.of<WaterProvider>(context, listen: false);
+    await provider.syncNotificationPermissionFromOS(isGranted);
   }
 
   final List<Widget> _screens = const [

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Hydro Reminder</string>
+	<string>HydroSoft</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -47,17 +47,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Hydro Reminder requires camera access to scan bottle QR codes and update hydration logs.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Hydro Reminder requires location access to provide weather-adjusted hydration reminders.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Hydro Reminder requires location access to provide weather-adjusted hydration reminders.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Hydro Reminder requires access to sync your water intake data with Apple Health.</string>
+	<string>HydroSoft, günlük su tüketiminizi ve adım verilerinizi Apple Sağlık (HealthKit) ile eşitlemek için okuma iznine ihtiyaç duyar.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Hydro Reminder requires access to update your water intake data in Apple Health.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Hydro Reminder requires photo library access to export data and custom avatars.</string>
+	<string>HydroSoft, içtiğiniz su miktarlarını Apple Sağlık (HealthKit) uygulamasındaki Beslenme > Su bölümüne kaydetmek için yazma iznine ihtiyaç duyar.</string>
 </dict>
 </plist>

@@ -19,11 +19,31 @@ class WaterQuickLogWidgetProvider : HomeWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.water_quick_log_widget)
 
             val consumed = widgetData.getInt("todayConsumed", 0)
+            val goal = widgetData.getInt("dailyGoal", 2500)
+            val percent = widgetData.getInt("percentage", 0)
             val p1 = widgetData.getInt("preset1", 200)
             val p2 = widgetData.getInt("preset2", 330)
             val p3 = widgetData.getInt("preset3", 500)
+            val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
-            views.setTextViewText(R.id.tv_quick_status, "Bugün: $consumed ml")
+            val defaultEmoji = when {
+                percent >= 100 -> "👑"
+                percent >= 70 -> "🐬"
+                percent >= 30 -> "🐳"
+                else -> "🥵"
+            }
+            val mascotEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
+
+            val bgRes = when {
+                percent >= 100 -> R.drawable.widget_card_bg_emerald
+                percent >= 70 -> R.drawable.widget_card_bg_teal
+                percent >= 30 -> R.drawable.widget_card_bg_ocean
+                else -> R.drawable.widget_card_bg
+            }
+            views.setInt(R.id.widget_quick_root, "setBackgroundResource", bgRes)
+
+            views.setTextViewText(R.id.tv_quick_title, "🔥 $streak gün · ⚡ Hızlı Ekle")
+            views.setTextViewText(R.id.tv_quick_status, "$mascotEmoji $consumed/$goal ml")
             views.setTextViewText(R.id.tv_quick_preset1, "+$p1 ml")
             views.setTextViewText(R.id.tv_quick_preset2, "+$p2 ml")
             views.setTextViewText(R.id.tv_quick_preset3, "+$p3 ml")

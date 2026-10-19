@@ -663,6 +663,51 @@ class WaterProvider with ChangeNotifier {
   Future<void> _syncWidgets() async {
     try {
       final percentInt = (todayPercentage * 100).round();
+      final now = DateTime.now();
+      const shortDays = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pa'];
+      final List<String> labels = [];
+      final List<String> statuses = [];
+
+      final goal = dailyGoal > 0 ? dailyGoal : 2500;
+      for (int i = 4; i >= 0; i--) {
+        final d = DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
+        labels.add(shortDays[d.weekday - 1]);
+        final dayTotal = _logs
+            .where((l) =>
+                l.timestamp.year == d.year &&
+                l.timestamp.month == d.month &&
+                l.timestamp.day == d.day)
+            .fold(0, (sum, l) => sum + l.amountMl);
+        if (dayTotal >= goal) {
+          statuses.add('2'); // Goal completed (checkmark)
+        } else if (dayTotal > 0) {
+          statuses.add('1'); // Partial progress (checkmark/active)
+        } else {
+          statuses.add('0'); // Empty
+        }
+      }
+
+      int displayStreak = currentStreak;
+      if (displayStreak == 0 && todayConsumed > 0) {
+        displayStreak = 1;
+      }
+
+      final String mascotEmoji;
+      final String mascotSubtitle;
+      if (percentInt >= 100) {
+        mascotEmoji = '👑';
+        mascotSubtitle = 'Efsanesin! Günlük hedef tamam! 🏆';
+      } else if (percentInt >= 70) {
+        mascotEmoji = '🐬';
+        mascotSubtitle = 'Hedefe çok az kaldı, devam et! 🚀';
+      } else if (percentInt >= 30) {
+        mascotEmoji = '🐳';
+        mascotSubtitle = 'Harika gidiyorsun! Su içmeyi unutma! 🌊';
+      } else {
+        mascotEmoji = '🥵';
+        mascotSubtitle = 'Damla seni çağırıyor! Su içelim! 💦';
+      }
+
       await WidgetService().updateWidgets(
         todayConsumed: todayConsumed,
         dailyGoal: dailyGoal,
@@ -671,6 +716,11 @@ class WaterProvider with ChangeNotifier {
         preset1: preset1,
         preset2: preset2,
         preset3: preset3,
+        streakDays: displayStreak,
+        dayLabels: labels.join(','),
+        dayStatuses: statuses.join(','),
+        mascotEmoji: mascotEmoji,
+        mascotSubtitle: mascotSubtitle,
       );
     } catch (_) {}
   }

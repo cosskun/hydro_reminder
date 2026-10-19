@@ -152,7 +152,7 @@ class WidgetService {
     }
   }
 
-  // Sync latest hydration data across all widgets
+  // Sync latest hydration data across all widgets (including Duolingo-style streak & 5-day tracker)
   Future<void> updateWidgets({
     required int todayConsumed,
     required int dailyGoal,
@@ -161,6 +161,11 @@ class WidgetService {
     required int preset1,
     required int preset2,
     required int preset3,
+    int streakDays = 0,
+    String dayLabels = 'Çr,Pe,Cu,Ct,Pa',
+    String dayStatuses = '0,0,0,0,0',
+    String mascotEmoji = '🥵',
+    String mascotSubtitle = 'Damla seni çağırıyor! 💦',
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
@@ -172,6 +177,11 @@ class WidgetService {
       await HomeWidget.saveWidgetData<int>('preset1', preset1);
       await HomeWidget.saveWidgetData<int>('preset2', preset2);
       await HomeWidget.saveWidgetData<int>('preset3', preset3);
+      await HomeWidget.saveWidgetData<int>('streakDays', streakDays);
+      await HomeWidget.saveWidgetData<String>('dayLabels', dayLabels);
+      await HomeWidget.saveWidgetData<String>('dayStatuses', dayStatuses);
+      await HomeWidget.saveWidgetData<String>('mascotEmoji', mascotEmoji);
+      await HomeWidget.saveWidgetData<String>('mascotSubtitle', mascotSubtitle);
 
       // Trigger update for all 3 Android & iOS widgets
       await HomeWidget.updateWidget(

@@ -18,19 +18,42 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
         for (appWidgetId in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.water_mini_widget)
 
-            val remaining = widgetData.getInt("dailyRemaining", 2500)
+            val consumed = widgetData.getInt("todayConsumed", 0)
             val percent = widgetData.getInt("percentage", 0)
+            val p1 = widgetData.getInt("preset1", 200)
+            val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
-            views.setTextViewText(R.id.tv_mini_percent, "%$percent")
-
-            val remainingStr = if (remaining >= 1000) {
-                String.format("%.1f L Kalan", remaining / 1000.0)
-            } else {
-                "$remaining ml Kalan"
+            val defaultEmoji = when {
+                percent >= 100 -> "👑"
+                percent >= 70 -> "🐬"
+                percent >= 30 -> "🐳"
+                else -> "🥵"
             }
-            views.setTextViewText(R.id.tv_mini_subtext, remainingStr)
+            val mascotEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
 
-            // Open app on click
+            val bgRes = when {
+                percent >= 100 -> R.drawable.widget_card_bg_emerald
+                percent >= 70 -> R.drawable.widget_card_bg_teal
+                percent >= 30 -> R.drawable.widget_card_bg_ocean
+                else -> R.drawable.widget_card_bg
+            }
+            views.setInt(R.id.widget_mini_root, "setBackgroundResource", bgRes)
+
+            views.setTextViewText(R.id.tv_mini_streak, "🔥 $streak")
+            views.setTextViewText(R.id.tv_mini_percent, "%$percent")
+            views.setTextViewText(R.id.tv_mini_mascot, mascotEmoji)
+            views.setTextViewText(R.id.tv_mini_subtext, "$consumed ml")
+            views.setTextViewText(R.id.btn_mini_quick_add, "💧 +$p1 ml")
+
+            // Quick Add Button Click
+            val quickAddIntent = HomeWidgetLaunchIntent.getActivity(
+                context,
+                MainActivity::class.java,
+                Uri.parse("hydroreminder://log?amount=$p1")
+            )
+            views.setOnClickPendingIntent(R.id.btn_mini_quick_add, quickAddIntent)
+
+            // Open app on root click
             val pendingIntent = HomeWidgetLaunchIntent.getActivity(
                 context,
                 MainActivity::class.java,

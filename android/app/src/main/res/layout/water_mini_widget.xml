@@ -6,36 +6,72 @@
     android:background="@drawable/widget_card_bg"
     android:gravity="center"
     android:orientation="vertical"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
+    <!-- Top Streak & Percent Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_mini_streak"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="🔥 1"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tv_mini_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:includeFontPadding="false"
+            android:text="%0"
+            android:textColor="#F1F5F9"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <!-- Big Mascot Character -->
     <TextView
+        android:id="@+id/tv_mini_mascot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="💧"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tv_mini_percent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:fontFamily="sans-serif-black"
         android:includeFontPadding="false"
-        android:text="%0"
-        android:textColor="#0369A1"
-        android:textSize="14sp" />
+        android:text="🥵"
+        android:textSize="28sp" />
 
     <TextView
         android:id="@+id/tv_mini_subtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="sans-serif-black"
         android:includeFontPadding="false"
-        android:text="2.5 L Kalan"
-        android:textColor="#64748B"
+        android:text="0 ml"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/btn_mini_quick_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/widget_button_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="sans-serif-black"
+        android:gravity="center"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:text="💧 +200 ml"
+        android:textColor="#4C1D95"
         android:textSize="9.5sp" />
 
 </LinearLayout>

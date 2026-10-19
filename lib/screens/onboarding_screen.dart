@@ -17,8 +17,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int? _calculatedGoal;
 
   void _calculateAndShowGoal() {
-    final age = int.tryParse(_ageController.text) ?? 25;
-    final weight = double.tryParse(_weightController.text) ?? 70.0;
+    final age = int.tryParse(_ageController.text.trim()) ?? 25;
+    final weight = double.tryParse(_weightController.text.trim().replaceAll(',', '.')) ?? 70.0;
     
     final provider = Provider.of<WaterProvider>(context, listen: false);
     final goal = provider.calculateDailyGoal(
@@ -35,8 +35,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
+        final mediaQuery = MediaQuery.of(sheetContext);
+        final systemBottomInset = mediaQuery.viewPadding.bottom > mediaQuery.padding.bottom
+            ? mediaQuery.viewPadding.bottom
+            : mediaQuery.padding.bottom;
         return Container(
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -46,93 +51,97 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             left: 24,
             right: 24,
             top: 24,
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+            bottom: mediaQuery.viewInsets.bottom + systemBottomInset + 32,
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 60,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade100,
-                    borderRadius: BorderRadius.circular(3),
+          child: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade100,
+                      borderRadius: BorderRadius.circular(3),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                const FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    '💧 Günlük Hedefiniz Belirlendi! 💧',
-                    maxLines: 1,
+                  const SizedBox(height: 20),
+                  const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '💧 Günlük Hedefiniz Belirlendi! 💧',
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '$_calculatedGoal ml',
+                      style: TextStyle(
+                        fontSize: 46,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.blue.shade800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Cinsiyet: $_selectedGender  •  Yaş: $age  •  Kilo: $weight kg',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
+                      fontSize: 13.5,
+                      color: Colors.grey.shade600,
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    '$_calculatedGoal ml',
+                  const SizedBox(height: 18),
+                  const Text(
+                    'Bu hedef, EFSA ve WHO kılavuzları doğrultusunda vücut kütlenize göre hesaplanmıştır.\n(Bilgilendirme amaçlıdır; tıbbi tavsiye yerine geçmez. Özel sağlık durumunuz varsa doktorunuza danışınız.)',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 46,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.blue.shade800,
+                      fontSize: 12,
+                      color: Colors.grey,
+                      height: 1.35,
                     ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Cinsiyet: $_selectedGender  •  Yaş: $age  •  Kilo: $weight kg',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13.5,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                const Text(
-                  'Bu hedef, EFSA ve WHO kılavuzları doğrultusunda vücut kütlenize göre hesaplanmıştır.\n(Bilgilendirme amaçlıdır; tıbbi tavsiye yerine geçmez. Özel sağlık durumunuz varsa doktorunuza danışınız.)',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () async {
-                    // Close the bottom sheet popup immediately first
-                    if (Navigator.of(sheetContext).canPop()) {
-                      Navigator.of(sheetContext).pop();
-                    }
-                    await provider.updateProfile(
-                      gender: _selectedGender,
-                      age: age,
-                      weight: weight,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade600,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Close the bottom sheet popup immediately first
+                      if (Navigator.of(sheetContext).canPop()) {
+                        Navigator.of(sheetContext).pop();
+                      }
+                      await provider.updateProfile(
+                        gender: _selectedGender,
+                        age: age,
+                        weight: weight,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 52),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 2,
                     ),
-                    elevation: 2,
+                    child: const Text(
+                      'Uygulamaya Başla 🚀',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  child: const Text(
-                    'Uygulamaya Başla 🚀',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
           ),
         );

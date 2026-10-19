@@ -810,6 +810,11 @@ class AlarmService with WidgetsBindingObserver {
       final safeGoal = dailyGoal > 0 ? dailyGoal : 2500;
       final percentClamped = percentage.clamp(0, 100);
       final remaining = (safeGoal - todayConsumed).clamp(0, safeGoal);
+      final status = WaterProvider.getHydrationStatus(percentage / 100.0);
+      final statusEmoji = status['emoji'] ?? '💧';
+      final p1Emoji = WaterProvider.getPresetMeta(preset1)['emoji'] ?? '🥛';
+      final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';
+      final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🍶';
 
       final androidDetails = AndroidNotificationDetails(
         _ongoingChannelId,
@@ -827,19 +832,19 @@ class AlarmService with WidgetsBindingObserver {
         actions: <AndroidNotificationAction>[
           AndroidNotificationAction(
             'action_log_$preset1',
-            '+$preset1 ml',
+            '$p1Emoji +$preset1 ml',
             showsUserInterface: true,
             cancelNotification: false,
           ),
           AndroidNotificationAction(
             'action_log_$preset2',
-            '+$preset2 ml',
+            '$p2Emoji +$preset2 ml',
             showsUserInterface: true,
             cancelNotification: false,
           ),
           AndroidNotificationAction(
             'action_log_$preset3',
-            '+$preset3 ml',
+            '$p3Emoji +$preset3 ml',
             showsUserInterface: true,
             cancelNotification: false,
           ),
@@ -850,7 +855,7 @@ class AlarmService with WidgetsBindingObserver {
 
       await _notificationsPlugin.show(
         id: _ongoingNotificationId,
-        title: 'HydroSoft • Günlük Hedef: $safeGoal ml (%$percentClamped)',
+        title: '$statusEmoji HydroSoft • Hedef: $safeGoal ml (%$percentClamped)',
         body: 'Bugün: $todayConsumed ml  |  Kalan: $remaining ml',
         notificationDetails: notificationDetails,
         payload: 'ongoing_panel',

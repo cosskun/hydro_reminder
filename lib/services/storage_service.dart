@@ -84,8 +84,12 @@ class StorageService {
   // Get profile data (legacy Map support)
   Future<Map<String, dynamic>> getProfile() async {
     final prefs = _prefsSync;
+    final rawGender = prefs.getString(_keyGender) ?? 'Erkek';
+    final normalizedGender = rawGender == 'Male'
+        ? 'Erkek'
+        : (rawGender == 'Female' ? 'Kadın' : rawGender);
     return {
-      'gender': prefs.getString(_keyGender) ?? 'Male',
+      'gender': normalizedGender,
       'age': prefs.getInt(_keyAge) ?? 25,
       'weight': prefs.getDouble(_keyWeight) ?? 70.0,
       'dailyGoal': prefs.getInt(_keyDailyGoal) ?? 2500,

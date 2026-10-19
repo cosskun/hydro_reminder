@@ -56,7 +56,17 @@
         android:includeFontPadding="false"
         android:text="0 ml"
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="11.5sp" />
+
+    <ProgressBar
+        android:id="@+id/pb_mini_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="3dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/widget_progress_bar" />
 
     <TextView
         android:id="@+id/btn_mini_quick_add"
@@ -70,7 +80,7 @@
         android:gravity="center"
         android:paddingTop="3dp"
         android:paddingBottom="3dp"
-        android:text="💧 +200 ml"
+        android:text="🥛 +200 ml"
         android:textColor="#0369A1"
         android:textSize="9.5sp" />
 

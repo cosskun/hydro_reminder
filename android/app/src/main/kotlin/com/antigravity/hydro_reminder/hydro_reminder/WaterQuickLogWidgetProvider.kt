@@ -26,24 +26,30 @@ class WaterQuickLogWidgetProvider : HomeWidgetProvider() {
             val p3 = widgetData.getInt("preset3", 500)
             val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
-            val defaultEmoji = when {
-                percent >= 100 -> "👑"
-                percent >= 70 -> "🐬"
-                percent >= 30 -> "🐳"
+            val mascotEmoji = when {
+                percent >= 100 -> "🏆"
+                percent >= 75 -> "😎"
+                percent >= 50 -> "💧"
+                percent >= 25 -> "🥛"
                 else -> "🥵"
             }
-            val mascotEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
+            val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
+            val p2Emoji = widgetData.getString("preset2Emoji", "🥤") ?: "🥤"
+            val p3Emoji = widgetData.getString("preset3Emoji", "🍶") ?: "🍶"
 
             val bgRes = when {
                 percent >= 100 -> R.drawable.widget_card_bg_emerald
-                percent >= 70 -> R.drawable.widget_card_bg_teal
-                percent >= 30 -> R.drawable.widget_card_bg_ocean
+                percent >= 75 -> R.drawable.widget_card_bg_teal
+                percent >= 25 -> R.drawable.widget_card_bg_ocean
                 else -> R.drawable.widget_card_bg
             }
             views.setInt(R.id.widget_quick_root, "setBackgroundResource", bgRes)
 
             views.setTextViewText(R.id.tv_quick_title, "🔥 $streak gün · ⚡ Hızlı Ekle")
-            views.setTextViewText(R.id.tv_quick_status, "$mascotEmoji $consumed/$goal ml")
+            views.setTextViewText(R.id.tv_quick_status, "$mascotEmoji $consumed/$goal ml (%$percent)")
+            views.setTextViewText(R.id.tv_quick_emoji1, p1Emoji)
+            views.setTextViewText(R.id.tv_quick_emoji2, p2Emoji)
+            views.setTextViewText(R.id.tv_quick_emoji3, p3Emoji)
             views.setTextViewText(R.id.tv_quick_preset1, "+$p1 ml")
             views.setTextViewText(R.id.tv_quick_preset2, "+$p2 ml")
             views.setTextViewText(R.id.tv_quick_preset3, "+$p3 ml")

@@ -9,14 +9,17 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   void _showSiriCommandsModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,14 +95,17 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   void _showBackTapGuideModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +126,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'iPhone\'unuzun arkasına 2 kez dokunduğunuzda ekranın üstünden şeffaf bir bildirim menüsü açılır (🥛 Bardak, 🥤 Küçük Şişe, 🌊 Büyük Şişe). Buradan tek tıkla içtiğiniz suyu seçip kaydedebilirsiniz.\n\nKurulum için:',
+                  'iPhone\'unuzun arkasına 2 kez dokunduğunuzda ekranın üstünden şeffaf bir bildirim menüsü açılır (🥛 Bardak, 🥤 Küçük Şişe, 🍶 Büyük Şişe). Buradan tek tıkla içtiğiniz suyu seçip kaydedebilirsiniz.\n\nKurulum için:',
                   style: TextStyle(
                     fontSize: 12.5,
                     color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -236,14 +242,17 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   void _showHealthKitInfoModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -706,14 +715,17 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   void _showIosWidgetGuideModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

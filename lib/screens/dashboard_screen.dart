@@ -15,48 +15,11 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  // Helper to get status emoji & message based on progress
-  Map<String, String> _getHydrationStatus(double percentage) {
-    if (percentage < 0.25) {
-      return {
-        'emoji': '🥵',
-        'message': 'Çok susuz kaldın! Hemen bir bardak su al.',
-        'color': 'E11D48', // rose
-      };
-    } else if (percentage < 0.50) {
-      return {
-        'emoji': '🥛',
-        'message': 'Güzel başlangıç! Yavaş yavaş hedefe ilerliyorsun.',
-        'color': 'F59E0B', // amber
-      };
-    } else if (percentage < 0.75) {
-      return {
-        'emoji': '💧',
-        'message': 'Harika gidiyorsun! Vücudun sana teşekkür ediyor.',
-        'color': '10B981', // emerald
-      };
-    } else if (percentage < 1.0) {
-      return {
-        'emoji': '😎',
-        'message': 'Neredeyse tamamladın! Enerjin yerinde.',
-        'color': '06B6D4', // cyan
-      };
-    } else {
-      return {
-        'emoji': '🏆',
-        'message': 'Tebrikler! Günlük su hedefini tamamladın!',
-        'color': '8B5CF6', // violet
-      };
-    }
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<WaterProvider>(context);
     final percentage = provider.todayPercentage;
-    final status = _getHydrationStatus(percentage);
+    final status = WaterProvider.getHydrationStatus(percentage);
     final statusColor = Color(int.parse('FF${status['color']!}', radix: 16));
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;

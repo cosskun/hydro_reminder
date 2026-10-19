@@ -17,7 +17,7 @@ class WaterProvider with ChangeNotifier {
 
   List<WaterLog> _logs = [];
   List<AlarmSetting> _alarms = [];
-  String _gender = 'Male';
+  String _gender = 'Erkek';
   int _age = 25;
   double _weight = 70.0;
   int _dailyGoal = 2500;
@@ -87,6 +87,41 @@ class WaterProvider with ChangeNotifier {
       return {'emoji': '🌊', 'name': 'Büyük Matara'};
     } else {
       return {'emoji': '🚰', 'name': 'Sürahi'};
+    }
+  }
+
+  // Unified Hydration Status (used by both DashboardScreen and Android/iOS Widgets so logos & texts are 100% in sync)
+  static Map<String, String> getHydrationStatus(double percentage) {
+    if (percentage < 0.25) {
+      return {
+        'emoji': '🥵',
+        'message': 'Çok susuz kaldın! Hemen bir bardak su al.',
+        'color': 'E11D48',
+      };
+    } else if (percentage < 0.50) {
+      return {
+        'emoji': '🥛',
+        'message': 'Güzel başlangıç! Yavaş yavaş hedefe ilerliyorsun.',
+        'color': 'F59E0B',
+      };
+    } else if (percentage < 0.75) {
+      return {
+        'emoji': '💧',
+        'message': 'Harika gidiyorsun! Vücudun sana teşekkür ediyor.',
+        'color': '10B981',
+      };
+    } else if (percentage < 1.0) {
+      return {
+        'emoji': '😎',
+        'message': 'Neredeyse tamamladın! Enerjin yerinde.',
+        'color': '06B6D4',
+      };
+    } else {
+      return {
+        'emoji': '🏆',
+        'message': 'Tebrikler! Günlük su hedefini tamamladın!',
+        'color': '8B5CF6',
+      };
     }
   }
 
@@ -692,21 +727,13 @@ class WaterProvider with ChangeNotifier {
         displayStreak = 1;
       }
 
-      final String mascotEmoji;
-      final String mascotSubtitle;
-      if (percentInt >= 100) {
-        mascotEmoji = '👑';
-        mascotSubtitle = 'Efsanesin! Günlük hedef tamam! 🏆';
-      } else if (percentInt >= 70) {
-        mascotEmoji = '🐬';
-        mascotSubtitle = 'Hedefe çok az kaldı, devam et! 🚀';
-      } else if (percentInt >= 30) {
-        mascotEmoji = '🐳';
-        mascotSubtitle = 'Harika gidiyorsun! Su içmeyi unutma! 🌊';
-      } else {
-        mascotEmoji = '🥵';
-        mascotSubtitle = 'Damla seni çağırıyor! Su içelim! 💦';
-      }
+      final status = WaterProvider.getHydrationStatus(todayPercentage);
+      final String mascotEmoji = status['emoji']!;
+      final String mascotSubtitle = status['message']!;
+
+      final p1Emoji = WaterProvider.getPresetMeta(preset1)['emoji'] ?? '🥛';
+      final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';
+      final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🍶';
 
       await WidgetService().updateWidgets(
         todayConsumed: todayConsumed,
@@ -716,6 +743,9 @@ class WaterProvider with ChangeNotifier {
         preset1: preset1,
         preset2: preset2,
         preset3: preset3,
+        preset1Emoji: p1Emoji,
+        preset2Emoji: p2Emoji,
+        preset3Emoji: p3Emoji,
         streakDays: displayStreak,
         dayLabels: labels.join(','),
         dayStatuses: statuses.join(','),
@@ -734,9 +764,9 @@ class WaterProvider with ChangeNotifier {
     // Baseline multiplier per kg:
     // Men: 35 ml/kg, Women: 31 ml/kg, Other: 33 ml/kg
     double multiplier = 35.0;
-    if (gender == 'Kadın') {
+    if (gender == 'Kadın' || gender == 'Female') {
       multiplier = 31.0;
-    } else if (gender == 'Diğer') {
+    } else if (gender == 'Diğer' || gender == 'Other') {
       multiplier = 33.0;
     }
 
@@ -1236,7 +1266,7 @@ class WaterProvider with ChangeNotifier {
     _logs.clear();
     _alarms.clear();
     _quickPresets = [200, 330, 500];
-    _gender = 'Male';
+    _gender = 'Erkek';
     _age = 25;
     _weight = 70.0;
     _dailyGoal = 2500;

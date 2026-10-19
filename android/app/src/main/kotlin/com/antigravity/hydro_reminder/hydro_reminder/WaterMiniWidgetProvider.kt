@@ -23,18 +23,19 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
             val p1 = widgetData.getInt("preset1", 200)
             val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
-            val defaultEmoji = when {
-                percent >= 100 -> "👑"
-                percent >= 70 -> "🐬"
-                percent >= 30 -> "🐳"
+            val mascotEmoji = when {
+                percent >= 100 -> "🏆"
+                percent >= 75 -> "😎"
+                percent >= 50 -> "💧"
+                percent >= 25 -> "🥛"
                 else -> "🥵"
             }
-            val mascotEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
+            val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
 
             val bgRes = when {
                 percent >= 100 -> R.drawable.widget_card_bg_emerald
-                percent >= 70 -> R.drawable.widget_card_bg_teal
-                percent >= 30 -> R.drawable.widget_card_bg_ocean
+                percent >= 75 -> R.drawable.widget_card_bg_teal
+                percent >= 25 -> R.drawable.widget_card_bg_ocean
                 else -> R.drawable.widget_card_bg
             }
             views.setInt(R.id.widget_mini_root, "setBackgroundResource", bgRes)
@@ -43,7 +44,8 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
             views.setTextViewText(R.id.tv_mini_percent, "%$percent")
             views.setTextViewText(R.id.tv_mini_mascot, mascotEmoji)
             views.setTextViewText(R.id.tv_mini_subtext, "$consumed ml")
-            views.setTextViewText(R.id.btn_mini_quick_add, "💧 +$p1 ml")
+            views.setProgressBar(R.id.pb_mini_progress, 100, percent.coerceIn(0, 100), false)
+            views.setTextViewText(R.id.btn_mini_quick_add, "$p1Emoji +$p1 ml")
 
             // Quick Add Button Click
             val quickAddIntent = HomeWidgetLaunchIntent.getActivity(

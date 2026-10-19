@@ -48,7 +48,7 @@ public struct WaterPresetQuery: EntityQuery {
         return [
             WaterPresetEntity(id: "preset1", name: "Bardak", amount: p1, emoji: "🥛"),
             WaterPresetEntity(id: "preset2", name: "Küçük Şişe", amount: p2, emoji: "🥤"),
-            WaterPresetEntity(id: "preset3", name: "Büyük Şişe", amount: p3, emoji: "🌊"),
+            WaterPresetEntity(id: "preset3", name: "Büyük Şişe", amount: p3, emoji: "🍶"),
         ]
     }
 }

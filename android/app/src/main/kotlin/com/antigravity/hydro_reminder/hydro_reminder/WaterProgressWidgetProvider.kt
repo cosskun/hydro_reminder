@@ -27,26 +27,31 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
             val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
             val defaultEmoji = when {
-                percent >= 100 -> "👑"
-                percent >= 70 -> "🐬"
-                percent >= 30 -> "🐳"
+                percent >= 100 -> "🏆"
+                percent >= 75 -> "😎"
+                percent >= 50 -> "💧"
+                percent >= 25 -> "🥛"
                 else -> "🥵"
             }
             val defaultSub = when {
-                percent >= 100 -> "Efsanesin! Günlük hedef tamam! 🏆"
-                percent >= 70 -> "Hedefe çok az kaldı, devam et! 🚀"
-                percent >= 30 -> "Harika gidiyorsun! Su içmeyi unutma! 🌊"
-                else -> "Damla seni çağırıyor! Su içelim! 💦"
+                percent >= 100 -> "Tebrikler! Günlük su hedefini tamamladın!"
+                percent >= 75 -> "Neredeyse tamamladın! Enerjin yerinde."
+                percent >= 50 -> "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
+                percent >= 25 -> "Güzel başlangıç! Yavaş yavaş hedefe ilerliyorsun."
+                else -> "Çok susuz kaldın! Hemen bir bardak su al."
             }
 
-            val mascotEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
-            val mascotSub = widgetData.getString("mascotSubtitle", defaultSub) ?: defaultSub
+            // Always use the synchronized status emoji for current percentage so legacy whale/dolphin cache never shows
+            val mascotEmoji = defaultEmoji
+            val mascotSub = defaultSub
+            val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
+            val p2Emoji = widgetData.getString("preset2Emoji", "🥤") ?: "🥤"
 
             // Dynamic Duolingo-style background gradient based on hydration %
             val bgRes = when {
                 percent >= 100 -> R.drawable.widget_card_bg_emerald
-                percent >= 70 -> R.drawable.widget_card_bg_teal
-                percent >= 30 -> R.drawable.widget_card_bg_ocean
+                percent >= 75 -> R.drawable.widget_card_bg_teal
+                percent >= 25 -> R.drawable.widget_card_bg_ocean
                 else -> R.drawable.widget_card_bg
             }
             views.setInt(R.id.widget_progress_root, "setBackgroundResource", bgRes)
@@ -54,12 +59,13 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
             views.setTextViewText(R.id.tv_streak_title, "🔥 $streak gün")
             views.setTextViewText(R.id.tv_progress_percent, "💧 %$percent")
             views.setTextViewText(R.id.tv_progress_message, mascotSub)
+            views.setProgressBar(R.id.pb_water_progress, 100, percent.coerceIn(0, 100), false)
             views.setTextViewText(R.id.tv_mascot_emoji, mascotEmoji)
             views.setTextViewText(R.id.tv_progress_consumed, "$consumed ml")
             views.setTextViewText(R.id.tv_progress_goal, "Hedef: $goal ml")
 
-            views.setTextViewText(R.id.btn_progress_preset1, "🥛 +$p1 ml")
-            views.setTextViewText(R.id.btn_progress_preset2, "🥤 +$p2 ml")
+            views.setTextViewText(R.id.btn_progress_preset1, "$p1Emoji +$p1 ml")
+            views.setTextViewText(R.id.btn_progress_preset2, "$p2Emoji +$p2 ml")
 
             // 5-Day Duolingo Checkmark Tracker
             val rawLabels = widgetData.getString("dayLabels", "Pe,Cu,Ct,Pa,Pt") ?: "Pe,Cu,Ct,Pa,Pt"

@@ -9,6 +9,18 @@ import android.service.quicksettings.TileService
 
 class WaterQuickSettingsTileService : TileService() {
 
+    private fun getSafeInt(prefs: android.content.SharedPreferences, key: String, defaultVal: Int): Int {
+        return try {
+            prefs.getInt(key, defaultVal)
+        } catch (_: ClassCastException) {
+            try {
+                prefs.getLong(key, defaultVal.toLong()).toInt()
+            } catch (_: Exception) {
+                defaultVal
+            }
+        }
+    }
+
     override fun onStartListening() {
         super.onStartListening()
         updateTileState()
@@ -17,9 +29,16 @@ class WaterQuickSettingsTileService : TileService() {
     override fun onClick() {
         super.onClick()
 
-        // Read user's custom preset1 from SharedPreferences or default to 250ml
-        val widgetData = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
-        val defaultAmount = widgetData.getInt("flutter.preset_1", 250).let { if (it > 0) it else 250 }
+        val homePrefs = getSharedPreferences("HomeWidgetPreferences", MODE_PRIVATE)
+        val flutterPrefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+
+        val p1FromWidget = getSafeInt(homePrefs, "preset1", 0)
+        val p1FromFlutter = getSafeInt(flutterPrefs, "flutter.preset_1", 200)
+        val defaultAmount = when {
+            p1FromWidget > 0 -> p1FromWidget
+            p1FromFlutter > 0 -> p1FromFlutter
+            else -> 200
+        }
 
         val intent = Intent(this, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
@@ -45,10 +64,17 @@ class WaterQuickSettingsTileService : TileService() {
 
     private fun updateTileState() {
         val tile = qsTile ?: return
+        val homePrefs = getSharedPreferences("HomeWidgetPreferences", MODE_PRIVATE)
+        val p1 = getSafeInt(homePrefs, "preset1", 200).let { if (it > 0) it else 200 }
+        val p1Emoji = homePrefs.getString("preset1Emoji", "🥛") ?: "🥛"
+        val consumed = getSafeInt(homePrefs, "todayConsumed", 0)
+        val goal = getSafeInt(homePrefs, "dailyGoal", 2500).let { if (it > 0) it else 2500 }
+        val percent = getSafeInt(homePrefs, "percentage", 0)
+
         tile.state = Tile.STATE_ACTIVE
-        tile.label = "+250 ml Su"
+        tile.label = "$p1Emoji +$p1 ml Ekle"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.subtitle = "HydroSoft Hızlı Ekle"
+            tile.subtitle = "%$percent · $consumed/$goal ml"
         }
         tile.updateTile()
     }

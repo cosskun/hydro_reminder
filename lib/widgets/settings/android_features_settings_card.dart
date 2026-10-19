@@ -11,14 +11,17 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
   void _showTileSetupModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,12 +30,14 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   children: [
                     const Text('⚡', style: TextStyle(fontSize: 24)),
                     const SizedBox(width: 8),
-                    Text(
-                      'Hızlı Ayarlar Kutucuğu Kurulumu',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                    Expanded(
+                      child: Text(
+                        'Hızlı Ayarlar Kutucuğu Kurulumu',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
                       ),
                     ),
                   ],
@@ -51,7 +56,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 _buildStepTile('2', 'Sağ alttaki veya üstteki "Düzenle" (Kalem ✏️) simgesine dokunun.', isDark),
                 const SizedBox(height: 10),
-                _buildStepTile('3', 'Aşağıdaki kullanılabilir butonlardan "💧 +250 ml Su Ekle" kutucuğunu bulun.', isDark),
+                _buildStepTile('3', 'Aşağıdaki kullanılabilir butonlardan "HydroSoft Su Ekle" kutucuğunu bulun.', isDark),
                 const SizedBox(height: 10),
                 _buildStepTile('4', 'Kutucuğu basılı tutarak yukarıya aktif kutucukların arasına sürükleyin.', isDark),
                 const SizedBox(height: 20),
@@ -81,14 +86,17 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
   void _showHealthConnectModal(BuildContext context, bool isDark) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,12 +105,14 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   children: [
                     const Text('💚', style: TextStyle(fontSize: 24)),
                     const SizedBox(width: 8),
-                    Text(
-                      'Google Health Connect',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                    Expanded(
+                      child: Text(
+                        'Google Health Connect',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        ),
                       ),
                     ),
                   ],
@@ -449,7 +459,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   ),
                   _buildShortcutChip(
                     context,
-                    emoji: '🌊',
+                    emoji: '🍶',
                     label: '+500 ml Büyük',
                     shortcutId: 'shortcut_bottle_500',
                     isDark: isDark,

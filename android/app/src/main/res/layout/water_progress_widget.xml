@@ -60,15 +60,27 @@
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"
-            android:text="Damla seni çağırıyor! Su içelim! 💦"
+            android:text="Çok susuz kaldın! Hemen bir bardak su al."
             android:textColor="#F1F5F9"
-            android:textSize="11.5sp" />
+            android:textSize="11sp" />
+
+        <!-- Live Water Progress Bar (Su Barı) -->
+        <ProgressBar
+            android:id="@+id/pb_water_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="7dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="8dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/widget_progress_bar" />
 
         <!-- 5-Day Duolingo Checkmark Row (Pe Cu Ct Pa Pt) -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="5dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 

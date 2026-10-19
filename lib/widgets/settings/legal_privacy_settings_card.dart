@@ -14,11 +14,13 @@ class LegalPrivacySettingsCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: DraggableScrollableSheet(
             expand: false,
@@ -27,7 +29,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
             maxChildSize: 0.92,
             builder: (_, scrollController) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

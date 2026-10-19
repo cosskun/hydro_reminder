@@ -83,20 +83,18 @@ class WidgetService {
         debugPrint('HomeWidget setAppGroupId error: $e');
       }
 
-      // Handle cold start from native Android App Shortcut
-      if (Platform.isAndroid) {
-        try {
-          final initialShortcutStr =
-              await _platformChannel.invokeMethod<String>('consumeInitialShortcutUri');
-          if (initialShortcutStr != null && initialShortcutStr.isNotEmpty) {
-            final parsed = Uri.tryParse(initialShortcutStr);
-            if (parsed != null) {
-              _handleWidgetUri(parsed);
-            }
+      // Handle cold start from native App Shortcut or iOS Widget URL Scheme
+      try {
+        final initialShortcutStr =
+            await _platformChannel.invokeMethod<String>('consumeInitialShortcutUri');
+        if (initialShortcutStr != null && initialShortcutStr.isNotEmpty) {
+          final parsed = Uri.tryParse(initialShortcutStr);
+          if (parsed != null) {
+            _handleWidgetUri(parsed);
           }
-        } catch (e) {
-          debugPrint('consumeInitialShortcutUri error: $e');
         }
+      } catch (e) {
+        debugPrint('consumeInitialShortcutUri error: $e');
       }
 
       // Handle cold start from widget click
@@ -165,7 +163,10 @@ class WidgetService {
     String dayLabels = 'Çr,Pe,Cu,Ct,Pa',
     String dayStatuses = '0,0,0,0,0',
     String mascotEmoji = '🥵',
-    String mascotSubtitle = 'Damla seni çağırıyor! 💦',
+    String mascotSubtitle = 'Çok susuz kaldın! Hemen bir bardak su al.',
+    String preset1Emoji = '🥛',
+    String preset2Emoji = '🥤',
+    String preset3Emoji = '🍶',
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
@@ -182,6 +183,33 @@ class WidgetService {
       await HomeWidget.saveWidgetData<String>('dayStatuses', dayStatuses);
       await HomeWidget.saveWidgetData<String>('mascotEmoji', mascotEmoji);
       await HomeWidget.saveWidgetData<String>('mascotSubtitle', mascotSubtitle);
+      await HomeWidget.saveWidgetData<String>('preset1Emoji', preset1Emoji);
+      await HomeWidget.saveWidgetData<String>('preset2Emoji', preset2Emoji);
+      await HomeWidget.saveWidgetData<String>('preset3Emoji', preset3Emoji);
+
+      if (Platform.isIOS) {
+        try {
+          await _platformChannel.invokeMethod('syncIosWidgetData', {
+            'todayConsumed': todayConsumed,
+            'dailyGoal': dailyGoal,
+            'dailyRemaining': dailyRemaining,
+            'percentage': percentage,
+            'preset1': preset1,
+            'preset2': preset2,
+            'preset3': preset3,
+            'streakDays': streakDays,
+            'dayLabels': dayLabels,
+            'dayStatuses': dayStatuses,
+            'mascotEmoji': mascotEmoji,
+            'mascotSubtitle': mascotSubtitle,
+            'preset1Emoji': preset1Emoji,
+            'preset2Emoji': preset2Emoji,
+            'preset3Emoji': preset3Emoji,
+          });
+        } catch (e) {
+          debugPrint('syncIosWidgetData error: $e');
+        }
+      }
 
       // Trigger update for all 3 Android & iOS widgets
       await HomeWidget.updateWidget(

@@ -43,12 +43,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final provider = Provider.of<WaterProvider>(context);
     if (!_isInitialized) {
-      final provider = Provider.of<WaterProvider>(context);
       _selectedGender = provider.gender;
       _ageController = TextEditingController(text: provider.age.toString());
       _weightController = TextEditingController(text: provider.weight.toString());
-      _dailyGoalController = TextEditingController(text: provider.dailyGoal.toString());
+      _dailyGoalController = TextEditingController(text: provider.baseDailyGoal.toString());
       _preset1Controller = TextEditingController(text: provider.preset1.toString());
       _preset2Controller = TextEditingController(text: provider.preset2.toString());
       _preset3Controller = TextEditingController(text: provider.preset3.toString());
@@ -108,8 +108,8 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
   }
 
   void _autoCalculateGoal() {
-    final age = int.tryParse(_ageController.text) ?? 25;
-    final weight = double.tryParse(_weightController.text) ?? 70.0;
+    final age = int.tryParse(_ageController.text.trim()) ?? 25;
+    final weight = double.tryParse(_weightController.text.trim().replaceAll(',', '.')) ?? 70.0;
     final provider = Provider.of<WaterProvider>(context, listen: false);
     final calculated = provider.calculateDailyGoal(
       gender: _selectedGender,
@@ -128,8 +128,8 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
   }
 
   void _saveProfile() {
-    final age = int.tryParse(_ageController.text) ?? 25;
-    final weight = double.tryParse(_weightController.text) ?? 70.0;
+    final age = int.tryParse(_ageController.text.trim()) ?? 25;
+    final weight = double.tryParse(_weightController.text.trim().replaceAll(',', '.')) ?? 70.0;
     final provider = Provider.of<WaterProvider>(context, listen: false);
 
     provider.updateProfile(
@@ -138,9 +138,9 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
       weight: weight,
     );
 
-    // Keep goal controller in sync with recalculated goal
+    // Keep goal controller in sync with recalculated base goal
     setState(() {
-      _dailyGoalController.text = provider.dailyGoal.toString();
+      _dailyGoalController.text = provider.baseDailyGoal.toString();
     });
 
     ScaffoldMessenger.of(context).showSnackBar(

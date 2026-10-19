@@ -61,6 +61,19 @@
 	<string>HydroSoft, sesli su ekleme komutları ve özel ses kayıtları için mikrofon erişimine ihtiyaç duyar.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>HydroSoft, Siri ve sesli komutlarla hızlı su kaydı oluşturabilmeniz için ses tanıma erişimine ihtiyaç duyar.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.antigravity.hydroreminder</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>hydroreminder</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
 

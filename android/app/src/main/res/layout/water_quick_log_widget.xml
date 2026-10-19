@@ -76,7 +76,7 @@
                 android:includeFontPadding="false"
                 android:singleLine="true"
                 android:text="+200 ml"
-                android:textColor="#4C1D95"
+                android:textColor="#0369A1"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -109,7 +109,7 @@
                 android:includeFontPadding="false"
                 android:singleLine="true"
                 android:text="+330 ml"
-                android:textColor="#4C1D95"
+                android:textColor="#0369A1"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -141,7 +141,7 @@
                 android:includeFontPadding="false"
                 android:singleLine="true"
                 android:text="+500 ml"
-                android:textColor="#4C1D95"
+                android:textColor="#0369A1"
                 android:textSize="10sp" />
         </LinearLayout>
 

@@ -96,7 +96,7 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
                 )
                 views.setTextColor(
                     checkIds[i],
-                    if (isDone) Color.parseColor("#5B21B6") else Color.parseColor("#94A3B8")
+                    if (isDone) Color.parseColor("#0369A1") else Color.parseColor("#94A3B8")
                 )
             }
 

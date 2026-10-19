@@ -152,7 +152,7 @@
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
                     android:text="✓"
-                    android:textColor="#6D28D9"
+                    android:textColor="#0369A1"
                     android:textSize="10sp" />
             </LinearLayout>
 
@@ -180,7 +180,7 @@
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
                     android:text="✓"
-                    android:textColor="#6D28D9"
+                    android:textColor="#0369A1"
                     android:textSize="10sp" />
             </LinearLayout>
 
@@ -233,7 +233,7 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:text="🥛 +200 ml"
-                android:textColor="#4C1D95"
+                android:textColor="#0369A1"
                 android:textSize="10sp" />
 
             <TextView

@@ -92,7 +92,16 @@ end
 
 def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profile_name)
   require 'xcodeproj'
-  proj_path = "Runner.xcodeproj"
+  candidates = [
+    "Runner.xcodeproj",
+    "../Runner.xcodeproj",
+    File.expand_path("../Runner.xcodeproj", __dir__),
+    File.expand_path("Runner.xcodeproj", Dir.pwd)
+  ]
+  proj_path = candidates.find { |p| File.exist?(p) }
+  raise "Runner.xcodeproj not found in #{candidates.inspect}" unless proj_path
+
+  UI.message("Opening Xcode project at: #{proj_path}")
   project = Xcodeproj::Project.open(proj_path)
 
   runner_target = project.targets.find { |t| t.name == "Runner" }

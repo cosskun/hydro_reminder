@@ -107,44 +107,48 @@ struct WaterTimelineProvider: TimelineProvider {
     }
 }
 
-// Dynamic Duolingo-style theme colors based on hydration percentage
+// Dynamic HydroSoft Blue theme gradients based on hydration percentage
 private func duolingoGradient(for percentage: Int) -> LinearGradient {
     if percentage >= 100 {
-        // Champion Emerald-Gold Gradient
+        // Royal Crystal Blue Gradient (100%+)
         return LinearGradient(
             colors: [
-                Color(red: 0.04, green: 0.60, blue: 0.42),
-                Color(red: 0.16, green: 0.82, blue: 0.58)
+                Color(red: 0.00, green: 0.34, blue: 0.61), // #01579B
+                Color(red: 0.01, green: 0.53, blue: 0.82), // #0288D1
+                Color(red: 0.25, green: 0.77, blue: 1.00)  // #40C4FF
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
     } else if percentage >= 70 {
-        // Energetic Teal-Cyan Gradient
+        // Bright Aqua-Sky Blue Gradient (70-99%)
         return LinearGradient(
             colors: [
-                Color(red: 0.05, green: 0.58, blue: 0.53),
-                Color(red: 0.18, green: 0.83, blue: 0.75)
+                Color(red: 0.01, green: 0.47, blue: 0.74), // #0277BD
+                Color(red: 0.01, green: 0.61, blue: 0.90), // #039BE5
+                Color(red: 0.22, green: 0.74, blue: 0.97)  // #38BDF8
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
     } else if percentage >= 30 {
-        // Electric Ocean Blue-Purple Gradient
+        // HydroSoft Signature Sky Blue Gradient (30-69%)
         return LinearGradient(
             colors: [
-                Color(red: 0.15, green: 0.39, blue: 0.92),
-                Color(red: 0.22, green: 0.74, blue: 0.97)
+                Color(red: 0.01, green: 0.41, blue: 0.63), // #0369A1
+                Color(red: 0.01, green: 0.53, blue: 0.82), // #0288D1
+                Color(red: 0.16, green: 0.71, blue: 0.96)  // #29B6F6
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
     } else {
-        // Duolingo Classic Vibrant Purple-Violet Callout Gradient
+        // Deep Ocean Blue Gradient (0-29%)
         return LinearGradient(
             colors: [
-                Color(red: 0.49, green: 0.23, blue: 0.93),
-                Color(red: 0.75, green: 0.36, blue: 0.98)
+                Color(red: 0.03, green: 0.35, blue: 0.52), // #075985
+                Color(red: 0.01, green: 0.52, blue: 0.78), // #0284C7
+                Color(red: 0.22, green: 0.74, blue: 0.97)  // #38BDF8
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
@@ -210,7 +214,7 @@ struct WaterProgressWidgetEntryView: View {
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
                                     .background(Color.white)
-                                    .foregroundColor(Color(red: 0.35, green: 0.16, blue: 0.75))
+                                    .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                                     .cornerRadius(10)
                             }
                         }
@@ -262,14 +266,14 @@ struct WaterProgressWidgetEntryView: View {
                                     .foregroundColor(Color.white.opacity(0.85))
                                 ZStack {
                                     Circle()
-                                        .fill(isDone ? Color.white.opacity(0.92) : Color.black.opacity(0.26))
+                                        .fill(isDone ? Color.white.opacity(0.95) : Color.black.opacity(0.22))
                                         .frame(width: 22, height: 22)
                                     Text(isDone ? "✓" : "•")
                                         .font(.system(size: 11, weight: .black))
                                         .foregroundColor(
                                             isDone
-                                                ? Color(red: 0.42, green: 0.18, blue: 0.85)
-                                                : Color.white.opacity(0.45)
+                                                ? Color(red: 0.01, green: 0.41, blue: 0.63)
+                                                : Color.white.opacity(0.50)
                                         )
                                 }
                             }
@@ -283,8 +287,8 @@ struct WaterProgressWidgetEntryView: View {
                                 .font(.system(size: 10, weight: .heavy, design: .rounded))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Color.white.opacity(0.92))
-                                .foregroundColor(Color(red: 0.30, green: 0.15, blue: 0.72))
+                                .background(Color.white.opacity(0.95))
+                                .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                                 .cornerRadius(8)
                         }
                         Link(destination: URL(string: "hydroreminder://log?amount=\(entry.preset2)")!) {
@@ -347,10 +351,10 @@ struct WaterQuickLogWidgetEntryView: View {
                         Text("🥛").font(.title2)
                         Text("+\(entry.preset1) ml")
                             .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundColor(Color(red: 0.35, green: 0.16, blue: 0.75))
+                            .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white.opacity(0.92))
+                    .background(Color.white.opacity(0.95))
                     .cornerRadius(14)
                 }
 
@@ -359,10 +363,10 @@ struct WaterQuickLogWidgetEntryView: View {
                         Text("🥤").font(.title2)
                         Text("+\(entry.preset2) ml")
                             .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundColor(Color(red: 0.35, green: 0.16, blue: 0.75))
+                            .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white.opacity(0.92))
+                    .background(Color.white.opacity(0.95))
                     .cornerRadius(14)
                 }
 
@@ -371,10 +375,10 @@ struct WaterQuickLogWidgetEntryView: View {
                         Text("🌊").font(.title2)
                         Text("+\(entry.preset3) ml")
                             .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundColor(Color(red: 0.35, green: 0.16, blue: 0.75))
+                            .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.white.opacity(0.92))
+                    .background(Color.white.opacity(0.95))
                     .cornerRadius(14)
                 }
             }
@@ -428,8 +432,8 @@ struct WaterMiniWidgetEntryView: View {
                         .font(.system(size: 10, weight: .heavy, design: .rounded))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 4)
-                        .background(Color.white.opacity(0.92))
-                        .foregroundColor(Color(red: 0.35, green: 0.16, blue: 0.75))
+                        .background(Color.white.opacity(0.95))
+                        .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
                         .cornerRadius(8)
                 }
             }

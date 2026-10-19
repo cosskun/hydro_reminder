@@ -50,6 +50,17 @@
 	<key>NSHealthShareUsageDescription</key>
 	<string>HydroSoft, günlük su tüketiminizi ve adım verilerinizi Apple Sağlık (HealthKit) ile eşitlemek için okuma iznine ihtiyaç duyar.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>HydroSoft, içtiğiniz su miktarlarını Apple Sağlık (HealthKit) uygulamasındaki Beslenme > Su bölümüne kaydetmek için yazma iznine ihtiyaç duyar.</string>
+	<string>HydroSoft, içtiğiniz su miktarlarını Apple Sağlık (HealthKit) uygulamasındaki Beslenme &gt; Su bölümüne kaydetmek için yazma iznine ihtiyaç duyar.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>HydroSoft, özel alarm sesi veya medya dosyası seçebilmeniz için medya ve fotoğraf kitaplığı erişimine ihtiyaç duyar.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>HydroSoft, su takibi veya profil özelleştirmelerinde görsel ekleyebilmeniz için kamera erişimine ihtiyaç duyar.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>HydroSoft, bulunduğunuz bölgenin iklim ve hava sıcaklığına göre günlük su hedefinizi optimize edebilmek için konum bilgisine ihtiyaç duyar.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>HydroSoft, sesli su ekleme komutları ve özel ses kayıtları için mikrofon erişimine ihtiyaç duyar.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>HydroSoft, Siri ve sesli komutlarla hızlı su kaydı oluşturabilmeniz için ses tanıma erişimine ihtiyaç duyar.</string>
 </dict>
 </plist>
+

@@ -305,6 +305,7 @@ private func duolingoGradient(for percentage: Int, theme: String = "ocean") -> L
             endPoint: .bottomTrailing
         )
     case "ocean":
+        fallthrough
     default:
         if percentage >= 100 {
             return LinearGradient(

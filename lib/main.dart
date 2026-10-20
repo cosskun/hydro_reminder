@@ -99,6 +99,8 @@ void main() async {
     },
   );
 
+  await waterProvider.syncWidgetsNow();
+
   runApp(
     ChangeNotifierProvider.value(
       value: waterProvider,

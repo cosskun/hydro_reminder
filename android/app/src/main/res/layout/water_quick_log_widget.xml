@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-bold"
-            android:text="🥵 0 ml"
+            android:text="🥱 0 ml"
             android:textColor="#F1F5F9"
             android:textSize="11sp" />
     </LinearLayout>
@@ -133,7 +133,7 @@
                 android:id="@+id/tv_quick_emoji3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🍶"
+                android:text="🫙"
                 android:textSize="15sp" />
 
             <TextView

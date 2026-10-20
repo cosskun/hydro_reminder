@@ -5,6 +5,8 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.antigravity.hydroreminder.shared</string>
+		<string>$(AppIdentifierPrefix)com.antigravity.hydroreminder.hydroReminder</string>
+		<string>$(AppIdentifierPrefix)com.antigravity.hydroreminder.hydroReminder.HydroWidgets</string>
 	</array>
 </dict>
 </plist>

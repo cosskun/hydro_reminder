@@ -1,4 +1,4 @@
-import Foundation
+﻿import Foundation
 import AppIntents
 import WidgetKit
 
@@ -40,15 +40,19 @@ public struct WaterPresetQuery: EntityQuery {
     }
 
     private func allPresets() -> [WaterPresetEntity] {
+        let kcDict = loadKeychainPayload()
         let prefs = UserDefaults(suiteName: appGroupId)
-        let p1 = max(prefs?.integer(forKey: "preset1") ?? 200, 50)
-        let p2 = max(prefs?.integer(forKey: "preset2") ?? 330, 100)
-        let p3 = max(prefs?.integer(forKey: "preset3") ?? 500, 150)
+        let p1 = max(intValue(from: kcDict, prefs: prefs, key: "preset1", defaultVal: 200), 50)
+        let p2 = max(intValue(from: kcDict, prefs: prefs, key: "preset2", defaultVal: 330), 100)
+        let p3 = max(intValue(from: kcDict, prefs: prefs, key: "preset3", defaultVal: 500), 150)
+        let p1Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset1Emoji", defaultVal: "🥛")
+        let p2Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset2Emoji", defaultVal: "🥤")
+        let p3Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset3Emoji", defaultVal: "🫙")
 
         return [
-            WaterPresetEntity(id: "preset1", name: "Bardak", amount: p1, emoji: "🥛"),
-            WaterPresetEntity(id: "preset2", name: "Küçük Şişe", amount: p2, emoji: "🥤"),
-            WaterPresetEntity(id: "preset3", name: "Büyük Şişe", amount: p3, emoji: "🍶"),
+            WaterPresetEntity(id: "preset1", name: "Bardak", amount: p1, emoji: p1Emoji),
+            WaterPresetEntity(id: "preset2", name: "Küçük Şişe", amount: p2, emoji: p2Emoji),
+            WaterPresetEntity(id: "preset3", name: "Şişe", amount: p3, emoji: p3Emoji),
         ]
     }
 }
@@ -87,14 +91,43 @@ struct QuickLogMenuIntent: AppIntent {
         }
 
         let amount = selectedPreset.amount
-        let consumed = (prefs?.integer(forKey: "todayConsumed") ?? 0) + amount
-        let goal = max(prefs?.integer(forKey: "dailyGoal") ?? 2500, 1000)
+        var kcDict = loadKeychainPayload() ?? [:]
+        let consumed = intValue(from: kcDict, prefs: prefs, key: "todayConsumed", defaultVal: 0) + amount
+        let goal = max(intValue(from: kcDict, prefs: prefs, key: "dailyGoal", defaultVal: 2500), 1000)
         let remaining = max(goal - consumed, 0)
         let percent = min(Int((Double(consumed) / Double(goal)) * 100.0), 100)
+
+        let statusEmoji: String
+        let statusSub: String
+        if percent >= 100 {
+            statusEmoji = "🥳"
+            statusSub = "Tebrikler! Günlük su hedefini tamamladın!"
+        } else if percent >= 75 {
+            statusEmoji = "😎"
+            statusSub = "Neredeyse tamamladın! Enerjin tam yerinde."
+        } else if percent >= 50 {
+            statusEmoji = "😊"
+            statusSub = "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
+        } else if percent >= 25 {
+            statusEmoji = "🙂"
+            statusSub = "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
+        } else {
+            statusEmoji = "🥱"
+            statusSub = "Güne susuz başladın! Hemen bir bardak su al."
+        }
+
+        kcDict["todayConsumed"] = consumed
+        kcDict["dailyRemaining"] = remaining
+        kcDict["percentage"] = percent
+        kcDict["mascotEmoji"] = statusEmoji
+        kcDict["mascotSubtitle"] = statusSub
+        saveKeychainPayload(kcDict)
 
         prefs?.set(consumed, forKey: "todayConsumed")
         prefs?.set(remaining, forKey: "dailyRemaining")
         prefs?.set(percent, forKey: "percentage")
+        prefs?.set(statusEmoji, forKey: "mascotEmoji")
+        prefs?.set(statusSub, forKey: "mascotSubtitle")
 
         // Trigger widget reload
         WidgetCenter.shared.reloadAllTimelines()
@@ -125,14 +158,43 @@ struct LogWaterIntent: AppIntent {
             return .result(value: "Özellik Kapalı", dialog: "HydroSoft ayarlarında Siri ile Sesli Komut özelliği kapalı.")
         }
 
-        let consumed = (prefs?.integer(forKey: "todayConsumed") ?? 0) + amount
-        let goal = max(prefs?.integer(forKey: "dailyGoal") ?? 2500, 1000)
+        var kcDict = loadKeychainPayload() ?? [:]
+        let consumed = intValue(from: kcDict, prefs: prefs, key: "todayConsumed", defaultVal: 0) + amount
+        let goal = max(intValue(from: kcDict, prefs: prefs, key: "dailyGoal", defaultVal: 2500), 1000)
         let remaining = max(goal - consumed, 0)
         let percent = min(Int((Double(consumed) / Double(goal)) * 100.0), 100)
+
+        let statusEmoji: String
+        let statusSub: String
+        if percent >= 100 {
+            statusEmoji = "🥳"
+            statusSub = "Tebrikler! Günlük su hedefini tamamladın!"
+        } else if percent >= 75 {
+            statusEmoji = "😎"
+            statusSub = "Neredeyse tamamladın! Enerjin tam yerinde."
+        } else if percent >= 50 {
+            statusEmoji = "😊"
+            statusSub = "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
+        } else if percent >= 25 {
+            statusEmoji = "🙂"
+            statusSub = "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
+        } else {
+            statusEmoji = "🥱"
+            statusSub = "Güne susuz başladın! Hemen bir bardak su al."
+        }
+
+        kcDict["todayConsumed"] = consumed
+        kcDict["dailyRemaining"] = remaining
+        kcDict["percentage"] = percent
+        kcDict["mascotEmoji"] = statusEmoji
+        kcDict["mascotSubtitle"] = statusSub
+        saveKeychainPayload(kcDict)
 
         prefs?.set(consumed, forKey: "todayConsumed")
         prefs?.set(remaining, forKey: "dailyRemaining")
         prefs?.set(percent, forKey: "percentage")
+        prefs?.set(statusEmoji, forKey: "mascotEmoji")
+        prefs?.set(statusSub, forKey: "mascotSubtitle")
 
         // Trigger widget reload
         WidgetCenter.shared.reloadAllTimelines()
@@ -155,9 +217,10 @@ struct GetWaterStatusIntent: AppIntent {
     static var description = IntentDescription("Bugün toplam ne kadar su içtiğinizi ve hedefinizi seslendirir.")
 
     func perform() async throws -> some ReturnsValue<String> & ProvidesDialog {
+        let kcDict = loadKeychainPayload()
         let prefs = UserDefaults(suiteName: appGroupId)
-        let consumed = prefs?.integer(forKey: "todayConsumed") ?? 0
-        let goal = max(prefs?.integer(forKey: "dailyGoal") ?? 2500, 1000)
+        let consumed = intValue(from: kcDict, prefs: prefs, key: "todayConsumed", defaultVal: 0)
+        let goal = max(intValue(from: kcDict, prefs: prefs, key: "dailyGoal", defaultVal: 2500), 1000)
         let remaining = max(goal - consumed, 0)
         let percent = min(Int((Double(consumed) / Double(goal)) * 100.0), 100)
 

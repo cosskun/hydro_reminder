@@ -459,7 +459,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   ),
                   _buildShortcutChip(
                     context,
-                    emoji: '🍶',
+                    emoji: '🫙',
                     label: '+500 ml Büyük',
                     shortcutId: 'shortcut_bottle_500',
                     isDark: isDark,

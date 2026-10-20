@@ -23,13 +23,16 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
             val p1 = widgetData.getInt("preset1", 200)
             val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
-            val mascotEmoji = when {
-                percent >= 100 -> "🏆"
+            val defaultEmoji = when {
+                percent >= 100 -> "🥳"
                 percent >= 75 -> "😎"
-                percent >= 50 -> "💧"
-                percent >= 25 -> "🥛"
-                else -> "🥵"
+                percent >= 50 -> "😊"
+                percent >= 25 -> "🙂"
+                else -> "🥱"
             }
+            val validEmojis = setOf("🥱", "🙂", "😊", "😎", "🥳")
+            val syncedEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
+            val mascotEmoji = if (validEmojis.contains(syncedEmoji)) syncedEmoji else defaultEmoji
             val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
 
             val bgRes = when {

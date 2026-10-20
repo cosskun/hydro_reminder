@@ -1,10 +1,13 @@
-import WidgetKit
+﻿import WidgetKit
 import SwiftUI
 import Security
 
 // App Group & Shared Keychain identifiers for sharing data with iOS widgets
 let appGroupId = "group.com.antigravity.hydroReminder"
-let keychainAccessGroup = "BHYTLHA722.com.antigravity.hydroreminder.shared"
+let keychainAccessGroups = [
+    "BHYTLHA722.com.antigravity.hydroreminder.shared",
+    "BHYTLHA722.com.antigravity.hydroreminder.hydroReminder"
+]
 let keychainService = "com.antigravity.hydroreminder.widgetsync"
 let keychainAccount = "hydro_widget_state_v1"
 
@@ -27,21 +30,23 @@ struct WaterWidgetEntry: TimelineEntry {
     let preset3Emoji: String
 }
 
-private func loadKeychainPayload() -> [String: Any]? {
-    let groupedQuery: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrService as String: keychainService,
-        kSecAttrAccount as String: keychainAccount,
-        kSecAttrAccessGroup as String: keychainAccessGroup,
-        kSecReturnData as String: true,
-        kSecMatchLimit as String: kSecMatchLimitOne
-    ]
-    var item: CFTypeRef?
-    let status = SecItemCopyMatching(groupedQuery as CFDictionary, &item)
-    if status == errSecSuccess,
-       let data = item as? Data,
-       let dict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-        return dict
+func loadKeychainPayload() -> [String: Any]? {
+    for group in keychainAccessGroups {
+        let groupedQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount,
+            kSecAttrAccessGroup as String: group,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(groupedQuery as CFDictionary, &item)
+        if status == errSecSuccess,
+           let data = item as? Data,
+           let dict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+            return dict
+        }
     }
 
     let fallbackQuery: [String: Any] = [
@@ -61,7 +66,41 @@ private func loadKeychainPayload() -> [String: Any]? {
     return nil
 }
 
-private func intValue(from dict: [String: Any]?, prefs: UserDefaults?, key: String, defaultVal: Int) -> Int {
+func saveKeychainPayload(_ dict: [String: Any]) {
+    guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
+        return
+    }
+    var savedAny = false
+    for group in keychainAccessGroups {
+        let groupedQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount,
+            kSecAttrAccessGroup as String: group
+        ]
+        SecItemDelete(groupedQuery as CFDictionary)
+        var item = groupedQuery
+        item[kSecValueData as String] = jsonData
+        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        if SecItemAdd(item as CFDictionary, nil) == errSecSuccess {
+            savedAny = true
+        }
+    }
+    if !savedAny {
+        let fallbackQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount
+        ]
+        SecItemDelete(fallbackQuery as CFDictionary)
+        var item = fallbackQuery
+        item[kSecValueData as String] = jsonData
+        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        SecItemAdd(item as CFDictionary, nil)
+    }
+}
+
+func intValue(from dict: [String: Any]?, prefs: UserDefaults?, key: String, defaultVal: Int) -> Int {
     if let val = dict?[key] as? Int {
         return val
     }
@@ -74,7 +113,7 @@ private func intValue(from dict: [String: Any]?, prefs: UserDefaults?, key: Stri
     return defaultVal
 }
 
-private func stringValue(from dict: [String: Any]?, prefs: UserDefaults?, key: String, defaultVal: String) -> String {
+func stringValue(from dict: [String: Any]?, prefs: UserDefaults?, key: String, defaultVal: String) -> String {
     if let val = dict?[key] as? String, !val.isEmpty {
         return val
     }
@@ -98,11 +137,11 @@ struct WaterTimelineProvider: TimelineProvider {
             streakDays: 2,
             dayLabels: ["Pe", "Cu", "Ct", "Pa", "Pt"],
             dayStatuses: [0, 0, 2, 2, 1],
-            mascotEmoji: "💧",
+            mascotEmoji: "😊",
             mascotSubtitle: "Harika gidiyorsun! Vücudun sana teşekkür ediyor.",
             preset1Emoji: "🥛",
             preset2Emoji: "🥤",
-            preset3Emoji: "🍶"
+            preset3Emoji: "🫙"
         )
     }
 
@@ -125,11 +164,12 @@ struct WaterTimelineProvider: TimelineProvider {
         let consumed = intValue(from: kcDict, prefs: prefs, key: "todayConsumed", defaultVal: 0)
         let goal = intValue(from: kcDict, prefs: prefs, key: "dailyGoal", defaultVal: 2500)
         let remaining = intValue(from: kcDict, prefs: prefs, key: "dailyRemaining", defaultVal: max(goal - consumed, 0))
+        let computedPercent = goal > 0 ? min(Int((Double(consumed) * 100.0) / Double(goal)), 200) : 0
         let percent = intValue(
             from: kcDict,
             prefs: prefs,
             key: "percentage",
-            defaultVal: goal > 0 ? min(Int(round(Double(consumed) * 100.0 / Double(goal))), 100) : 0
+            defaultVal: computedPercent
         )
         let p1 = intValue(from: kcDict, prefs: prefs, key: "preset1", defaultVal: 200)
         let p2 = intValue(from: kcDict, prefs: prefs, key: "preset2", defaultVal: 330)
@@ -148,25 +188,30 @@ struct WaterTimelineProvider: TimelineProvider {
         let statusEmoji: String
         let statusSub: String
         if percent >= 100 {
-            statusEmoji = "🏆"
+            statusEmoji = "🥳"
             statusSub = "Tebrikler! Günlük su hedefini tamamladın!"
         } else if percent >= 75 {
             statusEmoji = "😎"
-            statusSub = "Neredeyse tamamladın! Enerjin yerinde."
+            statusSub = "Neredeyse tamamladın! Enerjin tam yerinde."
         } else if percent >= 50 {
-            statusEmoji = "💧"
+            statusEmoji = "😊"
             statusSub = "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
         } else if percent >= 25 {
-            statusEmoji = "🥛"
-            statusSub = "Güzel başlangıç! Yavaş yavaş hedefe ilerliyorsun."
+            statusEmoji = "🙂"
+            statusSub = "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
         } else {
-            statusEmoji = "🥵"
-            statusSub = "Çok susuz kaldın! Hemen bir bardak su al."
+            statusEmoji = "🥱"
+            statusSub = "Güne susuz başladın! Hemen bir bardak su al."
         }
+
+        let validStatusEmojis: Set<String> = ["🥱", "🙂", "😊", "😎", "🥳"]
+        let syncedEmoji = stringValue(from: kcDict, prefs: prefs, key: "mascotEmoji", defaultVal: statusEmoji)
+        let finalEmoji = validStatusEmojis.contains(syncedEmoji) ? syncedEmoji : statusEmoji
+        let finalSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
 
         let p1Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset1Emoji", defaultVal: "🥛")
         let p2Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset2Emoji", defaultVal: "🥤")
-        let p3Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset3Emoji", defaultVal: "🍶")
+        let p3Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset3Emoji", defaultVal: "🫙")
 
         return WaterWidgetEntry(
             date: Date(),
@@ -180,8 +225,8 @@ struct WaterTimelineProvider: TimelineProvider {
             streakDays: streak,
             dayLabels: finalLabels,
             dayStatuses: finalStatuses,
-            mascotEmoji: statusEmoji,
-            mascotSubtitle: statusSub,
+            mascotEmoji: finalEmoji,
+            mascotSubtitle: finalSub,
             preset1Emoji: p1Emoji,
             preset2Emoji: p2Emoji,
             preset3Emoji: p3Emoji

@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -306,14 +306,33 @@ class AlarmService with WidgetsBindingObserver {
     _checkTimer = null;
   }
 
-  // Cancel follow-up burst notifications for an alarm
+  // Deterministic notification ID across app restarts (avoids Dart's per-run randomized String.hashCode)
+  int _deterministicNotificationId(dynamic rawId) {
+    final str = rawId.toString();
+    final parsed = int.tryParse(str);
+    if (parsed != null) {
+      return (parsed.abs() % 900000) + 10000;
+    }
+    int hash = 5381;
+    for (int i = 0; i < str.length; i++) {
+      hash = ((hash << 5) + hash) ^ str.codeUnitAt(i);
+    }
+    return ((hash & 0x7FFFFFFF) % 900000) + 10000;
+  }
+
+  // Cancel follow-up burst notifications for an alarm (including legacy IDs)
   Future<void> cancelAlarmFollowUps(dynamic id) async {
     if (kIsWeb) return;
     try {
-      final baseId = id.hashCode;
-      await _notificationsPlugin.cancel(id: baseId + 10001);
-      await _notificationsPlugin.cancel(id: baseId + 20002);
-      await _notificationsPlugin.cancel(id: baseId + 30003);
+      final detId = _deterministicNotificationId(id);
+      await _notificationsPlugin.cancel(id: detId + 10001);
+      await _notificationsPlugin.cancel(id: detId + 20002);
+      await _notificationsPlugin.cancel(id: detId + 30003);
+
+      final legacyId = id.hashCode;
+      await _notificationsPlugin.cancel(id: legacyId + 10001);
+      await _notificationsPlugin.cancel(id: legacyId + 20002);
+      await _notificationsPlugin.cancel(id: legacyId + 30003);
     } catch (_) {}
   }
 
@@ -321,23 +340,46 @@ class AlarmService with WidgetsBindingObserver {
   Future<void> syncNotifications(List<AlarmSetting> alarms) async {
     if (kIsWeb) return;
 
+    final allAlarms = (_provider != null && _provider!.alarms.isNotEmpty)
+        ? _provider!.alarms
+        : alarms;
+
     try {
-      // Clear all previously scheduled notifications and follow-up rings
-      for (final alarm in alarms) {
-        final baseId = alarm.id.hashCode;
-        await _notificationsPlugin.cancel(id: baseId);
-        await _notificationsPlugin.cancel(id: baseId + 10001);
-        await _notificationsPlugin.cancel(id: baseId + 20002);
-        await _notificationsPlugin.cancel(id: baseId + 30003);
+      // 1. Purge all previously scheduled alarm notifications (including legacy random hashCode duplicates)
+      try {
+        final pending = await _notificationsPlugin.pendingNotificationRequests();
+        for (final req in pending) {
+          if (req.id != _endOfDayNotificationId &&
+              req.id != _ongoingNotificationId &&
+              req.id != _sleepTipNotificationId) {
+            await _notificationsPlugin.cancel(id: req.id);
+          }
+        }
+      } catch (_) {}
+
+      // 2. Also explicitly cancel deterministic & legacy IDs for all known alarms
+      for (final alarm in allAlarms) {
+        final detId = _deterministicNotificationId(alarm.id);
+        await _notificationsPlugin.cancel(id: detId);
+        await cancelAlarmFollowUps(alarm.id);
+        await _notificationsPlugin.cancel(id: alarm.id.hashCode);
       }
     } catch (_) {
       // In test or unsupported environments where plugin platform instance isn't registered
       return;
     }
 
-    for (final alarm in alarms) {
+    // Deduplicate alarms by (hour, minute) so identical time slots never fire twice
+    final Set<String> scheduledTimeSlots = {};
+
+    for (final alarm in allAlarms) {
       if (alarm.isEnabled) {
-        final id = alarm.id.hashCode;
+        final slotKey = '${alarm.hour}:${alarm.minute}';
+        if (!scheduledTimeSlots.add(slotKey)) {
+          continue;
+        }
+
+        final id = _deterministicNotificationId(alarm.id);
         final title = '🚨 Su Zamanı Geldi! 💧';
         final body =
             '${alarm.label} saati geldi! Tam ekran alarmı kapatmak için dokunun ve suyunuzu için.';
@@ -388,7 +430,7 @@ class AlarmService with WidgetsBindingObserver {
         );
 
         try {
-          // Attempt alarmClock mode (wakes up phone from deep sleep/Doze mode)
+          // Schedule exactly 1 daily notification per alarm
           await _notificationsPlugin.zonedSchedule(
             id: id,
             title: title,
@@ -399,28 +441,6 @@ class AlarmService with WidgetsBindingObserver {
             matchDateTimeComponents: DateTimeComponents.time, // Daily repeat
             payload: 'alarm_${alarm.id}',
           );
-
-          // On iOS, schedule persistent follow-up alarm rings (+12s, +24s, +36s)
-          // so if the app is closed, it continues ringing & vibrating like a real alarm until opened
-          if (defaultTargetPlatform == TargetPlatform.iOS) {
-            final followUpOffsets = [12, 24, 36];
-            final followUpIds = [id + 10001, id + 20002, id + 30003];
-            for (int i = 0; i < followUpOffsets.length; i++) {
-              final followUpDate =
-                  scheduledDate.add(Duration(seconds: followUpOffsets[i]));
-              await _notificationsPlugin.zonedSchedule(
-                id: followUpIds[i],
-                title: '⏰ Su Alarmı Çalıyor! (${alarm.label})',
-                body:
-                    'Henüz suyunuzu içmediniz! Tam ekran alarmı açmak ve onaylamak için dokunun. 💧',
-                scheduledDate: followUpDate,
-                notificationDetails: const NotificationDetails(iOS: darwinDetails),
-                androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-                matchDateTimeComponents: DateTimeComponents.time,
-                payload: 'alarm_${alarm.id}',
-              );
-            }
-          }
         } catch (e) {
           try {
             // Fallback to exactAllowWhileIdle if alarmClock fails
@@ -773,6 +793,7 @@ class AlarmService with WidgetsBindingObserver {
   Future<void> cancelAlarm(dynamic id) async {
     if (kIsWeb) return;
     try {
+      await _notificationsPlugin.cancel(id: _deterministicNotificationId(id));
       await _notificationsPlugin.cancel(id: id.hashCode);
       await cancelAlarmFollowUps(id);
     } catch (_) {}
@@ -814,7 +835,7 @@ class AlarmService with WidgetsBindingObserver {
       final statusEmoji = status['emoji'] ?? '💧';
       final p1Emoji = WaterProvider.getPresetMeta(preset1)['emoji'] ?? '🥛';
       final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';
-      final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🍶';
+      final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🫙';
 
       final androidDetails = AndroidNotificationDetails(
         _ongoingChannelId,

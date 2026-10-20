@@ -14,7 +14,10 @@ import WidgetKit
   static var pendingShortcutUri: String?
 
   private static let appGroupId = "group.com.antigravity.hydroReminder"
-  private static let keychainAccessGroup = "BHYTLHA722.com.antigravity.hydroreminder.shared"
+  private static let keychainAccessGroups = [
+    "BHYTLHA722.com.antigravity.hydroreminder.shared",
+    "BHYTLHA722.com.antigravity.hydroreminder.hydroReminder"
+  ]
   private static let keychainService = "com.antigravity.hydroreminder.widgetsync"
   private static let keychainAccount = "hydro_widget_state_v1"
 
@@ -35,32 +38,45 @@ import WidgetKit
       return
     }
 
-    // Try saving with shared keychain access group first (works across Runner.app and HydroWidgets.appex)
-    let groupedQuery: [String: Any] = [
-      kSecClass as String: kSecClassGenericPassword,
-      kSecAttrService as String: keychainService,
-      kSecAttrAccount as String: keychainAccount,
-      kSecAttrAccessGroup as String: keychainAccessGroup
-    ]
-    SecItemDelete(groupedQuery as CFDictionary)
-
-    var groupedItem = groupedQuery
-    groupedItem[kSecValueData as String] = jsonData
-    groupedItem[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-    let status = SecItemAdd(groupedItem as CFDictionary, nil)
-
-    if status != errSecSuccess {
-      // Fallback without explicit group for simulator/local debug
-      let fallbackQuery: [String: Any] = [
+    var savedToAnyGroup = false
+    for group in keychainAccessGroups {
+      let groupedQuery: [String: Any] = [
         kSecClass as String: kSecClassGenericPassword,
         kSecAttrService as String: keychainService,
-        kSecAttrAccount as String: keychainAccount
+        kSecAttrAccount as String: keychainAccount,
+        kSecAttrAccessGroup as String: group
       ]
+      SecItemDelete(groupedQuery as CFDictionary)
+
+      var groupedItem = groupedQuery
+      groupedItem[kSecValueData as String] = jsonData
+      groupedItem[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+      let status = SecItemAdd(groupedItem as CFDictionary, nil)
+      if status == errSecSuccess {
+        savedToAnyGroup = true
+      }
+    }
+
+    // Also save to default keychain group as fallback
+    let fallbackQuery: [String: Any] = [
+      kSecClass as String: kSecClassGenericPassword,
+      kSecAttrService as String: keychainService,
+      kSecAttrAccount as String: keychainAccount
+    ]
+    if !savedToAnyGroup {
       SecItemDelete(fallbackQuery as CFDictionary)
       var fallbackItem = fallbackQuery
       fallbackItem[kSecValueData as String] = jsonData
       fallbackItem[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
       SecItemAdd(fallbackItem as CFDictionary, nil)
+    }
+  }
+
+  static func reloadWidgetsNow() {
+    if #available(iOS 14.0, *) {
+      #if canImport(WidgetKit)
+      WidgetCenter.shared.reloadAllTimelines()
+      #endif
     }
   }
 
@@ -76,12 +92,13 @@ import WidgetKit
       prefs.synchronize()
     }
 
-    // 3. Reload all WidgetKit timelines immediately
-    if #available(iOS 14.0, *) {
-      #if canImport(WidgetKit)
-      WidgetCenter.shared.reloadAllTimelines()
-      #endif
+    // 3. Also save to Standard UserDefaults
+    for (key, value) in args {
+      UserDefaults.standard.set(value, forKey: "hydro_widget_\(key)")
     }
+
+    // 4. Reload all WidgetKit timelines immediately
+    reloadWidgetsNow()
   }
 
   override func application(
@@ -96,12 +113,26 @@ import WidgetKit
       _ = AppDelegate.handleIncomingUrl(launchUrl)
     }
 
-    if let controller = window?.rootViewController as? FlutterViewController {
+    GeneratedPluginRegistrant.register(with: self)
+    let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+
+    if let registrar = self.registrar(forPlugin: "HydroWidgetBridgePlugin") {
+      setupMethodChannel(with: registrar.messenger())
+    } else if let controller = window?.rootViewController as? FlutterViewController {
       setupMethodChannel(with: controller.binaryMessenger)
     }
 
-    GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    return result
+  }
+
+  override func applicationWillResignActive(_ application: UIApplication) {
+    AppDelegate.reloadWidgetsNow()
+    super.applicationWillResignActive(application)
+  }
+
+  override func applicationDidEnterBackground(_ application: UIApplication) {
+    AppDelegate.reloadWidgetsNow()
+    super.applicationDidEnterBackground(application)
   }
 
   func setupMethodChannel(with messenger: FlutterBinaryMessenger) {

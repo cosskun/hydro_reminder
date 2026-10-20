@@ -1,4 +1,4 @@
-package com.antigravity.hydro_reminder.hydro_reminder
+﻿package com.antigravity.hydro_reminder.hydro_reminder
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -27,24 +27,25 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
             val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
             val defaultEmoji = when {
-                percent >= 100 -> "🏆"
+                percent >= 100 -> "🥳"
                 percent >= 75 -> "😎"
-                percent >= 50 -> "💧"
-                percent >= 25 -> "🥛"
-                else -> "🥵"
+                percent >= 50 -> "😊"
+                percent >= 25 -> "🙂"
+                else -> "🥱"
             }
             val defaultSub = when {
                 percent >= 100 -> "Tebrikler! Günlük su hedefini tamamladın!"
-                percent >= 75 -> "Neredeyse tamamladın! Enerjin yerinde."
+                percent >= 75 -> "Neredeyse tamamladın! Enerjin tam yerinde."
                 percent >= 50 -> "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
-                percent >= 25 -> "Güzel başlangıç! Yavaş yavaş hedefe ilerliyorsun."
-                else -> "Çok susuz kaldın! Hemen bir bardak su al."
+                percent >= 25 -> "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
+                else -> "Güne susuz başladın! Hemen bir bardak su al."
             }
 
-            // Always use the synchronized status emoji for current percentage so legacy whale/dolphin cache never shows
-            val mascotEmoji = defaultEmoji
-            val mascotSub = defaultSub
-            val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
+            val validEmojis = setOf("🥱", "🙂", "😊", "😎", "🥳")
+            val syncedEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
+            val mascotEmoji = if (validEmojis.contains(syncedEmoji)) syncedEmoji else defaultEmoji
+            val mascotSub = widgetData.getString("mascotSubtitle", defaultSub)?.takeIf { it.isNotBlank() } ?: defaultSub
+            val p1Emoji = widgetData.getString("preset1Emoji", "🙂") ?: "🙂"
             val p2Emoji = widgetData.getString("preset2Emoji", "🥤") ?: "🥤"
 
             // Dynamic Duolingo-style background gradient based on hydration %

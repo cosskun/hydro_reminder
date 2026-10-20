@@ -121,7 +121,7 @@ rescue => e
   UI.important("Could not enable capability #{capability_type}: #{e.message}")
 end
 
-def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profile_name, enable_keychain = false)
+def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profile_name, enable_keychain = true)
   require 'xcodeproj'
   candidates = [
     "Runner.xcodeproj",
@@ -132,12 +132,31 @@ def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profi
   proj_path = candidates.find { |p| File.exist?(p) }
   raise "Runner.xcodeproj not found in #{candidates.inspect}" unless proj_path
 
+  ios_dir = File.dirname(File.expand_path(proj_path))
+  runner_entitlements_exists = File.exist?(File.join(ios_dir, "Runner", "Runner.entitlements"))
+  widget_entitlements_exists = File.exist?(File.join(ios_dir, "HydroWidgets", "HydroWidgets.entitlements"))
+
+  flutter_build_name = "1.0.0"
+  flutter_build_number = "15"
+  generated_xcconfig = File.join(ios_dir, "Flutter", "Generated.xcconfig")
+  if File.exist?(generated_xcconfig)
+    File.readlines(generated_xcconfig).each do |line|
+      if line =~ /^FLUTTER_BUILD_NAME=(.+)$/
+        flutter_build_name = $1.strip
+      elsif line =~ /^FLUTTER_BUILD_NUMBER=(.+)$/
+        flutter_build_number = $1.strip
+      end
+    end
+  end
+  UI.message("Resolved Flutter build version for Widget Extension: #{flutter_build_name} (#{flutter_build_number})")
+  UI.message("Entitlements found in #{ios_dir}: Runner=#{runner_entitlements_exists}, HydroWidgets=#{widget_entitlements_exists}")
+
   UI.message("Opening Xcode project at: #{proj_path}")
   project = Xcodeproj::Project.open(proj_path)
 
   runner_target = project.targets.find { |t| t.name == "Runner" }
   runner_target.build_configurations.each do |config|
-    if enable_keychain && File.exist?("Runner/Runner.entitlements")
+    if enable_keychain && runner_entitlements_exists
       config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "Runner/Runner.entitlements"
     else
       config.build_settings.delete("CODE_SIGN_ENTITLEMENTS")
@@ -153,7 +172,11 @@ def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profi
       config.build_settings["CODE_SIGN_STYLE"] = "Manual"
       config.build_settings["CODE_SIGN_IDENTITY"] = "Apple Distribution"
       config.build_settings["PROVISIONING_PROFILE_SPECIFIER"] = widget_profile_name
-      if enable_keychain && File.exist?("HydroWidgets/HydroWidgets.entitlements")
+      config.build_settings["FLUTTER_BUILD_NAME"] = flutter_build_name
+      config.build_settings["FLUTTER_BUILD_NUMBER"] = flutter_build_number
+      config.build_settings["MARKETING_VERSION"] = flutter_build_name
+      config.build_settings["CURRENT_PROJECT_VERSION"] = flutter_build_number
+      if enable_keychain && widget_entitlements_exists
         config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "HydroWidgets/HydroWidgets.entitlements"
       else
         config.build_settings.delete("CODE_SIGN_ENTITLEMENTS")
@@ -193,7 +216,11 @@ def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profi
     config.build_settings["PRODUCT_NAME"] = "$(TARGET_NAME)"
     config.build_settings["INFOPLIST_FILE"] = "HydroWidgets/Info.plist"
     config.build_settings["GENERATE_INFOPLIST_FILE"] = "NO"
-    if enable_keychain && File.exist?("HydroWidgets/HydroWidgets.entitlements")
+    config.build_settings["FLUTTER_BUILD_NAME"] = flutter_build_name
+    config.build_settings["FLUTTER_BUILD_NUMBER"] = flutter_build_number
+    config.build_settings["MARKETING_VERSION"] = flutter_build_name
+    config.build_settings["CURRENT_PROJECT_VERSION"] = flutter_build_number
+    if enable_keychain && widget_entitlements_exists
       config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "HydroWidgets/HydroWidgets.entitlements"
     else
       config.build_settings.delete("CODE_SIGN_ENTITLEMENTS")
@@ -323,13 +350,6 @@ platform :ios do
     end
     UI.message("Keychain Sharing capability confirmed in profile: #{has_keychain}")
 
-    attach_widget_extension_to_xcodeproj(
-      "BHYTLHA722",
-      widget_bundle_id,
-      widget_profile_name,
-      has_keychain
-    )
-
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "Runner.xcodeproj",
@@ -338,6 +358,13 @@ platform :ios do
       bundle_identifier: app_bundle_id,
       profile_name: app_profile_name,
       code_sign_identity: "Apple Distribution"
+    )
+
+    attach_widget_extension_to_xcodeproj(
+      "BHYTLHA722",
+      widget_bundle_id,
+      widget_profile_name,
+      has_keychain
     )
 
     build_app(

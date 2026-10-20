@@ -9,7 +9,8 @@ class SceneDelegate: FlutterSceneDelegate {
   ) {
     super.scene(scene, willConnectTo: session, options: connectionOptions)
 
-    if let windowScene = scene as? UIWindowScene,
+    if AppDelegate.sharedHapticsChannel == nil,
+       let windowScene = scene as? UIWindowScene,
        let controller = windowScene.windows.first?.rootViewController as? FlutterViewController,
        let appDelegate = UIApplication.shared.delegate as? AppDelegate {
       appDelegate.setupMethodChannel(with: controller.binaryMessenger)
@@ -18,6 +19,16 @@ class SceneDelegate: FlutterSceneDelegate {
     if let urlContext = connectionOptions.urlContexts.first {
       _ = AppDelegate.handleIncomingUrl(urlContext.url)
     }
+  }
+
+  override func sceneWillResignActive(_ scene: UIScene) {
+    AppDelegate.reloadWidgetsNow()
+    super.sceneWillResignActive(scene)
+  }
+
+  override func sceneDidEnterBackground(_ scene: UIScene) {
+    AppDelegate.reloadWidgetsNow()
+    super.sceneDidEnterBackground(scene)
   }
 
   override func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

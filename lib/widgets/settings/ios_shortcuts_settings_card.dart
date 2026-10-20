@@ -126,7 +126,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'iPhone\'unuzun arkasına 2 kez dokunduğunuzda ekranın üstünden şeffaf bir bildirim menüsü açılır (🥛 Bardak, 🥤 Küçük Şişe, 🍶 Büyük Şişe). Buradan tek tıkla içtiğiniz suyu seçip kaydedebilirsiniz.\n\nKurulum için:',
+                  'iPhone\'unuzun arkasına 2 kez dokunduğunuzda ekranın üstünden şeffaf bir bildirim menüsü açılır (🥛 Bardak, 🥤 Küçük Şişe, 🫙 Şişe/Matara). Buradan tek tıkla içtiğiniz suyu seçip kaydedebilirsiniz.\n\nKurulum için:',
                   style: TextStyle(
                     fontSize: 12.5,
                     color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,

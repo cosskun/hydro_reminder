@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -162,15 +162,19 @@ class WidgetService {
     int streakDays = 0,
     String dayLabels = 'Çr,Pe,Cu,Ct,Pa',
     String dayStatuses = '0,0,0,0,0',
-    String mascotEmoji = '🥵',
-    String mascotSubtitle = 'Çok susuz kaldın! Hemen bir bardak su al.',
+    String mascotEmoji = '🥱',
+    String mascotSubtitle = 'Güne susuz başladın! Hemen bir bardak su al.',
     String preset1Emoji = '🥛',
     String preset2Emoji = '🥤',
-    String preset3Emoji = '🍶',
+    String preset3Emoji = '🫙',
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
     try {
+      try {
+        await HomeWidget.setAppGroupId(appGroupId);
+      } catch (_) {}
+
       await HomeWidget.saveWidgetData<int>('todayConsumed', todayConsumed);
       await HomeWidget.saveWidgetData<int>('dailyGoal', dailyGoal);
       await HomeWidget.saveWidgetData<int>('dailyRemaining', dailyRemaining);

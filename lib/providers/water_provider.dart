@@ -82,9 +82,9 @@ class WaterProvider with ChangeNotifier {
     } else if (amountMl <= 380) {
       return {'emoji': '🥤', 'name': 'Küçük Şişe'};
     } else if (amountMl <= 550) {
-      return {'emoji': '🍶', 'name': 'Şişe'};
+      return {'emoji': '🫙', 'name': 'Şişe'};
     } else if (amountMl <= 800) {
-      return {'emoji': '🌊', 'name': 'Büyük Matara'};
+      return {'emoji': '🫗', 'name': 'Büyük Matara'};
     } else {
       return {'emoji': '🚰', 'name': 'Sürahi'};
     }
@@ -94,31 +94,31 @@ class WaterProvider with ChangeNotifier {
   static Map<String, String> getHydrationStatus(double percentage) {
     if (percentage < 0.25) {
       return {
-        'emoji': '🥵',
-        'message': 'Çok susuz kaldın! Hemen bir bardak su al.',
+        'emoji': '🥱',
+        'message': 'Güne susuz başladın! Hemen bir bardak su al.',
         'color': 'E11D48',
       };
     } else if (percentage < 0.50) {
       return {
-        'emoji': '🥛',
-        'message': 'Güzel başlangıç! Yavaş yavaş hedefe ilerliyorsun.',
+        'emoji': '🙂',
+        'message': 'İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun.',
         'color': 'F59E0B',
       };
     } else if (percentage < 0.75) {
       return {
-        'emoji': '💧',
+        'emoji': '😊',
         'message': 'Harika gidiyorsun! Vücudun sana teşekkür ediyor.',
         'color': '10B981',
       };
     } else if (percentage < 1.0) {
       return {
         'emoji': '😎',
-        'message': 'Neredeyse tamamladın! Enerjin yerinde.',
+        'message': 'Neredeyse tamamladın! Enerjin tam yerinde.',
         'color': '06B6D4',
       };
     } else {
       return {
-        'emoji': '🏆',
+        'emoji': '🥳',
         'message': 'Tebrikler! Günlük su hedefini tamamladın!',
         'color': '8B5CF6',
       };
@@ -408,6 +408,7 @@ class WaterProvider with ChangeNotifier {
   // Synchronize both Notification and Health Connect permissions when user returns from system settings
   Future<void> syncSystemPermissionsOnResume() async {
     try {
+      await _syncWidgets();
       if (_hasCompletedOnboarding) {
         final hasNotifPerm = await AlarmService().checkPermissionStatus();
         await syncNotificationPermissionFromOS(hasNotifPerm);
@@ -547,7 +548,7 @@ class WaterProvider with ChangeNotifier {
   // Sync Live Ongoing Notification in Notification Drawer
   Future<void> _syncOngoingNotification() async {
     try {
-      final percentInt = (todayPercentage * 100).round();
+      final percentInt = (todayPercentage * 100).toInt();
       await AlarmService().updateOngoingProgressNotification(
         isEnabled: _isOngoingNotificationEnabled && _isNotificationsEnabled,
         todayConsumed: todayConsumed,
@@ -694,10 +695,13 @@ class WaterProvider with ChangeNotifier {
     }
   }
 
+  // Public helper to force widget synchronization after platform channels are ready
+  Future<void> syncWidgetsNow() => _syncWidgets();
+
   // Sync data with home screen and lock screen widgets
   Future<void> _syncWidgets() async {
     try {
-      final percentInt = (todayPercentage * 100).round();
+      final percentInt = (todayPercentage * 100).toInt();
       final now = DateTime.now();
       const shortDays = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pa'];
       final List<String> labels = [];
@@ -733,7 +737,7 @@ class WaterProvider with ChangeNotifier {
 
       final p1Emoji = WaterProvider.getPresetMeta(preset1)['emoji'] ?? '🥛';
       final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';
-      final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🍶';
+      final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🫙';
 
       await WidgetService().updateWidgets(
         todayConsumed: todayConsumed,

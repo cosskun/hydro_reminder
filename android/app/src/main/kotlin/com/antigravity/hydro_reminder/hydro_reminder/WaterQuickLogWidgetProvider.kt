@@ -26,16 +26,19 @@ class WaterQuickLogWidgetProvider : HomeWidgetProvider() {
             val p3 = widgetData.getInt("preset3", 500)
             val streak = widgetData.getInt("streakDays", if (consumed > 0) 1 else 0)
 
-            val mascotEmoji = when {
-                percent >= 100 -> "🏆"
+            val defaultEmoji = when {
+                percent >= 100 -> "🥳"
                 percent >= 75 -> "😎"
-                percent >= 50 -> "💧"
-                percent >= 25 -> "🥛"
-                else -> "🥵"
+                percent >= 50 -> "😊"
+                percent >= 25 -> "🙂"
+                else -> "🥱"
             }
+            val validEmojis = setOf("🥱", "🙂", "😊", "😎", "🥳")
+            val syncedEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
+            val mascotEmoji = if (validEmojis.contains(syncedEmoji)) syncedEmoji else defaultEmoji
             val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
             val p2Emoji = widgetData.getString("preset2Emoji", "🥤") ?: "🥤"
-            val p3Emoji = widgetData.getString("preset3Emoji", "🍶") ?: "🍶"
+            val p3Emoji = widgetData.getString("preset3Emoji", "🫙") ?: "🫙"
 
             val bgRes = when {
                 percent >= 100 -> R.drawable.widget_card_bg_emerald

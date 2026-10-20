@@ -16,10 +16,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,10 +101,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -310,16 +310,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           ),
           const SizedBox(height: 20),
           
-          const AppearanceSettingsCard(),
-          const SizedBox(height: 24),
-          
-          DailyGoalSettingsCard(
-            dailyGoalController: _dailyGoalController,
-            onAutoCalculate: _autoCalculateGoal,
-            onSave: _saveDailyGoal,
-          ),
-          const SizedBox(height: 24),
-          
+          // 1. Profil bilgilerini güncelle
           ProfileSettingsCard(
             selectedGender: _selectedGender,
             onGenderChanged: (val) => setState(() => _selectedGender = val),
@@ -329,6 +320,61 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           ),
           const SizedBox(height: 24),
           
+          // 2. Günlük su hedefi
+          DailyGoalSettingsCard(
+            dailyGoalController: _dailyGoalController,
+            onAutoCalculate: _autoCalculateGoal,
+            onSave: _saveDailyGoal,
+          ),
+          const SizedBox(height: 14),
+
+          // 3. Hedef ve hesaplama bilgilendirme uyarısı
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1C2541) : Colors.blue.shade50.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+              ),
+            ),
+            child: Row(
+              children: [
+                const Text('💡', style: TextStyle(fontSize: 22)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Mevcut günlük su hedefiniz: ${provider.dailyGoal} ml. Dilediğiniz zaman bu hedefi yukarıdaki alandan manuel olarak güncelleyebilir veya kilo & yaşınıza göre yeniden hesaplatabilirsiniz.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? const Color(0xFF94A3B8) : Colors.blue.shade900.withValues(alpha: 0.85),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // 4. Hızlı su ekleme paneli
+          QuickPresetsCard(
+            preset1Controller: _preset1Controller,
+            preset2Controller: _preset2Controller,
+            preset3Controller: _preset3Controller,
+            onSave: _savePresets,
+          ),
+          const SizedBox(height: 24),
+
+          // 5. Gün sonu özet
+          const EndOfDaySettingsCard(),
+          const SizedBox(height: 24),
+
+          // 6. Görünüm efekt
+          const AppearanceSettingsCard(),
+          const SizedBox(height: 24),
+
+          // 7. Bildirim alarm
           NotificationSettingsCard(
             hasNotificationPermission: _hasNotificationPermission,
             onRequestPermission: () async {
@@ -340,18 +386,8 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             },
           ),
           const SizedBox(height: 24),
-          
-          const EndOfDaySettingsCard(),
-          const SizedBox(height: 24),
-          
-          QuickPresetsCard(
-            preset1Controller: _preset1Controller,
-            preset2Controller: _preset2Controller,
-            preset3Controller: _preset3Controller,
-            onSave: _savePresets,
-          ),
-          const SizedBox(height: 24),
 
+          // 8. Android Hızlı kontroller (iOS için iOS Kestirmeler)
           if (!kIsWeb && (theme.platform == TargetPlatform.iOS || Platform.isIOS)) ...[
             const IosShortcutsSettingsCard(),
             const SizedBox(height: 24),
@@ -362,41 +398,14 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             const SizedBox(height: 24),
           ],
 
+          // 9. Yasal bilgiler
           const LegalPrivacySettingsCard(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
           
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1C2541) : Colors.blue.shade50.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
-              ),
-            ),
-            child: Row(
-              children: [
-                const Text('💡', style: TextStyle(fontSize: 24)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Mevcut günlük su hedefiniz: ${provider.dailyGoal} ml. Dilediğiniz zaman bu hedefi yukarıdaki alandan manuel olarak güncelleyebilir veya kilo & yaşınıza göre yeniden hesaplatabilirsiniz.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? const Color(0xFF94A3B8) : Colors.blue.shade900.withValues(alpha: 0.8),
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 40),
-          
+          // 10. Sıfırlama (eski Tehlikeli Alan)
           DangerZoneCard(
             onReset: () => _confirmReset(context, isDark),
-          ),
-          const SizedBox(height: 20),
+          ),          const SizedBox(height: 20),
         ],
       ),
     );

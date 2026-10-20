@@ -345,6 +345,76 @@ class NotificationSettingsCard extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 10),
+        InkWell(
+          onTap: () async {
+            await provider.toggleSmartPacing(!provider.isSmartPacingEnabled);
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Text('🧠', style: TextStyle(fontSize: 18)),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'Akıllı Tempo Hatırlatıcıları',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'Adaptif',
+                              style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Gün ortası (14:00) ve akşamüstü (18:30) tüketim hızınızı analiz eder; geride kalırsanız motive edici akıllı uyarı gönderir.',
+                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.isSmartPacingEnabled && hasNotificationPermission,
+                  activeThumbColor: const Color(0xFF10B981),
+                  onChanged: (val) async {
+                    await provider.toggleSmartPacing(val);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

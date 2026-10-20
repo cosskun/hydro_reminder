@@ -15,7 +15,7 @@ class DangerZoneCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return SettingsCardWrapper(
-      title: 'Tehlikeli Alan',
+      title: 'Sıfırlama',
       isDangerZone: true,
       children: [
         Text(

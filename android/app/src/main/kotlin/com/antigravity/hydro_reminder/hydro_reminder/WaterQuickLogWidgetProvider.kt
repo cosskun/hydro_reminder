@@ -28,23 +28,28 @@ class WaterQuickLogWidgetProvider : HomeWidgetProvider() {
 
             val defaultEmoji = when {
                 percent >= 100 -> "🥳"
-                percent >= 75 -> "😎"
-                percent >= 50 -> "😊"
-                percent >= 25 -> "🙂"
+                percent >= 70 -> "😎"
+                percent >= 35 -> "😊"
+                percent > 0 -> "🙂"
                 else -> "🥱"
             }
-            val validEmojis = setOf("🥱", "🙂", "😊", "😎", "🥳")
             val syncedEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
-            val mascotEmoji = if (validEmojis.contains(syncedEmoji)) syncedEmoji else defaultEmoji
+            val mascotEmoji = if (syncedEmoji.isNotBlank()) syncedEmoji else defaultEmoji
             val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
             val p2Emoji = widgetData.getString("preset2Emoji", "🥤") ?: "🥤"
             val p3Emoji = widgetData.getString("preset3Emoji", "🫙") ?: "🫙"
+            val widgetTheme = widgetData.getString("widgetTheme", "ocean") ?: "ocean"
 
-            val bgRes = when {
-                percent >= 100 -> R.drawable.widget_card_bg_emerald
-                percent >= 75 -> R.drawable.widget_card_bg_teal
-                percent >= 25 -> R.drawable.widget_card_bg_ocean
-                else -> R.drawable.widget_card_bg
+            val bgRes = when (widgetTheme) {
+                "glass" -> R.drawable.widget_card_bg_glass
+                "neon" -> R.drawable.widget_card_bg_neon
+                "emerald" -> R.drawable.widget_card_bg_forest
+                else -> when {
+                    percent >= 100 -> R.drawable.widget_card_bg_emerald
+                    percent >= 75 -> R.drawable.widget_card_bg_teal
+                    percent >= 25 -> R.drawable.widget_card_bg_ocean
+                    else -> R.drawable.widget_card_bg
+                }
             }
             views.setInt(R.id.widget_quick_root, "setBackgroundResource", bgRes)
 

@@ -1,4 +1,4 @@
-﻿import WidgetKit
+import WidgetKit
 import SwiftUI
 import Security
 
@@ -28,6 +28,8 @@ struct WaterWidgetEntry: TimelineEntry {
     let preset1Emoji: String
     let preset2Emoji: String
     let preset3Emoji: String
+    let widgetTheme: String
+    let mascotType: String
 }
 
 func loadKeychainPayload() -> [String: Any]? {
@@ -141,7 +143,9 @@ struct WaterTimelineProvider: TimelineProvider {
             mascotSubtitle: "Harika gidiyorsun! Vücudun sana teşekkür ediyor.",
             preset1Emoji: "🥛",
             preset2Emoji: "🥤",
-            preset3Emoji: "🫙"
+            preset3Emoji: "🫙",
+            widgetTheme: "ocean",
+            mascotType: "vitality"
         )
     }
 
@@ -190,13 +194,13 @@ struct WaterTimelineProvider: TimelineProvider {
         if percent >= 100 {
             statusEmoji = "🥳"
             statusSub = "Tebrikler! Günlük su hedefini tamamladın!"
-        } else if percent >= 75 {
+        } else if percent >= 70 {
             statusEmoji = "😎"
             statusSub = "Neredeyse tamamladın! Enerjin tam yerinde."
-        } else if percent >= 50 {
+        } else if percent >= 35 {
             statusEmoji = "😊"
             statusSub = "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
-        } else if percent >= 25 {
+        } else if percent > 0 {
             statusEmoji = "🙂"
             statusSub = "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
         } else {
@@ -204,14 +208,15 @@ struct WaterTimelineProvider: TimelineProvider {
             statusSub = "Güne susuz başladın! Hemen bir bardak su al."
         }
 
-        let validStatusEmojis: Set<String> = ["🥱", "🙂", "😊", "😎", "🥳"]
         let syncedEmoji = stringValue(from: kcDict, prefs: prefs, key: "mascotEmoji", defaultVal: statusEmoji)
-        let finalEmoji = validStatusEmojis.contains(syncedEmoji) ? syncedEmoji : statusEmoji
+        let finalEmoji = syncedEmoji.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? statusEmoji : syncedEmoji
         let finalSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
 
         let p1Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset1Emoji", defaultVal: "🥛")
         let p2Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset2Emoji", defaultVal: "🥤")
         let p3Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset3Emoji", defaultVal: "🫙")
+        let widgetTheme = stringValue(from: kcDict, prefs: prefs, key: "widgetTheme", defaultVal: "ocean")
+        let mascotType = stringValue(from: kcDict, prefs: prefs, key: "mascotType", defaultVal: "vitality")
 
         return WaterWidgetEntry(
             date: Date(),
@@ -229,7 +234,9 @@ struct WaterTimelineProvider: TimelineProvider {
             mascotSubtitle: finalSub,
             preset1Emoji: p1Emoji,
             preset2Emoji: p2Emoji,
-            preset3Emoji: p3Emoji
+            preset3Emoji: p3Emoji,
+            widgetTheme: widgetTheme,
+            mascotType: mascotType
         )
     }
 }
@@ -264,48 +271,82 @@ struct HydroWaterProgressBar: View {
     }
 }
 
-// Dynamic HydroSoft Blue theme gradients based on hydration percentage
-private func duolingoGradient(for percentage: Int) -> LinearGradient {
-    if percentage >= 100 {
+// Dynamic HydroSoft theme gradients based on hydration percentage and selected theme
+private func duolingoGradient(for percentage: Int, theme: String = "ocean") -> LinearGradient {
+    switch theme {
+    case "glass":
         return LinearGradient(
             colors: [
-                Color(red: 0.00, green: 0.34, blue: 0.61), // #01579B
-                Color(red: 0.01, green: 0.53, blue: 0.82), // #0288D1
-                Color(red: 0.25, green: 0.77, blue: 1.00)  // #40C4FF
+                Color(red: 0.06, green: 0.09, blue: 0.16), // #0F172A
+                Color(red: 0.12, green: 0.16, blue: 0.23), // #1E293B
+                Color(red: 0.20, green: 0.25, blue: 0.33)  // #334155
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
-    } else if percentage >= 75 {
+    case "neon":
         return LinearGradient(
             colors: [
-                Color(red: 0.01, green: 0.47, blue: 0.74), // #0277BD
-                Color(red: 0.01, green: 0.61, blue: 0.90), // #039BE5
-                Color(red: 0.22, green: 0.74, blue: 0.97)  // #38BDF8
+                Color(red: 0.18, green: 0.01, blue: 0.29), // #2E0249
+                Color(red: 0.34, green: 0.04, blue: 0.34), // #570A57
+                Color(red: 0.66, green: 0.06, blue: 0.47)  // #A91079
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
-    } else if percentage >= 25 {
+    case "emerald":
         return LinearGradient(
             colors: [
-                Color(red: 0.01, green: 0.41, blue: 0.63), // #0369A1
-                Color(red: 0.01, green: 0.53, blue: 0.82), // #0288D1
-                Color(red: 0.16, green: 0.71, blue: 0.96)  // #29B6F6
+                Color(red: 0.02, green: 0.31, blue: 0.23), // #064E3B
+                Color(red: 0.02, green: 0.47, blue: 0.34), // #047857
+                Color(red: 0.06, green: 0.73, blue: 0.51)  // #10B981
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
-    } else {
-        return LinearGradient(
-            colors: [
-                Color(red: 0.03, green: 0.35, blue: 0.52), // #075985
-                Color(red: 0.01, green: 0.52, blue: 0.78), // #0284C7
-                Color(red: 0.22, green: 0.74, blue: 0.97)  // #38BDF8
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+    case "ocean":
+    default:
+        if percentage >= 100 {
+            return LinearGradient(
+                colors: [
+                    Color(red: 0.00, green: 0.34, blue: 0.61), // #01579B
+                    Color(red: 0.01, green: 0.53, blue: 0.82), // #0288D1
+                    Color(red: 0.25, green: 0.77, blue: 1.00)  // #40C4FF
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        } else if percentage >= 75 {
+            return LinearGradient(
+                colors: [
+                    Color(red: 0.01, green: 0.47, blue: 0.74), // #0277BD
+                    Color(red: 0.01, green: 0.61, blue: 0.90), // #039BE5
+                    Color(red: 0.22, green: 0.74, blue: 0.97)  // #38BDF8
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        } else if percentage >= 25 {
+            return LinearGradient(
+                colors: [
+                    Color(red: 0.01, green: 0.41, blue: 0.63), // #0369A1
+                    Color(red: 0.01, green: 0.53, blue: 0.82), // #0288D1
+                    Color(red: 0.16, green: 0.71, blue: 0.96)  // #29B6F6
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        } else {
+            return LinearGradient(
+                colors: [
+                    Color(red: 0.03, green: 0.35, blue: 0.52), // #075985
+                    Color(red: 0.01, green: 0.52, blue: 0.78), // #0284C7
+                    Color(red: 0.22, green: 0.74, blue: 0.97)  // #38BDF8
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
     }
 }
 
@@ -619,7 +660,7 @@ struct WaterProgressWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterProgressWidgetEntryView(entry: entry)
-                .widgetBackground(duolingoGradient(for: entry.percentage))
+                .widgetBackground(duolingoGradient(for: entry.percentage, theme: entry.widgetTheme))
         }
         .configurationDisplayName("🔥 HydroSoft Seri & Maskot")
         .description("Duolingo tarzı günlük seri, su barı, 5 günlük su takvimi, canlı maskot ve hızlı su ekleme.")
@@ -633,7 +674,7 @@ struct WaterQuickLogWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterQuickLogWidgetEntryView(entry: entry)
-                .widgetBackground(duolingoGradient(for: entry.percentage))
+                .widgetBackground(duolingoGradient(for: entry.percentage, theme: entry.widgetTheme))
         }
         .configurationDisplayName("⚡ Hızlı Su Ekleme Barı")
         .description("Bardak veya şişe sembolüne basarak tek dokunuşla su içtiğinizi kaydedin.")
@@ -647,7 +688,7 @@ struct WaterMiniWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterMiniWidgetEntryView(entry: entry)
-                .widgetBackground(duolingoGradient(for: entry.percentage))
+                .widgetBackground(duolingoGradient(for: entry.percentage, theme: entry.widgetTheme))
         }
         .configurationDisplayName("💧 Mini Maskot & Kilit Ekranı")
         .description("Ana ekran ve kilit ekranı için emojili mini maskot ve su barı.")
@@ -655,11 +696,123 @@ struct WaterMiniWidget: Widget {
     }
 }
 
+#if canImport(ActivityKit)
+import ActivityKit
+
+@available(iOS 16.1, *)
+public struct HydroLiveActivityAttributes: ActivityAttributes {
+    public struct ContentState: Codable, Hashable {
+        public var todayConsumed: Int
+        public var dailyGoal: Int
+        public var percentage: Int
+        public var mascotEmoji: String
+        public var streakDays: Int
+    }
+    public var title: String
+}
+
+@available(iOS 16.1, *)
+struct HydroLiveActivityWidget: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: HydroLiveActivityAttributes.self) { context in
+            // Lock screen / Banner Presentation
+            HStack(spacing: 12) {
+                Text(context.state.mascotEmoji)
+                    .font(.system(size: 32))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack {
+                        Text("🔥 \(context.state.streakDays) Günlük Seri")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text("%\(context.state.percentage)")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundColor(.cyan)
+                    }
+
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color.white.opacity(0.18))
+                            Capsule()
+                                .fill(LinearGradient(colors: [Color.cyan, Color.blue], startPoint: .leading, endPoint: .trailing))
+                                .frame(width: max(geo.size.width * CGFloat(min(context.state.percentage, 100)) / 100.0, 6))
+                        }
+                    }
+                    .frame(height: 8)
+
+                    Text("\(context.state.todayConsumed) / \(context.state.dailyGoal) ml")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Color.white.opacity(0.8))
+                }
+            }
+            .padding(14)
+            .background(Color(red: 0.05, green: 0.1, blue: 0.2))
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.leading) {
+                    HStack {
+                        Text(context.state.mascotEmoji)
+                            .font(.system(size: 24))
+                        Text("🔥 \(context.state.streakDays)g")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.orange)
+                    }
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text("%\(context.state.percentage)")
+                        .font(.system(size: 16, weight: .black))
+                        .foregroundColor(.cyan)
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Color.white.opacity(0.18))
+                                Capsule()
+                                    .fill(LinearGradient(colors: [Color.cyan, Color.blue], startPoint: .leading, endPoint: .trailing))
+                                    .frame(width: max(geo.size.width * CGFloat(min(context.state.percentage, 100)) / 100.0, 6))
+                            }
+                        }
+                        .frame(height: 7)
+
+                        HStack {
+                            Text("\(context.state.todayConsumed) / \(context.state.dailyGoal) ml")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(.white)
+                            Spacer()
+                            Text("💧 HydroSoft")
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(Color.white.opacity(0.6))
+                        }
+                    }
+                }
+            } compactLeading: {
+                Text(context.state.mascotEmoji)
+                    .font(.system(size: 13))
+            } compactTrailing: {
+                Text("%\(context.state.percentage)")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.cyan)
+            } minimal: {
+                Text("💧")
+                    .font(.system(size: 12))
+            }
+        }
+    }
+}
+#endif
+
 @main
 struct HydroWidgetsBundle: WidgetBundle {
     var body: some Widget {
         WaterProgressWidget()
         WaterQuickLogWidget()
         WaterMiniWidget()
+        #if canImport(ActivityKit)
+        if #available(iOS 16.1, *) {
+            HydroLiveActivityWidget()
+        }
+        #endif
     }
 }

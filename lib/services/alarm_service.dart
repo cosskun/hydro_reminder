@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -42,6 +42,8 @@ class AlarmService with WidgetsBindingObserver {
   static const int _endOfDayNotificationId = 8888;
   static const int _sleepTipNotificationId = 7777;
   static const int _ongoingNotificationId = 9999;
+  static const int _smartPacingMiddayId = 8801;
+  static const int _smartPacingEveningId = 8802;
 
   // Initialize notifications, channel, permissions, and timezone settings
   Future<void> initialize(WaterProvider provider) async {
@@ -555,6 +557,84 @@ class AlarmService with WidgetsBindingObserver {
         );
       } catch (_) {}
     }
+  }
+
+  // Schedule smart adaptive pacing reminders based on daytime progress
+  Future<void> scheduleSmartPacingNotifications({
+    required bool isEnabled,
+    required int consumedMl,
+    required int dailyGoalMl,
+  }) async {
+    if (kIsWeb) return;
+
+    try {
+      await _notificationsPlugin.cancel(id: _smartPacingMiddayId);
+      await _notificationsPlugin.cancel(id: _smartPacingEveningId);
+    } catch (_) {}
+
+    if (!isEnabled) return;
+
+    final now = tz.TZDateTime.now(tz.local);
+    final percent = dailyGoalMl > 0 ? ((consumedMl * 100) / dailyGoalMl).round() : 0;
+
+    // Slot 1: Midday Pacing (14:00)
+    var middayDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 14, 0);
+    if (middayDate.isBefore(now)) {
+      middayDate = middayDate.add(const Duration(days: 1));
+    }
+
+    // Slot 2: Evening Pacing (18:30)
+    var eveningDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 18, 30);
+    if (eveningDate.isBefore(now)) {
+      eveningDate = eveningDate.add(const Duration(days: 1));
+    }
+
+    const androidDetails = AndroidNotificationDetails(
+      _tipsChannelId,
+      _tipsChannelName,
+      channelDescription: _tipsChannelDesc,
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      visibility: NotificationVisibility.public,
+    );
+
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'sound_water_drop.wav',
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        id: _smartPacingMiddayId,
+        title: '💧 Gün Ortası Hidrasyon Kontrolü',
+        body: 'Saat 14:00 oldu! Günlük hedefin %$percent seviyesinde. Öğleden sonraki enerjini yüksek tutmak için bir bardak taze su al! 🧊',
+        scheduledDate: middayDate,
+        notificationDetails: notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: 'smart_pacing_midday',
+      );
+
+      await _notificationsPlugin.zonedSchedule(
+        id: _smartPacingEveningId,
+        title: '⏰ Akşam Öncesi Su Zamanı',
+        body: 'Günün bitmesine az kaldı ve hedefin %$percent\'inde. Akşam rahat uyumak ve susuz kalmamak için hedefini tamamlamaya başla! 💧',
+        scheduledDate: eveningDate,
+        notificationDetails: notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: 'smart_pacing_evening',
+      );
+    } catch (_) {}
   }
 
   // Schedule a test alarm with delay to test lockscreen / background wakeup

@@ -173,60 +173,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 30),
+                const SizedBox(height: 16),
                 // Pulsing Icon / Logo area
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.blue.shade100.withValues(alpha: 0.6),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                        blurRadius: 18,
+                        spreadRadius: 4,
                       ),
                     ],
                   ),
                   child: Text(
                     '💧',
-                    style: TextStyle(fontSize: 64, color: Colors.blue.shade400),
+                    style: TextStyle(fontSize: 54, color: Colors.blue.shade400),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 Text(
                   'HydroSoft',
                   style: TextStyle(
-                    fontSize: 32,
+                    fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: Colors.blue.shade900,
                     letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   'Sağlıklı bir yaşam için kişisel hidrasyon asistanınız',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     color: Colors.blue.shade800.withValues(alpha: 0.7),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 22),
                 // Registration Form Card
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white.withValues(alpha: 0.95),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: Colors.white, width: 2),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.shade900.withValues(alpha: 0.04),
+                        color: Colors.blue.shade900.withValues(alpha: 0.05),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
@@ -243,7 +243,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           color: Colors.blue.shade900,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                       // Gender selection
                       const Text(
                         'Cinsiyet',
@@ -267,7 +267,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? Colors.blue.shade600
@@ -296,7 +296,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                       // Age Input
                       Row(
                         children: [
@@ -370,36 +370,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                // Action Button
-                ElevatedButton(
-                  onPressed: _calculateAndShowGoal,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade600,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 3,
-                    shadowColor: Colors.blue.shade300,
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Hedefimi Hesapla',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      const SizedBox(height: 20),
+                      // Action Button (Integrated cleanly inside the card, right below the inputs)
+                      ElevatedButton(
+                        onPressed: _calculateAndShowGoal,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade600,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 50),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 3,
+                          shadowColor: Colors.blue.shade300,
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                'Hedefimi Hesapla',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward_rounded, size: 18),
+                          ],
+                        ),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
               ],
             ),
           ),

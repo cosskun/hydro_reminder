@@ -131,6 +131,74 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 12),
+
+          // Duolingo-style Streak Freeze / Shield Status Card
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0FDF4),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isDark
+                    ? const Color(0xFF10B981).withValues(alpha: 0.4)
+                    : const Color(0xFF86EFAC),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Text('🛡️', style: TextStyle(fontSize: 20)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Seri Kalkanı',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF065F46),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${provider.streakShields} Adet Aktif',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF10B981),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Her hafta 1 ücretsiz kalkan yenilenir. Hedefinizi kaçırdığınız günlerde serinizi korur.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF047857),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 24),
 
           // 🏆 Badges & Achievements Section

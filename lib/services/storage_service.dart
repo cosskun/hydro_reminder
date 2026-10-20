@@ -53,6 +53,14 @@ class StorageService {
   static const String _keyAppleHealthEnabled = 'apple_health_sync_enabled';
   static const String _keyAppleHealthAutoGoal = 'apple_health_auto_goal_enabled';
   static const String _keyIsOngoingNotificationEnabled = 'ongoing_notification_enabled';
+  static const String _keyStreakShields = 'streak_shields_count';
+  static const String _keyFrozenDates = 'streak_frozen_dates_list';
+  static const String _keyLastShieldRefill = 'last_shield_refill_date';
+  static const String _keyLastGoalCelebratedDate = 'last_goal_celebrated_date';
+  static const String _keyIsSmartPacingEnabled = 'smart_pacing_enabled';
+  static const String _keyMascotType = 'custom_mascot_type';
+  static const String _keyWidgetTheme = 'custom_widget_theme';
+  static const String _keyAppLanguage = 'app_language';
 
   // Save profile information
   Future<void> saveProfile({
@@ -355,6 +363,90 @@ class StorageService {
   Future<bool> getOngoingNotificationSetting() async {
     final prefs = _prefsSync;
     return prefs.getBool(_keyIsOngoingNotificationEnabled) ?? false;
+  }
+
+  // Streak Shield Storage
+  Future<void> saveStreakShields(int count) async {
+    final prefs = _prefsSync;
+    await prefs.setInt(_keyStreakShields, count);
+  }
+
+  Future<int> getStreakShields() async {
+    final prefs = _prefsSync;
+    return prefs.getInt(_keyStreakShields) ?? 1; // Default 1 shield
+  }
+
+  Future<void> saveFrozenDates(List<String> dates) async {
+    final prefs = _prefsSync;
+    await prefs.setStringList(_keyFrozenDates, dates);
+  }
+
+  Future<List<String>> getFrozenDates() async {
+    final prefs = _prefsSync;
+    return prefs.getStringList(_keyFrozenDates) ?? [];
+  }
+
+  Future<void> saveLastShieldRefill(String isoDate) async {
+    final prefs = _prefsSync;
+    await prefs.setString(_keyLastShieldRefill, isoDate);
+  }
+
+  Future<String?> getLastShieldRefill() async {
+    final prefs = _prefsSync;
+    return prefs.getString(_keyLastShieldRefill);
+  }
+
+  // Goal Celebrated Date (Prevent multi-trigger per day)
+  Future<void> saveLastGoalCelebratedDate(String dateStr) async {
+    final prefs = _prefsSync;
+    await prefs.setString(_keyLastGoalCelebratedDate, dateStr);
+  }
+
+  Future<String?> getLastGoalCelebratedDate() async {
+    final prefs = _prefsSync;
+    return prefs.getString(_keyLastGoalCelebratedDate);
+  }
+
+  // Smart Pacing Setting
+  Future<void> saveSmartPacingSetting(bool isEnabled) async {
+    final prefs = _prefsSync;
+    await prefs.setBool(_keyIsSmartPacingEnabled, isEnabled);
+  }
+
+  Future<bool> getSmartPacingSetting() async {
+    final prefs = _prefsSync;
+    return prefs.getBool(_keyIsSmartPacingEnabled) ?? true;
+  }
+
+  // Custom Mascot, Widget Theme, and Language Settings
+  Future<void> saveMascotType(String type) async {
+    final prefs = _prefsSync;
+    await prefs.setString(_keyMascotType, type);
+  }
+
+  Future<String> getMascotType() async {
+    final prefs = _prefsSync;
+    return prefs.getString(_keyMascotType) ?? 'vitality';
+  }
+
+  Future<void> saveWidgetTheme(String theme) async {
+    final prefs = _prefsSync;
+    await prefs.setString(_keyWidgetTheme, theme);
+  }
+
+  Future<String> getWidgetTheme() async {
+    final prefs = _prefsSync;
+    return prefs.getString(_keyWidgetTheme) ?? 'ocean';
+  }
+
+  Future<void> saveLanguage(String lang) async {
+    final prefs = _prefsSync;
+    await prefs.setString(_keyAppLanguage, lang);
+  }
+
+  Future<String> getLanguage() async {
+    final prefs = _prefsSync;
+    return prefs.getString(_keyAppLanguage) ?? 'tr';
   }
 
   // Clear all data

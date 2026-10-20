@@ -58,12 +58,12 @@ class SettingsCardWrapper extends StatelessWidget {
           if (titleTrailing != null)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: Text(
                     title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -78,6 +78,7 @@ class SettingsCardWrapper extends StatelessWidget {
           else
             Text(
               title,
+              maxLines: 2,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

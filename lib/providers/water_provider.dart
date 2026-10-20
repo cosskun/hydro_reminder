@@ -11,6 +11,7 @@ import '../services/alarm_service.dart';
 import '../services/sound_service.dart';
 import '../services/widget_service.dart';
 import '../services/health_service.dart';
+import '../services/review_service.dart';
 
 class WaterProvider with ChangeNotifier {
   final StorageService _storageService = StorageService();
@@ -68,6 +69,22 @@ class WaterProvider with ChangeNotifier {
   // Ongoing Live Progress Notification State (Android & iOS)
   bool _isOngoingNotificationEnabled = false;
 
+  // Duolingo-style Streak Freeze / Shield State
+  int _streakShields = 1;
+  List<String> _frozenDates = [];
+  DateTime? _lastShieldRefillDate;
+
+  // Daily Goal Celebration State (Confetti & Jingle)
+  bool _shouldShowGoalCelebration = false;
+
+  // Smart Adaptive Reminders (Pacing) State
+  bool _isSmartPacingEnabled = true;
+
+  // Custom Mascot, Widget Theme, and App Language
+  String _mascotType = 'vitality';
+  String _widgetTheme = 'ocean';
+  String _language = 'tr';
+
   // Customizable Quick Add Presets
   List<int> _quickPresets = [200, 330, 500];
 
@@ -91,37 +108,185 @@ class WaterProvider with ChangeNotifier {
   }
 
   // Unified Hydration Status (used by both DashboardScreen and Android/iOS Widgets so logos & texts are 100% in sync)
-  static Map<String, String> getHydrationStatus(double percentage) {
-    if (percentage < 0.25) {
-      return {
-        'emoji': '🥱',
-        'message': 'Güne susuz başladın! Hemen bir bardak su al.',
-        'color': 'E11D48',
-      };
-    } else if (percentage < 0.50) {
-      return {
-        'emoji': '🙂',
-        'message': 'İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun.',
-        'color': 'F59E0B',
-      };
-    } else if (percentage < 0.75) {
-      return {
-        'emoji': '😊',
-        'message': 'Harika gidiyorsun! Vücudun sana teşekkür ediyor.',
-        'color': '10B981',
-      };
-    } else if (percentage < 1.0) {
-      return {
-        'emoji': '😎',
-        'message': 'Neredeyse tamamladın! Enerjin tam yerinde.',
-        'color': '06B6D4',
-      };
-    } else {
-      return {
-        'emoji': '🥳',
-        'message': 'Tebrikler! Günlük su hedefini tamamladın!',
-        'color': '8B5CF6',
-      };
+  static Map<String, String> getHydrationStatus(
+    double percentage, {
+    String mascotType = 'vitality',
+    String lang = 'tr',
+  }) {
+    final isEn = lang == 'en';
+    switch (mascotType) {
+      case 'cat':
+        if (percentage <= 0.0) {
+          return {
+            'emoji': '😿',
+            'message': isEn
+                ? 'Meow! So thirsty, could you spare a sip of water?'
+                : 'Miyav! Çok susadım, bir yudum su verir misin?',
+            'color': 'E11D48',
+          };
+        } else if (percentage < 0.35) {
+          return {
+            'emoji': '🐱',
+            'message': isEn
+                ? "Feeling refreshed! Let's keep drinking water together."
+                : 'Biraz ferahladım! Birlikte su içmeye devam edelim.',
+            'color': 'F59E0B',
+          };
+        } else if (percentage < 0.70) {
+          return {
+            'emoji': '😺',
+            'message': isEn
+                ? 'Happy purrs! Our hydration level is super.'
+                : 'Harika bir mırıltı! Hidrasyon seviyemiz süper.',
+            'color': '10B981',
+          };
+        } else if (percentage < 1.0) {
+          return {
+            'emoji': '😻',
+            'message': isEn
+                ? 'Pawsome! Just a tiny bit left to reach the goal.'
+                : 'Sana bayılıyorum! Hedefe çok ama çok az kaldı.',
+            'color': '06B6D4',
+          };
+        } else {
+          return {
+            'emoji': '🦁',
+            'message': isEn
+                ? "Roar time! You are today's hydration champion!"
+                : 'Kükreme vakti! Günün şampiyon kedisi sensin!',
+            'color': '8B5CF6',
+          };
+        }
+
+      case 'penguin':
+        if (percentage <= 0.0) {
+          return {
+            'emoji': '🧊',
+            'message': isEn
+                ? 'Ice is melting! Refresh yourself with cool water.'
+                : 'Buzlar eriyor! Hemen taze suyla ferahla.',
+            'color': 'E11D48',
+          };
+        } else if (percentage < 0.35) {
+          return {
+            'emoji': '🐧',
+            'message': isEn
+                ? 'Waddling towards the goal! First sip was great.'
+                : 'Paytak adımlarla hedefe! İlk yudum harika.',
+            'color': 'F59E0B',
+          };
+        } else if (percentage < 0.70) {
+          return {
+            'emoji': '🦭',
+            'message': isEn
+                ? 'Cool as the ocean! Gliding with the waves.'
+                : 'Serin sular gibisin! Dalgalarla akıyoruz.',
+            'color': '10B981',
+          };
+        } else if (percentage < 1.0) {
+          return {
+            'emoji': '🏄',
+            'message': isEn
+                ? 'Catching the polar wave! Summit is so close.'
+                : 'Kutup dalgasını yakaladık! Zirve çok yakın.',
+            'color': '06B6D4',
+          };
+        } else {
+          return {
+            'emoji': '👑',
+            'message': isEn
+                ? 'King of the Arctic! Daily goal accomplished!'
+                : 'Kutupların Kralı! Günlük hedef tamamlandı!',
+            'color': '8B5CF6',
+          };
+        }
+
+      case 'plant':
+        if (percentage <= 0.0) {
+          return {
+            'emoji': '🥀',
+            'message': isEn
+                ? 'Leaves are drooping! Time for some revitalizing water.'
+                : 'Yapraklar boyun büktü! Biraz can suyu ver.',
+            'color': 'E11D48',
+          };
+        } else if (percentage < 0.35) {
+          return {
+            'emoji': '🌱',
+            'message': isEn
+                ? 'First green shoot sprouted! Reviving with water.'
+                : 'İlk filiz yeşerdi! Suyla yeniden canlanıyoruz.',
+            'color': 'F59E0B',
+          };
+        } else if (percentage < 0.70) {
+          return {
+            'emoji': '🌿',
+            'message': isEn
+                ? 'Branches growing strong, freshness everywhere.'
+                : 'Dallar uzuyor, tazelik her yere yayılıyor.',
+            'color': '10B981',
+          };
+        } else if (percentage < 1.0) {
+          return {
+            'emoji': '🪴',
+            'message': isEn
+                ? 'Blooming bright! Just a little left to full bloom.'
+                : 'Işıl ışıl parlıyorsun! Çiçek açmaya çok az kaldı.',
+            'color': '06B6D4',
+          };
+        } else {
+          return {
+            'emoji': '🌳',
+            'message': isEn
+                ? 'Standing tall and vibrant! Congratulations!'
+                : 'Koca bir çınar gibi dipdirisin! Tebrikler!',
+            'color': '8B5CF6',
+          };
+        }
+
+      case 'vitality':
+      default:
+        if (percentage <= 0.0) {
+          return {
+            'emoji': '🥱',
+            'message': isEn
+                ? 'Started the day dehydrated! Grab a glass of water.'
+                : 'Güne susuz başladın! Hemen bir bardak su al.',
+            'color': 'E11D48',
+          };
+        } else if (percentage < 0.35) {
+          return {
+            'emoji': '🙂',
+            'message': isEn
+                ? 'First step taken! Stepping steadily towards your goal.'
+                : 'İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun.',
+            'color': 'F59E0B',
+          };
+        } else if (percentage < 0.70) {
+          return {
+            'emoji': '😊',
+            'message': isEn
+                ? 'Going great! Your body thanks you.'
+                : 'Harika gidiyorsun! Vücudun sana teşekkür ediyor.',
+            'color': '10B981',
+          };
+        } else if (percentage < 1.0) {
+          return {
+            'emoji': '😎',
+            'message': isEn
+                ? 'Almost there! Your energy is peaking.'
+                : 'Neredeyse tamamladın! Enerjin tam yerinde.',
+            'color': '06B6D4',
+          };
+        } else {
+          return {
+            'emoji': '🥳',
+            'message': isEn
+                ? 'Congratulations! You reached your daily goal!'
+                : 'Tebrikler! Günlük su hedefini tamamladın!',
+            'color': '8B5CF6',
+          };
+        }
     }
   }
 
@@ -206,12 +371,14 @@ class WaterProvider with ChangeNotifier {
     return _logs.fold(0, (sum, log) => sum + log.amountMl);
   }
 
-  // Calculate current consecutive streak (days goal was achieved)
+  // Calculate current consecutive streak (days goal was achieved or protected by streak shield)
   int get currentStreak {
     int streak = 0;
     final now = DateTime.now();
     for (int i = 0; i < 60; i++) {
       final checkDate = now.subtract(Duration(days: i));
+      final dateKey =
+          '${checkDate.year}-${checkDate.month.toString().padLeft(2, '0')}-${checkDate.day.toString().padLeft(2, '0')}';
       final totalForDay = _logs
           .where((log) =>
               log.timestamp.year == checkDate.year &&
@@ -219,13 +386,133 @@ class WaterProvider with ChangeNotifier {
               log.timestamp.day == checkDate.day)
           .fold(0, (sum, log) => sum + log.amountMl);
 
-      if (totalForDay >= _dailyGoal) {
+      final isGoalAchieved = totalForDay >= _dailyGoal;
+      final isFrozen = _frozenDates.contains(dateKey);
+
+      if (isGoalAchieved || isFrozen) {
         streak++;
       } else {
         if (i > 0) break;
       }
     }
     return streak;
+  }
+
+  // Streak Shield & Freeze Getters
+  int get streakShields => _streakShields;
+  List<String> get frozenDates => List.unmodifiable(_frozenDates);
+  bool get shouldShowGoalCelebration => _shouldShowGoalCelebration;
+  bool get isSmartPacingEnabled => _isSmartPacingEnabled;
+
+  void clearGoalCelebration() {
+    _shouldShowGoalCelebration = false;
+    notifyListeners();
+  }
+
+  // Check if yesterday was missed and eligible for Streak Freeze recovery
+  bool get canRecoverYesterday {
+    if (_streakShields <= 0) return false;
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final yesterdayKey =
+        '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}';
+
+    if (_frozenDates.contains(yesterdayKey)) return false;
+
+    final yesterdayTotal = _logs
+        .where((log) =>
+            log.timestamp.year == yesterday.year &&
+            log.timestamp.month == yesterday.month &&
+            log.timestamp.day == yesterday.day)
+        .fold(0, (sum, log) => sum + log.amountMl);
+
+    if (yesterdayTotal >= _dailyGoal) return false;
+
+    // Check if there was an active streak before yesterday
+    final dayBefore = DateTime.now().subtract(const Duration(days: 2));
+    final dayBeforeKey =
+        '${dayBefore.year}-${dayBefore.month.toString().padLeft(2, '0')}-${dayBefore.day.toString().padLeft(2, '0')}';
+    final dayBeforeTotal = _logs
+        .where((log) =>
+            log.timestamp.year == dayBefore.year &&
+            log.timestamp.month == dayBefore.month &&
+            log.timestamp.day == dayBefore.day)
+        .fold(0, (sum, log) => sum + log.amountMl);
+
+    final wasDayBeforeAchieved =
+        dayBeforeTotal >= _dailyGoal || _frozenDates.contains(dayBeforeKey);
+
+    return wasDayBeforeAchieved;
+  }
+
+  // Use a Streak Shield to freeze/recover yesterday's streak
+  Future<bool> useStreakShieldForYesterday() async {
+    if (!canRecoverYesterday) return false;
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final yesterdayKey =
+        '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}';
+
+    _streakShields--;
+    _frozenDates.add(yesterdayKey);
+    await _storageService.saveStreakShields(_streakShields);
+    await _storageService.saveFrozenDates(_frozenDates);
+
+    await _syncWidgets();
+    notifyListeners();
+    return true;
+  }
+
+  // Toggle Smart Pacing Reminders
+  Future<void> toggleSmartPacing(bool enabled) async {
+    _isSmartPacingEnabled = enabled;
+    await _storageService.saveSmartPacingSetting(enabled);
+    await _syncSmartPacing();
+    notifyListeners();
+  }
+
+  // Mascot, Theme and Language Getters
+  String get mascotType => _mascotType;
+  String get widgetTheme => _widgetTheme;
+  String get language => _language;
+
+  // Mascot, Theme and Language Update Methods
+  Future<void> updateMascotType(String type) async {
+    _mascotType = type;
+    await _storageService.saveMascotType(type);
+    await _syncWidgets();
+    notifyListeners();
+  }
+
+  Future<void> updateWidgetTheme(String theme) async {
+    _widgetTheme = theme;
+    await _storageService.saveWidgetTheme(theme);
+    await _syncWidgets();
+    notifyListeners();
+  }
+
+  Future<void> updateLanguage(String lang) async {
+    _language = lang;
+    await _storageService.saveLanguage(lang);
+    await _syncWidgets();
+    notifyListeners();
+  }
+
+  void _checkAndRefillStreakShields() {
+    final now = DateTime.now();
+    if (_lastShieldRefillDate == null) {
+      _lastShieldRefillDate = now;
+      _storageService.saveLastShieldRefill(now.toIso8601String());
+      return;
+    }
+
+    final daysSinceRefill = now.difference(_lastShieldRefillDate!).inDays;
+    if (daysSinceRefill >= 7) {
+      if (_streakShields < 2) {
+        _streakShields++;
+        _storageService.saveStreakShields(_streakShields);
+      }
+      _lastShieldRefillDate = now;
+      _storageService.saveLastShieldRefill(now.toIso8601String());
+    }
   }
 
   // Badges list with real-time progress calculations
@@ -354,8 +641,26 @@ class WaterProvider with ChangeNotifier {
     // Ongoing Live Progress Notification
     _isOngoingNotificationEnabled = await _storageService.getOngoingNotificationSetting();
 
+    // Streak Shields & Freeze State
+    _streakShields = await _storageService.getStreakShields();
+    _frozenDates = await _storageService.getFrozenDates();
+    final lastRefill = await _storageService.getLastShieldRefill();
+    if (lastRefill != null) {
+      _lastShieldRefillDate = DateTime.tryParse(lastRefill);
+    }
+    _checkAndRefillStreakShields();
+
+    // Smart Adaptive Reminders (Pacing)
+    _isSmartPacingEnabled = await _storageService.getSmartPacingSetting();
+
+    // Mascot, Theme and Language
+    _mascotType = await _storageService.getMascotType();
+    _widgetTheme = await _storageService.getWidgetTheme();
+    _language = await _storageService.getLanguage();
+
     await _syncWidgets();
     await _syncEndOfDaySummary();
+    await _syncSmartPacing();
     await _syncOngoingNotification();
     notifyListeners();
   }
@@ -690,6 +995,8 @@ class WaterProvider with ChangeNotifier {
               HapticFeedback.heavyImpact();
             } catch (_) {}
           }
+          // Store review prompt check on new achievement unlock
+          ReviewService().checkAndPromptIfEligible(streak: streak, isNewBadgeUnlocked: true);
         }
       }
     }
@@ -731,7 +1038,11 @@ class WaterProvider with ChangeNotifier {
         displayStreak = 1;
       }
 
-      final status = WaterProvider.getHydrationStatus(todayPercentage);
+      final status = WaterProvider.getHydrationStatus(
+        todayPercentage,
+        mascotType: _mascotType,
+        lang: _language,
+      );
       final String mascotEmoji = status['emoji']!;
       final String mascotSubtitle = status['message']!;
 
@@ -755,6 +1066,8 @@ class WaterProvider with ChangeNotifier {
         dayStatuses: statuses.join(','),
         mascotEmoji: mascotEmoji,
         mascotSubtitle: mascotSubtitle,
+        widgetTheme: _widgetTheme,
+        mascotType: _mascotType,
       );
     } catch (_) {}
   }
@@ -870,6 +1183,8 @@ class WaterProvider with ChangeNotifier {
 
   // Add water intake log with optional beverage type
   Future<void> addWater(int rawAmountMl, {String beverageId = 'water'}) async {
+    final prevPercentage = todayPercentage;
+
     final beverage = BeverageType.fromId(beverageId);
     final effectiveMl = (rawAmountMl * beverage.hydrationFactor).round();
 
@@ -883,7 +1198,24 @@ class WaterProvider with ChangeNotifier {
     _logs.add(newLog);
     notifyListeners();
 
-    if (_isSoundEffectsEnabled) {
+    final newPercentage = todayPercentage;
+
+    // Daily Goal Reached Celebration (Crossing >= 100% threshold for the first time today)
+    if (prevPercentage < 1.0 && newPercentage >= 1.0) {
+      final now = DateTime.now();
+      final todayStr =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final lastCelebrated = await _storageService.getLastGoalCelebratedDate();
+      if (lastCelebrated != todayStr) {
+        await _storageService.saveLastGoalCelebratedDate(todayStr);
+        _shouldShowGoalCelebration = true;
+        if (_isSoundEffectsEnabled) {
+          SoundService().playGoalReachedCelebrationSound();
+        }
+        notifyListeners();
+        ReviewService().checkAndPromptIfEligible(streak: currentStreak);
+      }
+    } else if (_isSoundEffectsEnabled) {
       try {
         HapticFeedback.lightImpact();
         SoundService().playWaterSipSound();
@@ -894,6 +1226,7 @@ class WaterProvider with ChangeNotifier {
       await _storageService.saveWaterLogs(_logs);
       await _checkAndUnlockBadges();
       await _syncEndOfDaySummary();
+      await _syncSmartPacing();
       await _syncWidgets();
       await _syncOngoingNotification();
       if (_isAppleHealthSyncEnabled) {
@@ -914,6 +1247,7 @@ class WaterProvider with ChangeNotifier {
     try {
       await _storageService.saveWaterLogs(_logs);
       await _syncEndOfDaySummary();
+      await _syncSmartPacing();
       await _syncWidgets();
       await _syncOngoingNotification();
     } catch (_) {}
@@ -928,6 +1262,19 @@ class WaterProvider with ChangeNotifier {
           hour: _endOfDayHour,
           minute: _endOfDayMinute,
           remainingMl: dailyRemainingMl,
+          consumedMl: todayConsumed,
+          dailyGoalMl: dailyGoal,
+        );
+      } catch (_) {}
+    }
+  }
+
+  // Sync Smart Adaptive Pacing Reminders with live progress
+  Future<void> _syncSmartPacing() async {
+    if (_isNotificationsEnabled && _isSmartPacingEnabled) {
+      try {
+        await AlarmService().scheduleSmartPacingNotifications(
+          isEnabled: _isSmartPacingEnabled,
           consumedMl: todayConsumed,
           dailyGoalMl: dailyGoal,
         );

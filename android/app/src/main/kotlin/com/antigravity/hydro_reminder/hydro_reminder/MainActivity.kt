@@ -91,6 +91,9 @@ class MainActivity: FlutterFragmentActivity() {
                         val pinned = requestPinAppShortcut(shortcutId)
                         result.success(pinned)
                     }
+                    "requestAddQuickTile" -> {
+                        requestAddQuickTile(result)
+                    }
                     "consumeInitialShortcutUri" -> {
                         val uri = pendingShortcutUri
                         pendingShortcutUri = null
@@ -151,6 +154,54 @@ class MainActivity: FlutterFragmentActivity() {
             return appWidgetManager.requestPinAppWidget(providerComponent, null, null)
         } catch (_: Exception) {
             return false
+        }
+    }
+
+    private fun requestAddQuickTile(result: MethodChannel.Result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            try {
+                val statusBarManager = getSystemService(android.app.StatusBarManager::class.java)
+                if (statusBarManager == null) {
+                    result.success(mapOf("supported" to false, "success" to false, "alreadyAdded" to false))
+                    return
+                }
+                val componentName = android.content.ComponentName(this, WaterQuickSettingsTileService::class.java)
+                val homePrefs = getSharedPreferences("HomeWidgetPreferences", MODE_PRIVATE)
+                val flutterPrefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+
+                val p1FromWidget = try { homePrefs.getInt("preset1", 0) } catch (_: Exception) { 0 }
+                val p1FromFlutter = try { flutterPrefs.getInt("flutter.preset_1", 200) } catch (_: Exception) { 200 }
+                val p1 = when {
+                    p1FromWidget > 0 -> p1FromWidget
+                    p1FromFlutter > 0 -> p1FromFlutter
+                    else -> 200
+                }
+                val label = "💧 +$p1 ml Su Ekle"
+                val icon = android.graphics.drawable.Icon.createWithResource(this, R.drawable.ic_shortcut_cup)
+
+                statusBarManager.requestAddTileService(
+                    componentName,
+                    label,
+                    icon,
+                    mainExecutor,
+                    java.util.function.Consumer { statusCode ->
+                        val isAdded = (statusCode == android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ADDED)
+                        val isAlreadyAdded = (statusCode == android.app.StatusBarManager.TILE_ADD_REQUEST_RESULT_TILE_ALREADY_ADDED)
+                        result.success(
+                            mapOf(
+                                "supported" to true,
+                                "success" to (isAdded || isAlreadyAdded),
+                                "alreadyAdded" to isAlreadyAdded,
+                                "statusCode" to statusCode
+                            )
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                result.success(mapOf("supported" to true, "success" to false, "alreadyAdded" to false, "error" to e.message))
+            }
+        } else {
+            result.success(mapOf("supported" to false, "success" to false, "alreadyAdded" to false))
         }
     }
 

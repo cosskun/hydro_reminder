@@ -24,7 +24,7 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 2200),
     )..repeat();
   }
 
@@ -39,39 +39,48 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Container(
-          width: widget.size,
-          height: widget.size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0F9FF),
-            border: Border.all(
-              color: isDark ? const Color(0xFF38BDF8).withValues(alpha: 0.6) : Colors.blue.shade200,
-              width: 4,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? const Color(0xFF38BDF8).withValues(alpha: 0.15)
-                    : Colors.blue.shade100.withValues(alpha: 0.5),
-                blurRadius: 15,
-                spreadRadius: 2,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: widget.progress),
+      duration: const Duration(milliseconds: 1100),
+      curve: Curves.easeOutCubic,
+      builder: (context, smoothProgress, child) {
+        return AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return Container(
+              width: widget.size,
+              height: widget.size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0F9FF),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF38BDF8).withValues(alpha: 0.65)
+                      : const Color(0xFF0284C7).withValues(alpha: 0.4),
+                  width: 4,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark
+                        ? const Color(0xFF38BDF8).withValues(alpha: 0.22)
+                        : Colors.blue.shade200.withValues(alpha: 0.5),
+                    blurRadius: 18,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: ClipPath(
-            clipper: _CircleClipper(),
-            child: CustomPaint(
-              painter: _LiquidPainter(
-                progress: widget.progress,
-                animationValue: _animationController.value,
-                isDark: isDark,
+              child: ClipPath(
+                clipper: _CircleClipper(),
+                child: CustomPaint(
+                  painter: _LiquidPainter(
+                    progress: smoothProgress,
+                    animationValue: _animationController.value,
+                    isDark: isDark,
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -81,19 +90,36 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
 class _CircleClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    final path = Path()
-      ..addOval(Rect.fromLTWH(0, 0, size.width, size.height));
-    return path;
+    return Path()..addOval(Rect.fromLTWH(0, 0, size.width, size.height));
   }
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
+class _BubbleSeed {
+  final double xFactor;
+  final double radius;
+  final double speedFactor;
+  final double phase;
+
+  const _BubbleSeed(this.xFactor, this.radius, this.speedFactor, this.phase);
+}
+
 class _LiquidPainter extends CustomPainter {
   final double progress;
   final double animationValue;
   final bool isDark;
+
+  static const List<_BubbleSeed> _bubbles = [
+    _BubbleSeed(0.20, 3.2, 1.2, 0.1),
+    _BubbleSeed(0.35, 4.0, 0.9, 0.4),
+    _BubbleSeed(0.50, 2.5, 1.4, 0.7),
+    _BubbleSeed(0.65, 3.8, 1.1, 0.2),
+    _BubbleSeed(0.80, 2.8, 1.3, 0.8),
+    _BubbleSeed(0.42, 2.0, 1.5, 0.55),
+    _BubbleSeed(0.58, 4.5, 0.8, 0.35),
+  ];
 
   _LiquidPainter({
     required this.progress,
@@ -103,59 +129,113 @@ class _LiquidPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint1 = Paint()
-      ..color = Colors.blue.shade300.withValues(alpha: 0.8)
-      ..style = PaintingStyle.fill;
-
-    final paint2 = Paint()
-      ..color = Colors.blue.shade400.withValues(alpha: 0.9)
-      ..style = PaintingStyle.fill;
-
-    // Fluid height based on progress (capped at 100% height, but can flow up to top)
     final clampedProgress = progress.clamp(0.0, 1.0);
     final waterHeight = size.height * (1.0 - clampedProgress);
 
-    // First wave (Back wave)
+    // 1. Back Wave (Translucent Deep Aqua)
+    final backPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: isDark
+            ? [
+                const Color(0xFF0369A1).withValues(alpha: 0.75),
+                const Color(0xFF0C4A6E).withValues(alpha: 0.9),
+              ]
+            : [
+                const Color(0xFF38BDF8).withValues(alpha: 0.7),
+                const Color(0xFF0284C7).withValues(alpha: 0.85),
+              ],
+      ).createShader(Rect.fromLTWH(0, waterHeight, size.width, size.height - waterHeight))
+      ..style = PaintingStyle.fill;
+
     final path1 = Path();
     path1.moveTo(0, waterHeight);
-    for (double i = 0.0; i <= size.width; i++) {
+    for (double i = 0.0; i <= size.width; i += 2.0) {
       final angle = (i / size.width * 2 * math.pi) + (animationValue * 2 * math.pi);
-      final y = waterHeight + math.sin(angle) * 8; // Amplitude 8
+      final y = waterHeight + math.sin(angle) * 7.5;
       path1.lineTo(i, y);
     }
     path1.lineTo(size.width, size.height);
     path1.lineTo(0, size.height);
     path1.close();
-    canvas.drawPath(path1, paint1);
+    canvas.drawPath(path1, backPaint);
 
-    // Second wave (Front wave - offset phase and amplitude for 3D effect)
+    // 2. Rising Animated Micro-Air Bubbles (Only drawn inside fluid)
+    final bubblePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.35)
+      ..style = PaintingStyle.fill;
+
+    if (clampedProgress > 0.05) {
+      final fluidDepth = size.height - waterHeight;
+      for (final b in _bubbles) {
+        final bx = size.width * b.xFactor + math.sin(animationValue * 2 * math.pi + b.phase) * 3.0;
+        final cycleProgress = ((animationValue * b.speedFactor) + b.phase) % 1.0;
+        final by = size.height - (fluidDepth * cycleProgress);
+
+        if (by >= waterHeight && by <= size.height) {
+          canvas.drawCircle(Offset(bx, by), b.radius, bubblePaint);
+        }
+      }
+    }
+
+    // 3. Front Wave (Vibrant Aqua / Glowing Cyan)
+    final frontPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: isDark
+            ? [
+                const Color(0xFF38BDF8),
+                const Color(0xFF0284C7),
+              ]
+            : [
+                const Color(0xFF38BDF8),
+                const Color(0xFF0369A1),
+              ],
+      ).createShader(Rect.fromLTWH(0, waterHeight, size.width, size.height - waterHeight))
+      ..style = PaintingStyle.fill;
+
     final path2 = Path();
+    final crestPath = Path();
     path2.moveTo(0, waterHeight);
-    for (double i = 0.0; i <= size.width; i++) {
+    crestPath.moveTo(0, waterHeight);
+
+    for (double i = 0.0; i <= size.width; i += 2.0) {
       final angle = (i / size.width * 2 * math.pi) - (animationValue * 2 * math.pi) + math.pi / 2;
-      final y = waterHeight + math.sin(angle) * 6; // Amplitude 6
+      final y = waterHeight + math.sin(angle) * 6.0;
       path2.lineTo(i, y);
+      crestPath.lineTo(i, y);
     }
     path2.lineTo(size.width, size.height);
     path2.lineTo(0, size.height);
     path2.close();
-    canvas.drawPath(path2, paint2);
+    canvas.drawPath(path2, frontPaint);
 
-    // Draw percentage text inside the bubble
+    // 4. Wave Crest Foam Highlight (Subtle glowing 1.8px froth line)
+    final crestPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.55)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8;
+    canvas.drawPath(crestPath, crestPaint);
+
+    // 5. Center Hydration Percentage Typography
+    final percentInt = (progress * 100).toInt();
     final textPainter = TextPainter(
       text: TextSpan(
-        text: '${(progress * 100).toInt()}%',
+        text: '%$percentInt',
         style: TextStyle(
-          color: progress > 0.45
+          color: progress > 0.42
               ? Colors.white
-              : (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800),
-          fontSize: (size.width * 0.18).clamp(20.0, 44.0),
+              : (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1)),
+          fontSize: (size.width * 0.20).clamp(22.0, 46.0),
           fontWeight: FontWeight.w900,
+          letterSpacing: -0.5,
           shadows: [
             Shadow(
-              color: Colors.black26,
+              color: Colors.black.withValues(alpha: 0.28),
               offset: const Offset(1, 1),
-              blurRadius: 2,
+              blurRadius: 3,
             ),
           ],
         ),

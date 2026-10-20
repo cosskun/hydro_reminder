@@ -289,7 +289,7 @@ void main() {
       expect(find.text('Profil Bilgilerini Güncelle'), findsOneWidget);
       expect(find.text('Bildirim ve Alarm Ayarları'), findsOneWidget);
       expect(find.text('Gün Sonu Özet Bildirimi'), findsOneWidget);
-      expect(find.text('Hızlı Su Ekleme Miktarları'), findsOneWidget);
+      expect(find.text('Hızlı Su Ekleme Paneli'), findsOneWidget);
 
       // Verify Android card is present
       expect(find.text('Android Hızlı Kontroller 🤖'), findsOneWidget);

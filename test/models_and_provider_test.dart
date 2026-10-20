@@ -1,7 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hydro_reminder/models/badge_item.dart';
 import 'package:hydro_reminder/models/beverage_type.dart';
 import 'package:hydro_reminder/models/water_log.dart';
+import 'package:hydro_reminder/providers/water_provider.dart';
+import 'package:hydro_reminder/services/review_service.dart';
+import 'package:hydro_reminder/services/sound_service.dart';
+import 'package:hydro_reminder/services/storage_service.dart';
+import 'package:hydro_reminder/l10n/app_translations.dart';
 
 void main() {
   group('BeverageType Tests', () {
@@ -84,6 +90,143 @@ void main() {
       expect(ids.contains('ocean_50l'), isTrue);
       expect(ids.contains('ocean_100l'), isTrue);
       expect(ids.contains('beverage_guru'), isTrue);
+    });
+  });
+
+  group('ReviewService Tests', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test('shouldPromptReview returns true initially for unrated user', () async {
+      final service = ReviewService();
+      expect(await service.hasRated(), isFalse);
+      expect(await service.shouldPromptReview(), isTrue);
+    });
+
+    test('markAsRated permanently suppresses future review prompts', () async {
+      final service = ReviewService();
+      await service.markAsRated();
+      expect(await service.hasRated(), isTrue);
+      expect(await service.shouldPromptReview(), isFalse);
+    });
+
+    test('checkAndPromptIfEligible triggers only when streak >= 3 or badge unlocked', () async {
+      final service = ReviewService();
+      // Streak < 3 and no badge -> not eligible
+      final notEligible = await service.checkAndPromptIfEligible(streak: 2, isNewBadgeUnlocked: false);
+      expect(notEligible, isFalse);
+
+      // Streak >= 3 -> eligible
+      final eligibleStreak = await service.checkAndPromptIfEligible(streak: 3, isNewBadgeUnlocked: false);
+      expect(eligibleStreak, isTrue);
+    });
+  });
+
+  group('Mascot & Multi-language Hydration Status Tests', () {
+    test('Default vitality mascot returns expected emojis and messages', () {
+      final s0 = WaterProvider.getHydrationStatus(0.0);
+      expect(s0['emoji'], '🥱');
+      expect(s0['message'], 'Güne susuz başladın! Hemen bir bardak su al.');
+
+      // 1 or 2 glasses of water (e.g. 21% / 400ml) immediately switches to step 1
+      final s20 = WaterProvider.getHydrationStatus(0.21);
+      expect(s20['emoji'], '🙂');
+      expect(s20['message'], 'İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun.');
+
+      final s100 = WaterProvider.getHydrationStatus(1.0);
+      expect(s100['emoji'], '🥳');
+      expect(s100['message'], 'Tebrikler! Günlük su hedefini tamamladın!');
+    });
+
+    test('Cat mascot returns cat-specific emojis across hydration stages', () {
+      expect(WaterProvider.getHydrationStatus(0.0, mascotType: 'cat')['emoji'], '😿');
+      expect(WaterProvider.getHydrationStatus(0.20, mascotType: 'cat')['emoji'], '🐱');
+      expect(WaterProvider.getHydrationStatus(0.50, mascotType: 'cat')['emoji'], '😺');
+      expect(WaterProvider.getHydrationStatus(0.85, mascotType: 'cat')['emoji'], '😻');
+      expect(WaterProvider.getHydrationStatus(1.05, mascotType: 'cat')['emoji'], '🦁');
+    });
+
+    test('Penguin mascot returns penguin-specific emojis across hydration stages', () {
+      expect(WaterProvider.getHydrationStatus(0.0, mascotType: 'penguin')['emoji'], '🧊');
+      expect(WaterProvider.getHydrationStatus(0.20, mascotType: 'penguin')['emoji'], '🐧');
+      expect(WaterProvider.getHydrationStatus(0.50, mascotType: 'penguin')['emoji'], '🦭');
+      expect(WaterProvider.getHydrationStatus(0.85, mascotType: 'penguin')['emoji'], '🏄');
+      expect(WaterProvider.getHydrationStatus(1.05, mascotType: 'penguin')['emoji'], '👑');
+    });
+
+    test('Plant mascot returns plant-specific emojis across hydration stages', () {
+      expect(WaterProvider.getHydrationStatus(0.0, mascotType: 'plant')['emoji'], '🥀');
+      expect(WaterProvider.getHydrationStatus(0.20, mascotType: 'plant')['emoji'], '🌱');
+      expect(WaterProvider.getHydrationStatus(0.50, mascotType: 'plant')['emoji'], '🌿');
+      expect(WaterProvider.getHydrationStatus(0.85, mascotType: 'plant')['emoji'], '🪴');
+      expect(WaterProvider.getHydrationStatus(1.05, mascotType: 'plant')['emoji'], '🌳');
+    });
+
+    test('English language returns accurate English messages for mascots', () {
+      final enVitality = WaterProvider.getHydrationStatus(1.0, mascotType: 'vitality', lang: 'en');
+      expect(enVitality['message'], 'Congratulations! You reached your daily goal!');
+
+      final enCat = WaterProvider.getHydrationStatus(0.0, mascotType: 'cat', lang: 'en');
+      expect(enCat['message'], 'Meow! So thirsty, could you spare a sip of water?');
+    });
+  });
+
+  group('AppTranslations Tests', () {
+    test('Translates keys correctly in both Turkish and English', () {
+      expect(AppTranslations.get('app_name', lang: 'tr'), 'HydroSoft');
+      expect(AppTranslations.get('app_name', lang: 'en'), 'HydroSoft');
+
+      expect(AppTranslations.get('tab_dashboard', lang: 'tr'), 'Ana Sayfa');
+      expect(AppTranslations.get('tab_dashboard', lang: 'en'), 'Home');
+
+      expect(AppTranslations.get('mascot_cat', lang: 'tr'), 'Sevimli Kedi');
+      expect(AppTranslations.get('mascot_cat', lang: 'en'), 'Playful Cat');
+
+      expect(AppTranslations.get('theme_glass', lang: 'tr'), 'iOS Buzlu Cam');
+      expect(AppTranslations.get('theme_glass', lang: 'en'), 'iOS Frosted Glass');
+    });
+  });
+
+  group('Nature Sounds & SoundService Tests', () {
+    test('Contains meditation nature presets (Gentle Rain, River Stream, Tibetan Bowl)', () {
+      final names = SoundService.presetSounds.map((p) => p.name).toList();
+      expect(names.contains('Huzurlu Yağmur'), isTrue);
+      expect(names.contains('Nehir Akıntısı'), isTrue);
+      expect(names.contains('Tibet Kasesi & Zen'), isTrue);
+
+      final paths = SoundService.presetSounds.map((p) => p.path).toList();
+      expect(paths.contains('sounds/sound_gentle_rain.wav'), isTrue);
+      expect(paths.contains('sounds/sound_river_stream.wav'), isTrue);
+      expect(paths.contains('sounds/sound_tibetan_bowl.wav'), isTrue);
+    });
+  });
+
+  group('StorageService Mascot, Theme & Language Tests', () {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      await StorageService().init();
+    });
+
+    test('Saves and loads custom mascot type', () async {
+      final storage = StorageService();
+      expect(await storage.getMascotType(), 'vitality');
+      await storage.saveMascotType('penguin');
+      expect(await storage.getMascotType(), 'penguin');
+    });
+
+    test('Saves and loads custom widget theme', () async {
+      final storage = StorageService();
+      expect(await storage.getWidgetTheme(), 'ocean');
+      await storage.saveWidgetTheme('glass');
+      expect(await storage.getWidgetTheme(), 'glass');
+    });
+
+    test('Saves and loads language setting', () async {
+      final storage = StorageService();
+      expect(await storage.getLanguage(), 'tr');
+      await storage.saveLanguage('en');
+      expect(await storage.getLanguage(), 'en');
     });
   });
 }

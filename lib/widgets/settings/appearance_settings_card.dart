@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_translations.dart';
 import '../../providers/water_provider.dart';
 import 'settings_card_wrapper.dart';
 
@@ -11,16 +12,182 @@ class AppearanceSettingsCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final lang = provider.language;
 
     return SettingsCardWrapper(
-      title: 'Görünüm & Efektler 🎨',
+      title: lang == 'en' ? 'Appearance & Effects 🎨' : 'Görünüm & Efektler 🎨',
       titleTrailing: Icon(
         isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
         color: const Color(0xFF38BDF8),
       ),
       children: [
+        // 1. Language Switcher (Uygulama Dili)
+        Text(
+          AppTranslations.get('section_language', lang: lang),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _buildChoiceChip(
+                context,
+                title: 'Türkçe',
+                icon: '🇹🇷',
+                isSelected: lang == 'tr',
+                onTap: () => provider.updateLanguage('tr'),
+                isDark: isDark,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildChoiceChip(
+                context,
+                title: 'English',
+                icon: '🇬🇧',
+                isSelected: lang == 'en',
+                onTap: () => provider.updateLanguage('en'),
+                isDark: isDark,
+              ),
+            ),
+          ],
+        ),
+        const Divider(height: 24, thickness: 0.5),
+
+        // 2. Custom Mascot Selection (Özel Maskotlar)
+        Text(
+          AppTranslations.get('section_mascot', lang: lang),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          lang == 'en'
+              ? 'Choose which mascot accompanies your hydration journey in the app and home widgets.'
+              : 'Uygulamada ve ana ekran widget\'larında size eşlik edecek maskotu seçin.',
+          style: TextStyle(
+            fontSize: 11,
+            color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildMascotOption(
+          context,
+          id: 'vitality',
+          name: AppTranslations.get('mascot_vitality', lang: lang),
+          preview: '🥱  🙂  😊  😎  🥳',
+          isSelected: provider.mascotType == 'vitality',
+          onTap: () => provider.updateMascotType('vitality'),
+          isDark: isDark,
+        ),
+        const SizedBox(height: 8),
+        _buildMascotOption(
+          context,
+          id: 'cat',
+          name: AppTranslations.get('mascot_cat', lang: lang),
+          preview: '😿  🐱  😺  😻  🦁',
+          isSelected: provider.mascotType == 'cat',
+          onTap: () => provider.updateMascotType('cat'),
+          isDark: isDark,
+        ),
+        const SizedBox(height: 8),
+        _buildMascotOption(
+          context,
+          id: 'penguin',
+          name: AppTranslations.get('mascot_penguin', lang: lang),
+          preview: '🧊  🐧  🦭  🏄  👑',
+          isSelected: provider.mascotType == 'penguin',
+          onTap: () => provider.updateMascotType('penguin'),
+          isDark: isDark,
+        ),
+        const SizedBox(height: 8),
+        _buildMascotOption(
+          context,
+          id: 'plant',
+          name: AppTranslations.get('mascot_plant', lang: lang),
+          preview: '🥀  🌱  🌿  🪴  🌳',
+          isSelected: provider.mascotType == 'plant',
+          onTap: () => provider.updateMascotType('plant'),
+          isDark: isDark,
+        ),
+        const Divider(height: 24, thickness: 0.5),
+
+        // 3. Widget & Color Theme Selector (Widget Teması)
+        Text(
+          AppTranslations.get('section_widget_theme', lang: lang),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          lang == 'en'
+              ? 'Personalize widget backgrounds and accents for Android & iOS.'
+              : 'Android ve iOS araç takımlarının arka plan ve renk paletini özelleştirin.',
+          style: TextStyle(
+            fontSize: 11,
+            color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _buildThemePill(
+              context,
+              id: 'ocean',
+              name: AppTranslations.get('theme_ocean', lang: lang),
+              colors: [const Color(0xFF0369A1), const Color(0xFF38BDF8)],
+              isSelected: provider.widgetTheme == 'ocean',
+              onTap: () => provider.updateWidgetTheme('ocean'),
+              isDark: isDark,
+            ),
+            _buildThemePill(
+              context,
+              id: 'glass',
+              name: AppTranslations.get('theme_glass', lang: lang),
+              colors: [const Color(0xFF0F172A), const Color(0xFF334155)],
+              isSelected: provider.widgetTheme == 'glass',
+              onTap: () => provider.updateWidgetTheme('glass'),
+              isDark: isDark,
+            ),
+            _buildThemePill(
+              context,
+              id: 'neon',
+              name: AppTranslations.get('theme_neon', lang: lang),
+              colors: [const Color(0xFF2E0249), const Color(0xFFD946EF)],
+              isSelected: provider.widgetTheme == 'neon',
+              onTap: () => provider.updateWidgetTheme('neon'),
+              isDark: isDark,
+            ),
+            _buildThemePill(
+              context,
+              id: 'emerald',
+              name: AppTranslations.get('theme_emerald', lang: lang),
+              colors: [const Color(0xFF064E3B), const Color(0xFF10B981)],
+              isSelected: provider.widgetTheme == 'emerald',
+              onTap: () => provider.updateWidgetTheme('emerald'),
+              isDark: isDark,
+            ),
+          ],
+        ),
+        const Divider(height: 24, thickness: 0.5),
+
+        // 4. Dark Theme Switch
         InkWell(
-          onTap: () => provider.updateThemeMode(provider.isDarkMode ? ThemeMode.light : ThemeMode.dark),
+          onTap: () => provider.updateThemeMode(
+            provider.isDarkMode ? ThemeMode.light : ThemeMode.dark,
+          ),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -31,16 +198,22 @@ class AppearanceSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Gece Mavisi Karanlık Tema',
+                        lang == 'en'
+                            ? 'Midnight Dark Theme'
+                            : 'Gece Mavisi Karanlık Tema',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark
+                              ? const Color(0xFFF1F5F9)
+                              : Colors.blue.shade900,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Gözü yormayan derin lacivert ve gece mavisi arayüz.',
+                        lang == 'en'
+                            ? 'Eye-friendly deep navy and midnight blue interface.'
+                            : 'Gözü yormayan derin lacivert ve gece mavisi arayüz.',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -54,7 +227,9 @@ class AppearanceSettingsCard extends StatelessWidget {
                   value: provider.isDarkMode,
                   activeThumbColor: const Color(0xFF38BDF8),
                   onChanged: (val) {
-                    provider.updateThemeMode(val ? ThemeMode.dark : ThemeMode.light);
+                    provider.updateThemeMode(
+                      val ? ThemeMode.dark : ThemeMode.light,
+                    );
                   },
                 ),
               ],
@@ -62,8 +237,12 @@ class AppearanceSettingsCard extends StatelessWidget {
           ),
         ),
         const Divider(height: 16, thickness: 0.5),
+
+        // 5. Sound & Haptic Effects Switch
         InkWell(
-          onTap: () => provider.updateSoundEffectsEnabled(!provider.isSoundEffectsEnabled),
+          onTap: () => provider.updateSoundEffectsEnabled(
+            !provider.isSoundEffectsEnabled,
+          ),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -74,16 +253,22 @@ class AppearanceSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Su Ekleme Ses & Titreşim Efektleri',
+                        lang == 'en'
+                            ? 'Water Sip & Haptic Feedback'
+                            : 'Su Ekleme Ses & Titreşim Efektleri',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark
+                              ? const Color(0xFFF1F5F9)
+                              : Colors.blue.shade900,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Su eklerken yudumlama sesi ve rozet kazanınca kutlama melodisi çalar.',
+                        lang == 'en'
+                            ? 'Plays a gentle sip audio on water log and celebration melody on goals.'
+                            : 'Su eklerken yudumlama sesi ve hedefe ulaşınca kutlama melodisi çalar.',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -105,6 +290,182 @@ class AppearanceSettingsCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildChoiceChip(
+    BuildContext context, {
+    required String title,
+    required String icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+              : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF38BDF8)
+                : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
+            width: isSelected ? 1.8 : 1.0,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(icon, style: const TextStyle(fontSize: 15)),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected
+                      ? const Color(0xFF38BDF8)
+                      : (isDark ? Colors.white : Colors.blue.shade900),
+                ),
+              ),
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.check_circle_rounded, size: 14, color: Color(0xFF38BDF8)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMascotOption(
+    BuildContext context, {
+    required String id,
+    required String name,
+    required String preview,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+              : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF38BDF8)
+                : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
+            width: isSelected ? 1.8 : 1.0,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected
+                          ? const Color(0xFF38BDF8)
+                          : (isDark ? Colors.white : Colors.blue.shade900),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    preview,
+                    style: const TextStyle(fontSize: 13, letterSpacing: 1.5),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: isSelected
+                  ? const Color(0xFF38BDF8)
+                  : (isDark ? Colors.grey : Colors.grey.shade400),
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemePill(
+    BuildContext context, {
+    required String id,
+    required String name,
+    required List<Color> colors,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+              : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF38BDF8)
+                : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
+            width: isSelected ? 1.8 : 1.0,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(colors: colors),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected
+                    ? const Color(0xFF38BDF8)
+                    : (isDark ? Colors.white : Colors.blue.shade900),
+              ),
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 6),
+              const Icon(Icons.check_rounded, size: 14, color: Color(0xFF38BDF8)),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

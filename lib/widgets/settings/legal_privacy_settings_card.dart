@@ -20,19 +20,17 @@ class LegalPrivacySettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
-        return SafeArea(
-          child: DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.72,
-            minChildSize: 0.45,
-            maxChildSize: 0.92,
-            builder: (_, scrollController) {
-              return Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomInset),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.72,
+          minChildSize: 0.45,
+          maxChildSize: 0.92,
+          builder: (_, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                     Center(
                       child: Container(
                         width: 48,
@@ -104,7 +102,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                         },
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -127,8 +125,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                 ),
               );
             },
-          ),
-        );
+          );
       },
     );
   }

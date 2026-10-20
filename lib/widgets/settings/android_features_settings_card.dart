@@ -8,7 +8,46 @@ import 'settings_card_wrapper.dart';
 class AndroidFeaturesSettingsCard extends StatelessWidget {
   const AndroidFeaturesSettingsCard({super.key});
 
-  void _showTileSetupModal(BuildContext context, bool isDark) {
+  static Future<void> _handleAutoAddTile(BuildContext context, bool isDark, int presetAmount) async {
+    final res = await WidgetService().requestAddQuickTile();
+    if (!context.mounted) return;
+
+    final supported = res['supported'] == true;
+    final success = res['success'] == true;
+    final alreadyAdded = res['alreadyAdded'] == true;
+
+    if (alreadyAdded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚡ "HydroSoft Su Ekle" kutucuğu zaten bildirim panelinizde ekli!'),
+          backgroundColor: Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎉 +$presetAmount ml Su Ekleme kutucuğu Hızlı Ayarlar paneline başarıyla eklendi!'),
+          backgroundColor: const Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (!supported) {
+      final p1Meta = WaterProvider.getPresetMeta(presetAmount);
+      final p1Emoji = p1Meta['emoji'] ?? '💧';
+      _showTileSetupModal(context, isDark, presetAmount, p1Emoji);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Hızlı Ayarlar kutucuğu ekleme işlemi iptal edildi.'),
+          backgroundColor: Colors.blueGrey,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  static void _showTileSetupModal(BuildContext context, bool isDark, int presetAmount, String presetEmoji) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -18,10 +57,9 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,21 +82,79 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'Bildirim panelinizi aşağı çektiğinizde Wi-Fi ve Fener butonlarının yanına HydroSoft kutucuğunu eklemek için şu adımları izleyin:',
+                  'Bildirim panelinizi aşağı çektiğinizde Wi-Fi ve Fener butonlarının yanına "$presetEmoji +$presetAmount ml Su Ekle" kutucuğunu ekleyin:',
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _handleAutoAddTile(context, isDark, presetAmount);
+                    },
+                    icon: const Icon(Icons.flash_on_rounded, size: 17),
+                    label: const Text(
+                      '⚡ Tek Dokunuşla Otomatik Ekle (Önerilen)',
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF10B981),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 11),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Veya Elle Eklemek İçin Adımlar:',
                   style: TextStyle(
-                    fontSize: 12.5,
-                    color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
-                    height: 1.4,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155),
                   ),
                 ),
                 const SizedBox(height: 16),
                 _buildStepTile('1', 'Bildirim çubuğunu en yukarıdan iki kez aşağı kaydırın.', isDark),
                 const SizedBox(height: 10),
-                _buildStepTile('2', 'Sağ alttaki veya üstteki "Düzenle" (Kalem ✏️) simgesine dokunun.', isDark),
+                _buildStepTile('2', 'Sağ üstteki "Düzenle" (Kalem ✏️) simgesine dokunun. Samsung Galaxy cihazlarda "Tam" panelini veya "Kontrol Ekle / Düğmeleri Düzenle" (+) butonuna dokunun.', isDark),
                 const SizedBox(height: 10),
-                _buildStepTile('3', 'Aşağıdaki kullanılabilir butonlardan "HydroSoft Su Ekle" kutucuğunu bulun.', isDark),
+                _buildStepTile('3', 'Eklenebilir butonlar arasından "$presetEmoji HydroSoft Su Ekle" kutucuğunu bulun.', isDark),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF451A03) : const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF78350F) : const Color(0xFFFDE68A),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('⚠️', style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Önemli (Samsung): Kutucuğa tek dokunursanız (tıklarsanız) Android uygulamayı açar ve panel kapanır! Tıklamak yerine kutucuğa parmağınızı BASILI TUTUN.',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E),
+                            height: 1.35,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 10),
-                _buildStepTile('4', 'Kutucuğu basılı tutarak yukarıya aktif kutucukların arasına sürükleyin.', isDark),
+                _buildStepTile('4', 'Kutucuğu BASILI TUTARAK yukarıya aktif kutucukların arasına sürükleyip bırakın ve "Bitti"ye dokunun.', isDark),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -93,10 +189,9 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final bottomInset = MediaQuery.of(ctx).viewPadding.bottom;
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 24 + bottomInset),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,6 +347,8 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final p1Meta = WaterProvider.getPresetMeta(provider.preset1);
+    final p1Emoji = p1Meta['emoji'] ?? '💧';
 
     return SettingsCardWrapper(
       title: 'Android Hızlı Kontroller 🤖',
@@ -324,7 +421,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Bildirim çubuğunda "💧 +250 ml Su Ekle" kutucuğu hazır.',
+                          'Bildirim çubuğunda "$p1Emoji +${provider.preset1} ml Su Ekle" kutucuğu hazır.',
                           style: TextStyle(
                             fontSize: 11,
                             color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF047857),
@@ -338,8 +435,27 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => _handleAutoAddTile(context, isDark, provider.preset1),
+                  icon: const Icon(Icons.flash_on_rounded, size: 16),
+                  label: const Text(
+                    '⚡ Hızlı Ayarlara Otomatik Ekle (1 Dokunuş)',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF10B981),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _showTileSetupModal(context, isDark),
+                  onPressed: () => _showTileSetupModal(context, isDark, provider.preset1, p1Emoji),
                   icon: const Icon(Icons.help_outline_rounded, size: 15),
                   label: const Text('Nasıl Eklenir? (Adım Adım Kılavuz)', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600)),
                   style: OutlinedButton.styleFrom(
@@ -380,7 +496,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
-                      Icons.touch_app_rounded,
+                      Icons.app_shortcut_rounded,
                       color: Color(0xFF0288D1),
                       size: 20,
                     ),
@@ -400,7 +516,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Ana ekranda HydroSoft ikonuna uzun basarak veya aşağıdaki kısayol butonlarına dokunarak anında çalıştırın (ana ekrana sabitlemek için basılı tutun):',
+                          'Telefonunuzun ana ekranında HydroSoft uygulama simgesine parmağınızı basılı tuttuğunuzda açılan hazır kısayollar:',
                           style: TextStyle(
                             fontSize: 11,
                             color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
@@ -421,73 +537,51 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                     context,
                     emoji: '🥛',
                     label: '+200 ml Bardak',
-                    shortcutId: 'shortcut_cup_200',
                     isDark: isDark,
-                    onTap: () async {
-                      await provider.addWater(200);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('💧 +200 ml Bardak su başarıyla eklendi!'),
-                            backgroundColor: Color(0xFF0288D1),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
                   ),
                   _buildShortcutChip(
                     context,
                     emoji: '🥤',
                     label: '+330 ml Şişe',
-                    shortcutId: 'shortcut_bottle_330',
                     isDark: isDark,
-                    onTap: () async {
-                      await provider.addWater(330);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('💧 +330 ml Şişe su başarıyla eklendi!'),
-                            backgroundColor: Color(0xFF0288D1),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
                   ),
                   _buildShortcutChip(
                     context,
                     emoji: '🫙',
                     label: '+500 ml Büyük',
-                    shortcutId: 'shortcut_bottle_500',
                     isDark: isDark,
-                    onTap: () async {
-                      await provider.addWater(500);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('💧 +500 ml Büyük su başarıyla eklendi!'),
-                            backgroundColor: Color(0xFF0288D1),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
                   ),
                   _buildShortcutChip(
                     context,
                     emoji: '📊',
                     label: 'İstatistikler',
-                    shortcutId: 'shortcut_history_stats',
                     isDark: isDark,
-                    onTap: () {
-                      mainNavigationKey.currentState?.setTabIndex(1);
-                    },
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline_rounded, size: 14, color: Color(0xFF0288D1)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '💡 Bilgi: Bu kısayollar telefonunuzun ana ekranında çalışır. Ana ekranda HydroSoft simgesine 1 saniye basılı tuttuğunuzda açılan menüden doğrudan işlem yapabilirsiniz.',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
+                          height: 1.35,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -727,30 +821,23 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
     BuildContext context, {
     required String emoji,
     required String label,
-    required String shortcutId,
     required bool isDark,
-    required VoidCallback onTap,
   }) {
     return Material(
       color: isDark ? const Color(0xFF1E293B) : Colors.white,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap: onTap,
-        onLongPress: () async {
-          final pinned = await WidgetService().pinAndroidShortcut(shortcutId);
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  pinned
-                      ? '📌 "$label" kısayolu için ana ekrana ekleme penceresi açıldı!'
-                      : 'Ana ekranda HydroSoft ikonuna basılı tutup "$label" kısayolunu sürükleyerek ana ekrana bırakabilirsiniz.',
-                ),
-                backgroundColor: pinned ? const Color(0xFF10B981) : const Color(0xFF0288D1),
-                behavior: SnackBarBehavior.floating,
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '💡 "$label" kısayolunu kullanmak için telefonunuzun ana ekranında HydroSoft simgesine parmağınızı basılı tutun.',
               ),
-            );
-          }
+              backgroundColor: const Color(0xFF0288D1),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 3),
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(10),
         child: Container(
@@ -774,12 +861,6 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0288D1),
                 ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.touch_app_rounded,
-                size: 12,
-                color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
               ),
             ],
           ),

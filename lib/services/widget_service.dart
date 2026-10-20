@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -46,6 +46,22 @@ class WidgetService {
       return pinned ?? false;
     } catch (_) {
       return false;
+    }
+  }
+
+  // Request Android 13+ (API 33+) to add the Quick Settings Tile via native system dialog
+  Future<Map<String, dynamic>> requestAddQuickTile() async {
+    if (kIsWeb || !Platform.isAndroid) {
+      return {'supported': false, 'success': false, 'alreadyAdded': false};
+    }
+    try {
+      final res = await _platformChannel.invokeMethod<Map<dynamic, dynamic>>('requestAddQuickTile');
+      if (res != null) {
+        return Map<String, dynamic>.from(res);
+      }
+      return {'supported': false, 'success': false, 'alreadyAdded': false};
+    } catch (_) {
+      return {'supported': false, 'success': false, 'alreadyAdded': false};
     }
   }
 
@@ -167,6 +183,8 @@ class WidgetService {
     String preset1Emoji = '🥛',
     String preset2Emoji = '🥤',
     String preset3Emoji = '🫙',
+    String widgetTheme = 'ocean',
+    String mascotType = 'vitality',
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
@@ -190,6 +208,8 @@ class WidgetService {
       await HomeWidget.saveWidgetData<String>('preset1Emoji', preset1Emoji);
       await HomeWidget.saveWidgetData<String>('preset2Emoji', preset2Emoji);
       await HomeWidget.saveWidgetData<String>('preset3Emoji', preset3Emoji);
+      await HomeWidget.saveWidgetData<String>('widgetTheme', widgetTheme);
+      await HomeWidget.saveWidgetData<String>('mascotType', mascotType);
 
       if (Platform.isIOS) {
         try {
@@ -209,6 +229,8 @@ class WidgetService {
             'preset1Emoji': preset1Emoji,
             'preset2Emoji': preset2Emoji,
             'preset3Emoji': preset3Emoji,
+            'widgetTheme': widgetTheme,
+            'mascotType': mascotType,
           });
         } catch (e) {
           debugPrint('syncIosWidgetData error: $e');

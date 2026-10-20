@@ -52,6 +52,21 @@ class SoundService {
       icon: '✨',
       path: 'sounds/sound_energy_chime.wav',
     ),
+    PresetSound(
+      name: 'Huzurlu Yağmur',
+      icon: '🌧️',
+      path: 'sounds/sound_gentle_rain.wav',
+    ),
+    PresetSound(
+      name: 'Nehir Akıntısı',
+      icon: '🏞️',
+      path: 'sounds/sound_river_stream.wav',
+    ),
+    PresetSound(
+      name: 'Tibet Kasesi & Zen',
+      icon: '🧘',
+      path: 'sounds/sound_tibetan_bowl.wav',
+    ),
   ];
 
   // Trigger native hardware vibration + Taptic Engine burst (works in Silent Mode on both iOS & Android)
@@ -133,6 +148,18 @@ class SoundService {
   // Play badge celebration chime sound effect
   Future<void> playBadgeCelebrationSound() async {
     try {
+      await _effectPlayer.stop();
+      await _effectPlayer.setReleaseMode(ReleaseMode.release);
+      await _effectPlayer.play(AssetSource('sounds/sound_energy_chime.wav'));
+    } catch (_) {}
+  }
+
+  // Play daily goal reached celebration sound effect + multi-stage haptic fanfare
+  Future<void> playGoalReachedCelebrationSound() async {
+    try {
+      HapticFeedback.heavyImpact();
+      Future.delayed(const Duration(milliseconds: 140), () => HapticFeedback.mediumImpact());
+      Future.delayed(const Duration(milliseconds: 280), () => HapticFeedback.lightImpact());
       await _effectPlayer.stop();
       await _effectPlayer.setReleaseMode(ReleaseMode.release);
       await _effectPlayer.play(AssetSource('sounds/sound_energy_chime.wav'));

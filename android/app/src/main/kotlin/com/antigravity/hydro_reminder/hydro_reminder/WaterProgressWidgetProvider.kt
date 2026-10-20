@@ -1,4 +1,4 @@
-﻿package com.antigravity.hydro_reminder.hydro_reminder
+package com.antigravity.hydro_reminder.hydro_reminder
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -28,32 +28,37 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
 
             val defaultEmoji = when {
                 percent >= 100 -> "🥳"
-                percent >= 75 -> "😎"
-                percent >= 50 -> "😊"
-                percent >= 25 -> "🙂"
+                percent >= 70 -> "😎"
+                percent >= 35 -> "😊"
+                percent > 0 -> "🙂"
                 else -> "🥱"
             }
             val defaultSub = when {
                 percent >= 100 -> "Tebrikler! Günlük su hedefini tamamladın!"
-                percent >= 75 -> "Neredeyse tamamladın! Enerjin tam yerinde."
-                percent >= 50 -> "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
-                percent >= 25 -> "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
+                percent >= 70 -> "Neredeyse tamamladın! Enerjin tam yerinde."
+                percent >= 35 -> "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
+                percent > 0 -> "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
                 else -> "Güne susuz başladın! Hemen bir bardak su al."
             }
 
-            val validEmojis = setOf("🥱", "🙂", "😊", "😎", "🥳")
             val syncedEmoji = widgetData.getString("mascotEmoji", defaultEmoji) ?: defaultEmoji
-            val mascotEmoji = if (validEmojis.contains(syncedEmoji)) syncedEmoji else defaultEmoji
+            val mascotEmoji = if (syncedEmoji.isNotBlank()) syncedEmoji else defaultEmoji
             val mascotSub = widgetData.getString("mascotSubtitle", defaultSub)?.takeIf { it.isNotBlank() } ?: defaultSub
-            val p1Emoji = widgetData.getString("preset1Emoji", "🙂") ?: "🙂"
+            val p1Emoji = widgetData.getString("preset1Emoji", "🥛") ?: "🥛"
             val p2Emoji = widgetData.getString("preset2Emoji", "🥤") ?: "🥤"
+            val widgetTheme = widgetData.getString("widgetTheme", "ocean") ?: "ocean"
 
-            // Dynamic Duolingo-style background gradient based on hydration %
-            val bgRes = when {
-                percent >= 100 -> R.drawable.widget_card_bg_emerald
-                percent >= 75 -> R.drawable.widget_card_bg_teal
-                percent >= 25 -> R.drawable.widget_card_bg_ocean
-                else -> R.drawable.widget_card_bg
+            // Theme-aware and progress-aware background gradient
+            val bgRes = when (widgetTheme) {
+                "glass" -> R.drawable.widget_card_bg_glass
+                "neon" -> R.drawable.widget_card_bg_neon
+                "emerald" -> R.drawable.widget_card_bg_forest
+                else -> when {
+                    percent >= 100 -> R.drawable.widget_card_bg_emerald
+                    percent >= 75 -> R.drawable.widget_card_bg_teal
+                    percent >= 25 -> R.drawable.widget_card_bg_ocean
+                    else -> R.drawable.widget_card_bg
+                }
             }
             views.setInt(R.id.widget_progress_root, "setBackgroundResource", bgRes)
 

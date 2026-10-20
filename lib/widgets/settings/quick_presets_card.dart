@@ -77,7 +77,7 @@ class QuickPresetsCard extends StatelessWidget {
     }
 
     return SettingsCardWrapper(
-      title: 'Hızlı Su Ekleme Miktarları',
+      title: 'Hızlı Su Ekleme Paneli',
       titleTrailing: const Icon(Icons.local_drink_outlined, color: Color(0xFF38BDF8)),
       children: [
         Text(

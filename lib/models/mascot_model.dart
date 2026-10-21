@@ -181,6 +181,44 @@ class MascotEnergyLadder {
                 : 'Tam şarj olduk! Parkta neşeyle zıplamaya hazırım! 🎾🌟',
           };
       }
+    } else if (mascotId == 'penguin') {
+      switch (tier) {
+        case MascotEnergyTier.energy0:
+          return {
+            'title': isEn ? 'Zero Energy • Ice Melted' : 'Sıfır Enerji • Buzlar Eridi',
+            'message': isEn
+                ? 'Ice melted, feeling totally drained! Please give me a cold glass of water! 🧊'
+                : 'Buzlarım eridi, takatim kalmadı! Lütfen hemen soğuk bir bardak su ver! 🧊',
+          };
+        case MascotEnergyTier.energy25:
+          return {
+            'title': isEn ? 'First Sip • Cool Start' : 'İlk Yudum • Serin Başlangıç',
+            'message': isEn
+                ? 'First ice-cold sip felt amazing! Slowly waddling back to my feet.'
+                : 'Buz gibi ilk yudum harika geldi! Yavaş yavaş ayaklanıyorum.',
+          };
+        case MascotEnergyTier.energy50:
+          return {
+            'title': isEn ? 'Half Energy • Scarf On' : 'Yarı Enerji • Atkı Takıldı',
+            'message': isEn
+                ? 'Red scarf on! Tank half full, ready to slide onto the ice rink!'
+                : 'Kırmızı atkımı taktım, yarı depoyla buz pistine çıkmaya hazırım!',
+          };
+        case MascotEnergyTier.energy75:
+          return {
+            'title': isEn ? 'High Vitality • Glacier Slide' : 'Yüksek Canlılık • Buz Kaydırağı',
+            'message': isEn
+                ? 'Sunglasses on, belly-sliding straight towards the goal! 🏄❄️'
+                : 'Gözlükler takıldı, göbeğimin üstünde hedefe doğru kayıyorum! 🏄❄️',
+          };
+        case MascotEnergyTier.energy100:
+          return {
+            'title': isEn ? 'Full Charge • Polar Champion' : 'Tam Şarj • Kutup Şampiyonu',
+            'message': isEn
+                ? 'Polar wave conquered! At the summit with a crystal chalice, awesome! 👑❄️'
+                : 'Kutup dalgasını yakaladık! Kristal kadehle zirvedeyiz, harikasın! 👑❄️',
+          };
+      }
     }
 
     // Generic Fallback
@@ -296,7 +334,7 @@ class MascotCatalog {
     personalityTr: 'Kutup soğukluğunu ve buz gibi suları seven serin dost.',
     personalityEn: 'Loves arctic chill and ice-cold fresh water.',
     emoji: '🐧',
-    defaultImageAsset: 'assets/mascots/penguin_workout.png',
+    defaultImageAsset: 'assets/mascots/penguin_morning.png',
   );
 
   static const MascotCharacter panda = MascotCharacter(
@@ -670,12 +708,16 @@ class MascotResolver {
                 ? "Trophy raised, confetti bursting! You are today's hydration champion! 🏆🎉"
                 : (mascot.id == 'dog'
                     ? "Trophy won, confetti flying! You are today's hydration champion! 🏆🎉"
-                    : 'Congratulations! You reached your daily goal!'))
+                    : (mascot.id == 'penguin'
+                        ? "Polar trophy raised, confetti on ice! You are today's hydration champion! 🏆❄️"
+                        : 'Congratulations! You reached your daily goal!')))
             : (mascot.id == 'cat'
                 ? 'Kupayı kaldırdık, konfetiler patladı! Günün şampiyon kedisi sensin! 🏆🎉'
                 : (mascot.id == 'dog'
                     ? 'Kupayı kaptık, konfetiler havada! Günün şampiyon köpüşü sensin! 🏆🎉'
-                    : 'Tebrikler! Günlük su hedefini tamamladın!'));
+                    : (mascot.id == 'penguin'
+                        ? 'Buz kupasını kaldırdık, konfetiler havada! Günün kutup şampiyonu sensin! 🏆❄️'
+                        : 'Tebrikler! Günlük su hedefini tamamladın!')));
         break;
 
       case MascotState.thirsty:
@@ -723,14 +765,14 @@ class MascotResolver {
                 : (mascot.id == 'dog'
                     ? "Waking up with tail wags! Let's start the day with a fresh glass of water."
                     : (mascot.id == 'penguin'
-                        ? 'Waddling towards the goal! First sip was great.'
+                        ? "Waddling out of the igloo! Let's start the day with a cold glass of glacier water."
                         : 'Good morning! Kickstart your body with fresh water.')))
             : (mascot.id == 'cat'
                 ? 'Mırrr... Gerinme vakti! Güne 1 bardak taze suyla enerjik başlayalım.'
                 : (mascot.id == 'dog'
                     ? 'Kuyruk sallayarak uyandık! Güne 1 bardak taze suyla enerjik başlayalım.'
                     : (mascot.id == 'penguin'
-                        ? 'Paytak adımlarla hedefe! İlk yudum harika.'
+                        ? 'İglodan paytak adımlarla çıktık! Güne 1 bardak buz gibi taze suyla başlayalım.'
                         : 'Günaydın! Güne 1 bardak taze suyla enerjik başla.')));
         break;
 
@@ -742,14 +784,14 @@ class MascotResolver {
                 : (mascot.id == 'dog'
                     ? 'Glasses on, paws on keyboard! Keep your water close at the desk.'
                     : (mascot.id == 'penguin'
-                        ? 'Cool as the ocean! Gliding with the waves.'
+                        ? 'Round glasses on, igloo desk mode! Sip cold water while focusing.'
                         : 'Send fresh oxygen to your brain with a crisp sip.')))
             : (mascot.id == 'cat'
                 ? 'Gözlükler takıldı, çalışma başladı! Masa başında suyunu yudumlamayı unutma.'
                 : (mascot.id == 'dog'
                     ? 'Gözlükler takıldı, patiler klavyede! Masa başında suyunu yudumlamayı unutma.'
                     : (mascot.id == 'penguin'
-                        ? 'Serin sular gibisin! Dalgalarla akıyoruz.'
+                        ? 'Yuvarlak gözlükler takıldı, masa başı odaklanma! Soğuk suyunu yudumlamayı unutma.'
                         : 'Beynine taze bir yudum oksijen gönder, zihnin açılsın.')));
         break;
 
@@ -768,14 +810,14 @@ class MascotResolver {
                 : (mascot.id == 'dog'
                     ? 'Red headband on, workout mode! Keep your hydration high while running.'
                     : (mascot.id == 'penguin'
-                        ? 'Catching the polar wave! Summit is so close.'
+                        ? 'Red sweatband on, sliding workout! Keep your stamina high with glacier water.'
                         : 'Active day! Maintain your hydration and stamina.')))
             : (mascot.id == 'cat'
                 ? 'Spor bandı takıldı, tempo yükseldi! Enerjini korumak için suyunu ihmal etme.'
                 : (mascot.id == 'dog'
                     ? 'Kırmızı kafa bandı takıldı, tempo yükseldi! Koşarken suyunu ihmal etme.'
                     : (mascot.id == 'penguin'
-                        ? 'Kutup dalgasını yakaladık! Zirve çok yakın.'
+                        ? 'Kırmızı alın bandı takıldı, tempo yükseldi! Buzda kayarken suyunu ihmal etme.'
                         : 'Günün temposu yüksek! Enerjini korumak için suyunu ihmal etme.')));
         break;
 
@@ -787,14 +829,14 @@ class MascotResolver {
                 : (mascot.id == 'dog'
                     ? 'Curled up in armchair... Unwind from the day with a fresh cup of water.'
                     : (mascot.id == 'penguin'
-                        ? 'Catching the polar wave! Summit is so close.'
+                        ? 'Cozy blanket on the armchair... Unwind from the day with a cold cup of water.'
                         : 'Unwind from today. Just a couple of cups left to finish.')))
             : (mascot.id == 'cat'
                 ? 'Koltukta huzurlu mırıltılar... Günün yorgunluğunu taze bir bardak suyla atalım.'
                 : (mascot.id == 'dog'
                     ? 'Koltukta kıvrılıp dinlenme vakti... Günün yorgunluğunu taze bir bardak suyla atalım.'
                     : (mascot.id == 'penguin'
-                        ? 'Kutup dalgasını yakaladık! Zirve çok yakın.'
+                        ? 'Koltukta battaniyeye sarılıp dinlenme vakti... Günün yorgunluğunu taze suyla atalım.'
                         : 'Günün yorgunluğunu atıyoruz. Hedefe ulaşmaya çok az kaldı!')));
         break;
 
@@ -805,12 +847,16 @@ class MascotResolver {
                 ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
                 : (mascot.id == 'dog'
                     ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
-                    : '$streakDays days strong! Keep this legendary habit blazing!'))
+                    : (mascot.id == 'penguin'
+                        ? '$streakDays days strong! Polar superhero protecting the flames! 🔥❄️'
+                        : '$streakDays days strong! Keep this legendary habit blazing!')))
             : (mascot.id == 'cat'
                 ? '$streakDays günlük seriyi süper kahraman gibi koruyoruz! Alevler sönmesin! 🔥'
                 : (mascot.id == 'dog'
                     ? '$streakDays günlük seriyi süper kahraman peleriniyle koruyoruz! Alevler sönmesin! 🔥'
-                    : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın!'));
+                    : (mascot.id == 'penguin'
+                        ? '$streakDays günlük seriyi kutup peleriniyle koruyoruz! Alevler sönmesin! 🔥❄️'
+                        : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın!')));
         break;
     }
 
@@ -835,10 +881,10 @@ class MascotResolver {
         state == MascotState.thirsty;
 
     // Primary Image Selection:
-    // When a mascot has an energy ladder (Cat and Dog), hydration level energy ladder has
+    // When a mascot has an energy ladder (Cat, Dog, Penguin), hydration level energy ladder has
     // absolute priority on the in-app screen and widgets!
     // Time-based routine events (bedtime, afternoon slump) do NOT override the user's water energy progress.
-    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog';
+    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog' || mascot.id == 'penguin';
     final String resolvedImageAsset;
     final String finalTitle;
     final String finalMessage;

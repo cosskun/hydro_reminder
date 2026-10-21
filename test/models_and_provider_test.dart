@@ -365,15 +365,42 @@ void main() {
     });
   });
 
-  group('Hydration Energy Ladder (Cat & Dog 5 Tiers) Tests', () {
-    test('All 5 Cat and Dog energy ladder image assets exist on disk', () {
-      final catEnergyTiers = [0, 25, 50, 75, 100];
-      for (final step in catEnergyTiers) {
+  group('Pip (Polar Penguin) 10 States & Asset Tests', () {
+    test('All 10 states resolve to valid penguin assets that exist on disk', () {
+      final expectedAssets = {
+        MascotState.morning: 'assets/mascots/penguin_morning.png',
+        MascotState.workFocus: 'assets/mascots/penguin_work_focus.png',
+        MascotState.lunch: 'assets/mascots/penguin_lunch.png',
+        MascotState.afternoonSlump: 'assets/mascots/penguin_afternoon_slump.png',
+        MascotState.workout: 'assets/mascots/penguin_workout.png',
+        MascotState.evening: 'assets/mascots/penguin_evening.png',
+        MascotState.bedtime: 'assets/mascots/penguin_bedtime.png',
+        MascotState.goalReached: 'assets/mascots/penguin_goal_reached.png',
+        MascotState.thirsty: 'assets/mascots/penguin_thirsty.png',
+        MascotState.streakFire: 'assets/mascots/penguin_streak_fire.png',
+      };
+
+      for (final state in MascotState.values) {
+        final expected = expectedAssets[state]!;
+        final actual = 'assets/mascots/penguin_${state.assetSuffix}.png';
+        expect(actual, expected);
+        expect(File(actual).existsSync(), isTrue, reason: '$actual should exist on disk');
+      }
+    });
+  });
+
+  group('Hydration Energy Ladder (Cat, Dog & Penguin 5 Tiers) Tests', () {
+    test('All 5 Cat, Dog and Penguin energy ladder image assets exist on disk', () {
+      final energyTiers = [0, 25, 50, 75, 100];
+      for (final step in energyTiers) {
         final catAsset = 'assets/mascots/cat_energy_$step.png';
         expect(File(catAsset).existsSync(), isTrue, reason: '$catAsset must exist');
 
         final dogAsset = 'assets/mascots/dog_energy_$step.png';
         expect(File(dogAsset).existsSync(), isTrue, reason: '$dogAsset must exist');
+
+        final penguinAsset = 'assets/mascots/penguin_energy_$step.png';
+        expect(File(penguinAsset).existsSync(), isTrue, reason: '$penguinAsset must exist');
       }
     });
 
@@ -397,12 +424,26 @@ void main() {
         isEn: false,
       );
       expect(dog100['title'], contains('Tam Şarj'));
+
+      final penguin0 = MascotEnergyLadder.getDialogue(
+        mascotId: 'penguin',
+        tier: MascotEnergyTier.energy0,
+        isEn: false,
+      );
+      expect(penguin0['title'], contains('Buzlar Eridi'));
+
+      final penguin100 = MascotEnergyLadder.getDialogue(
+        mascotId: 'penguin',
+        tier: MascotEnergyTier.energy100,
+        isEn: false,
+      );
+      expect(penguin100['title'], contains('Kutup Şampiyonu'));
     });
 
     test('Energy ladder has absolute priority on dashboard even during bedtime hours (22:00+)', () {
       final nightTime = DateTime(2026, 1, 1, 23, 15);
 
-      // At 24% intake during bedtime hours
+      // At 24% intake during bedtime hours (Cat)
       final status24 = WaterProvider.getHydrationStatus(
         0.24,
         mascotType: 'cat',
@@ -411,6 +452,18 @@ void main() {
       expect(status24['imageAsset'], 'assets/mascots/cat_energy_25.png');
       expect(status24['routineImageAsset'], 'assets/mascots/cat_bedtime.png');
       expect(status24['title'], contains('İlk Yudum'));
+      expect(status24['routineTitle'], 'Hadi son bir yudum!');
+
+      // At 24% intake during bedtime hours (Penguin)
+      final penguinStatus24 = WaterProvider.getHydrationStatus(
+        0.24,
+        mascotType: 'penguin',
+        now: nightTime,
+      );
+      expect(penguinStatus24['imageAsset'], 'assets/mascots/penguin_energy_25.png');
+      expect(penguinStatus24['routineImageAsset'], 'assets/mascots/penguin_bedtime.png');
+      expect(penguinStatus24['title'], contains('İlk Yudum'));
+      expect(penguinStatus24['routineTitle'], 'Hadi son bir yudum!');
       expect(status24['routineTitle'], 'Hadi son bir yudum!');
 
       // At 80% intake during bedtime hours (Energy 75)

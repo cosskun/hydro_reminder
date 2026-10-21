@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+16: Ayarlar akışı yeniden sıralandı, One UI Hızlı Ayarlar tek dokunuş entegrasyonu, yasal ve bilgi modalları alt panel hizalaması yapıldı, yeni maskotlar, widget temaları ve meditasyon sesleri eklendi."
+          releaseNotes: "Hydro Reminder v1.0.0+28: Su içtikçe seviye atlayan 5 kademeli Maskot Enerji Merdiveni, yeni Kahverengi Poodle (Buddy) maskotu ve interaktif durum kartı entegrasyonu."

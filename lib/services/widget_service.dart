@@ -197,7 +197,7 @@ class WidgetService {
     String preset2Emoji = '🥤',
     String preset3Emoji = '🫙',
     String widgetTheme = 'ocean',
-    String mascotType = 'vitality',
+    String mascotType = 'cat',
     String? imageAsset,
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
@@ -208,10 +208,7 @@ class WidgetService {
       } catch (_) {}
 
       String? mascotBase64;
-      if (imageAsset != null &&
-          imageAsset.isNotEmpty &&
-          mascotType != 'vitality' &&
-          mascotType != 'plant') {
+      if (imageAsset != null && imageAsset.isNotEmpty) {
         try {
           final ByteData byteData = await rootBundle.load(imageAsset);
           final rawBytes = byteData.buffer.asUint8List();

@@ -82,7 +82,7 @@ class WaterProvider with ChangeNotifier {
   bool _isSmartPacingEnabled = true;
 
   // Custom Mascot, Widget Theme, and App Language
-  String _mascotType = 'vitality';
+  String _mascotType = 'cat';
   String _widgetTheme = 'ocean';
   String _language = 'tr';
 
@@ -111,7 +111,7 @@ class WaterProvider with ChangeNotifier {
   // Unified Hydration Status (used by DashboardScreen and Android/iOS Widgets so characters & texts are 100% in sync)
   static Map<String, String> getHydrationStatus(
     double percentage, {
-    String mascotType = 'vitality',
+    String mascotType = 'cat',
     String lang = 'tr',
     int streakDays = 0,
     DateTime? lastLogTime,

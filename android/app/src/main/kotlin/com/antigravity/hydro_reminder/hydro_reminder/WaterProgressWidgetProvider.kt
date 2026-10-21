@@ -68,10 +68,10 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
             views.setProgressBar(R.id.pb_water_progress, 100, percent.coerceIn(0, 100), false)
 
             val base64Str = widgetData.getString("mascotBase64", null)
-            val mascotType = widgetData.getString("mascotType", "vitality") ?: "vitality"
+            val mascotType = widgetData.getString("mascotType", "cat") ?: "cat"
             var bitmapLoaded = false
 
-            if (mascotType != "vitality" && mascotType != "plant" && !base64Str.isNullOrBlank()) {
+            if (!base64Str.isNullOrBlank()) {
                 try {
                     val imageBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
                     val bitmap = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)

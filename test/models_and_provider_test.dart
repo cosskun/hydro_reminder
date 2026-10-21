@@ -125,16 +125,16 @@ void main() {
 
   group('Mascot & Multi-language Hydration Status Tests', () {
     test('Default vitality mascot returns expected emojis and messages', () {
-      final s0 = WaterProvider.getHydrationStatus(0.0);
+      final s0 = WaterProvider.getHydrationStatus(0.0, mascotType: 'vitality');
       expect(s0['emoji'], '🥱');
       expect(s0['message'], 'Güne susuz başladın! Hemen bir bardak su al.');
 
       // 1 or 2 glasses of water (e.g. 21% / 400ml) immediately switches to step 1
-      final s20 = WaterProvider.getHydrationStatus(0.21);
+      final s20 = WaterProvider.getHydrationStatus(0.21, mascotType: 'vitality');
       expect(s20['emoji'], '🙂');
       expect(s20['message'], 'İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun.');
 
-      final s100 = WaterProvider.getHydrationStatus(1.0);
+      final s100 = WaterProvider.getHydrationStatus(1.0, mascotType: 'vitality');
       expect(s100['emoji'], '🥳');
       expect(s100['message'], 'Tebrikler! Günlük su hedefini tamamladın!');
     });
@@ -210,7 +210,7 @@ void main() {
 
     test('Saves and loads custom mascot type', () async {
       final storage = StorageService();
-      expect(await storage.getMascotType(), 'vitality');
+      expect(await storage.getMascotType(), 'cat');
       await storage.saveMascotType('penguin');
       expect(await storage.getMascotType(), 'penguin');
     });

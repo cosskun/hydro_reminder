@@ -426,7 +426,14 @@ class StorageService {
 
   Future<String> getMascotType() async {
     final prefs = _prefsSync;
-    return prefs.getString(_keyMascotType) ?? 'vitality';
+    final val = prefs.getString(_keyMascotType);
+    if (val == null || val == 'vitality' || val == 'plant') {
+      return 'cat';
+    }
+    if (val == 'owl') {
+      return 'squirrel';
+    }
+    return val;
   }
 
   Future<void> saveWidgetTheme(String theme) async {

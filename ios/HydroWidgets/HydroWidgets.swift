@@ -145,7 +145,7 @@ struct WaterTimelineProvider: TimelineProvider {
             preset2Emoji: "🥤",
             preset3Emoji: "🫙",
             widgetTheme: "ocean",
-            mascotType: "vitality"
+            mascotType: "cat"
         )
     }
 
@@ -216,7 +216,7 @@ struct WaterTimelineProvider: TimelineProvider {
         let p2Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset2Emoji", defaultVal: "🥤")
         let p3Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset3Emoji", defaultVal: "🫙")
         let widgetTheme = stringValue(from: kcDict, prefs: prefs, key: "widgetTheme", defaultVal: "ocean")
-        let mascotType = stringValue(from: kcDict, prefs: prefs, key: "mascotType", defaultVal: "vitality")
+        let mascotType = stringValue(from: kcDict, prefs: prefs, key: "mascotType", defaultVal: "cat")
 
         return WaterWidgetEntry(
             date: Date(),
@@ -372,8 +372,7 @@ struct MascotWidgetView: View {
     let size: CGFloat
 
     var body: some View {
-        if entry.mascotType != "vitality" && entry.mascotType != "plant",
-           let uiImage = getSharedMascotImage() {
+        if let uiImage = getSharedMascotImage() {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFit()

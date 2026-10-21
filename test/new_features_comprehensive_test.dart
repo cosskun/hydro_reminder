@@ -165,20 +165,21 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Check all 4 mascot options are present
-      expect(find.text('Canlılık Yüzleri (Klasik)'), findsOneWidget);
+      // Check all 5 official animal mascot options are present
       expect(find.text('Sevimli Kedi'), findsOneWidget);
+      expect(find.text('Neşeli Köpek'), findsOneWidget);
       expect(find.text('Kutup Pengueni'), findsOneWidget);
-      expect(find.text('Yeşil Filiz & Doğa'), findsOneWidget);
+      expect(find.text('Tembel Panda'), findsOneWidget);
+      expect(find.text('Fındık (Sincap)'), findsOneWidget);
 
-      // 1. Switch to Cat mascot
-      await tester.tap(find.text('Sevimli Kedi'));
+      // 1. Switch to Dog mascot
+      await tester.tap(find.text('Neşeli Köpek'));
       await tester.pumpAndSettle();
-      expect(provider.mascotType, 'cat');
-      expect(await StorageService().getMascotType(), 'cat');
+      expect(provider.mascotType, 'dog');
+      expect(await StorageService().getMascotType(), 'dog');
 
-      final catStatus = WaterProvider.getHydrationStatus(0.0, mascotType: provider.mascotType);
-      expect(catStatus['emoji'], '😿');
+      final dogStatus = WaterProvider.getHydrationStatus(0.0, mascotType: provider.mascotType);
+      expect(dogStatus['emoji'], '🐶');
 
       // 2. Switch to Penguin mascot
       await tester.tap(find.text('Kutup Pengueni'));
@@ -189,20 +190,20 @@ void main() {
       final penguinStatus = WaterProvider.getHydrationStatus(1.0, mascotType: provider.mascotType);
       expect(penguinStatus['emoji'], '👑');
 
-      // 3. Switch to Plant mascot
-      await tester.tap(find.text('Yeşil Filiz & Doğa'));
+      // 3. Switch to Squirrel mascot
+      await tester.tap(find.text('Fındık (Sincap)'));
       await tester.pumpAndSettle();
-      expect(provider.mascotType, 'plant');
-      expect(await StorageService().getMascotType(), 'plant');
+      expect(provider.mascotType, 'squirrel');
+      expect(await StorageService().getMascotType(), 'squirrel');
 
-      final plantStatus = WaterProvider.getHydrationStatus(0.20, mascotType: provider.mascotType);
-      expect(plantStatus['emoji'], '🌱');
+      final squirrelStatus = WaterProvider.getHydrationStatus(1.0, mascotType: provider.mascotType);
+      expect(squirrelStatus['emoji'], '👑');
 
-      // 4. Switch back to Vitality
-      await tester.tap(find.text('Canlılık Yüzleri (Klasik)'));
+      // 4. Switch back to Cat
+      await tester.tap(find.text('Sevimli Kedi'));
       await tester.pumpAndSettle();
-      expect(provider.mascotType, 'vitality');
-      expect(await StorageService().getMascotType(), 'vitality');
+      expect(provider.mascotType, 'cat');
+      expect(await StorageService().getMascotType(), 'cat');
     });
   });
 

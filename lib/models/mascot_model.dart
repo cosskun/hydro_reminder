@@ -14,6 +14,33 @@ enum MascotState {
   streakFire, // 3+ days streak, flame cape, superpower
 }
 
+extension MascotStateExtension on MascotState {
+  String get assetSuffix {
+    switch (this) {
+      case MascotState.morning:
+        return 'morning';
+      case MascotState.workFocus:
+        return 'work_focus';
+      case MascotState.lunch:
+        return 'lunch';
+      case MascotState.afternoonSlump:
+        return 'afternoon_slump';
+      case MascotState.workout:
+        return 'workout';
+      case MascotState.evening:
+        return 'evening';
+      case MascotState.bedtime:
+        return 'bedtime';
+      case MascotState.goalReached:
+        return 'goal_reached';
+      case MascotState.thirsty:
+        return 'thirsty';
+      case MascotState.streakFire:
+        return 'streak_fire';
+    }
+  }
+}
+
 /// Mascot character representation
 class MascotCharacter {
   final String id;
@@ -130,13 +157,11 @@ class MascotCatalog {
   );
 
   static const List<MascotCharacter> allMascots = [
-    vitality,
     cat,
     dog,
     penguin,
     panda,
     squirrel,
-    plant,
   ];
 
   static MascotCharacter getById(String id) {
@@ -578,7 +603,7 @@ class MascotResolver {
         break;
     }
 
-    final imageAsset = 'assets/mascots/${mascot.id}_${state.name}.png';
+    final imageAsset = 'assets/mascots/${mascot.id}_${state.assetSuffix}.png';
 
     return MascotDialogue(
       title: title,

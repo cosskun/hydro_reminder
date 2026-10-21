@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+28: Su içtikçe seviye atlayan 5 kademeli Maskot Enerji Merdiveni, yeni Kahverengi Poodle (Buddy) maskotu ve interaktif durum kartı entegrasyonu."
+          releaseNotes: "Hydro Reminder v1.0.0+29: Apple araç takımları (Widget) Duolingo tarzı dev kahraman maskot ve büyük slogan tipografisi ile baştan tasarlandı. 512px ultra net vektör görsel kalitesi."

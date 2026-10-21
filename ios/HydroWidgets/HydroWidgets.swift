@@ -24,6 +24,7 @@ struct WaterWidgetEntry: TimelineEntry {
     let dayLabels: [String]
     let dayStatuses: [Int]
     let mascotEmoji: String
+    let mascotTitle: String
     let mascotSubtitle: String
     let preset1Emoji: String
     let preset2Emoji: String
@@ -140,6 +141,7 @@ struct WaterTimelineProvider: TimelineProvider {
             dayLabels: ["Pe", "Cu", "Ct", "Pa", "Pt"],
             dayStatuses: [0, 0, 2, 2, 1],
             mascotEmoji: "😊",
+            mascotTitle: "Hadi son bir yudum!",
             mascotSubtitle: "Harika gidiyorsun! Vücudun sana teşekkür ediyor.",
             preset1Emoji: "🥛",
             preset2Emoji: "🥤",
@@ -190,27 +192,49 @@ struct WaterTimelineProvider: TimelineProvider {
 
         // Synchronized with DashboardScreen & WaterProvider.getHydrationStatus
         let statusEmoji: String
+        let statusTitle: String
         let statusSub: String
         if percent >= 100 {
             statusEmoji = "🥳"
+            statusTitle = "İşte bu, şampiyon!"
             statusSub = "Tebrikler! Günlük su hedefini tamamladın!"
         } else if percent >= 70 {
             statusEmoji = "😎"
-            statusSub = "Neredeyse tamamladın! Enerjin tam yerinde."
+            statusTitle = "Neredeyse tamamladın!"
+            statusSub = "Enerjin tam yerinde, zirve çok yakın."
         } else if percent >= 35 {
             statusEmoji = "😊"
-            statusSub = "Harika gidiyorsun! Vücudun sana teşekkür ediyor."
+            statusTitle = "Harika gidiyorsun!"
+            statusSub = "Vücudun sana teşekkür ediyor."
         } else if percent > 0 {
             statusEmoji = "🙂"
-            statusSub = "İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun."
+            statusTitle = "İlk adımı attın!"
+            statusSub = "Yavaş yavaş hedefe ilerliyorsun."
         } else {
             statusEmoji = "🥱"
-            statusSub = "Güne susuz başladın! Hemen bir bardak su al."
+            statusTitle = "Güne susuz başladın!"
+            statusSub = "Hemen bir bardak su al."
         }
 
         let syncedEmoji = stringValue(from: kcDict, prefs: prefs, key: "mascotEmoji", defaultVal: statusEmoji)
         let finalEmoji = syncedEmoji.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? statusEmoji : syncedEmoji
-        let finalSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
+        let syncedTitle = stringValue(from: kcDict, prefs: prefs, key: "mascotTitle", defaultVal: "")
+        let finalTitle: String
+        let finalSub: String
+        if !syncedTitle.isEmpty {
+            finalTitle = syncedTitle
+            finalSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
+        } else {
+            let rawSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
+            let parts = rawSub.components(separatedBy: " • ")
+            if parts.count >= 2 {
+                finalTitle = parts[0]
+                finalSub = parts[1]
+            } else {
+                finalTitle = statusTitle
+                finalSub = rawSub
+            }
+        }
 
         let p1Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset1Emoji", defaultVal: "🥛")
         let p2Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset2Emoji", defaultVal: "🥤")
@@ -231,6 +255,7 @@ struct WaterTimelineProvider: TimelineProvider {
             dayLabels: finalLabels,
             dayStatuses: finalStatuses,
             mascotEmoji: finalEmoji,
+            mascotTitle: finalTitle,
             mascotSubtitle: finalSub,
             preset1Emoji: p1Emoji,
             preset2Emoji: p2Emoji,
@@ -391,6 +416,25 @@ struct MascotWidgetView: View {
     }
 }
 
+// Hero Full-Scale Mascot Display (Duolingo Style - Large, Crisp, Unclipped)
+struct MascotHeroView: View {
+    let entry: WaterWidgetEntry
+    var height: CGFloat? = nil
+    var width: CGFloat? = nil
+
+    var body: some View {
+        if let uiImage = getSharedMascotImage() {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: width, height: height)
+        } else {
+            Text(entry.mascotEmoji)
+                .font(.system(size: (height ?? 70) * 0.65))
+        }
+    }
+}
+
 // 1. Streak, Mascot, Water Bar & 5-Day Checkmark Widget
 struct WaterProgressWidgetEntryView: View {
     var entry: WaterWidgetEntry
@@ -413,98 +457,116 @@ struct WaterProgressWidgetEntryView: View {
                     .tint(.cyan)
             }
         case .systemSmall:
-            ZStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    HStack {
-                        Text("🔥 \(entry.streakDays) gün")
-                            .font(.system(size: 15, weight: .black, design: .rounded))
-                            .foregroundColor(.white)
+            // Duolingo Style Mascot Hero Widget (Small 2x2)
+            ZStack(alignment: .bottom) {
+                // 1. Giant Hero Mascot Character (takes lower 65% of the card)
+                VStack {
+                    Spacer(minLength: 34)
+                    MascotHeroView(entry: entry, height: 104)
+                        .offset(y: 4)
+                }
+
+                // 2. Information & Slogan Overlay
+                VStack(alignment: .leading, spacing: 3) {
+                    // Header: Flame + Streak & Percentage Pill
+                    HStack(alignment: .center) {
+                        HStack(spacing: 3) {
+                            Text("🔥")
+                                .font(.system(size: 15))
+                            Text("\(entry.streakDays)")
+                                .font(.system(size: 17, weight: .black, design: .rounded))
+                                .foregroundColor(.white)
+                        }
                         Spacer()
                         Text("%\(entry.percentage)")
-                            .font(.system(size: 10, weight: .heavy, design: .rounded))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.white.opacity(0.24))
+                            .font(.system(size: 11, weight: .heavy, design: .rounded))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2.5)
+                            .background(Color.black.opacity(0.28))
                             .foregroundColor(.white)
                             .cornerRadius(8)
                     }
 
-                    Text(entry.mascotSubtitle)
-                        .font(.system(size: 10, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color.white.opacity(0.92))
+                    // Slogan Title (Duolingo Style: "Sen hazır uyanıkken...", "Hadi son bir yudum!")
+                    Text(entry.mascotTitle)
+                        .font(.system(size: 13.5, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .shadow(color: Color.black.opacity(0.45), radius: 3, x: 0, y: 1)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .padding(.top, 1)
 
-                    HydroWaterProgressBar(percentage: entry.percentage, height: 6)
+                    Spacer()
 
-                    Spacer(minLength: 0)
-
-                    HStack(alignment: .bottom) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(entry.todayConsumed) ml")
-                                .font(.system(size: 13, weight: .black, design: .rounded))
-                                .foregroundColor(.white)
-                            Link(destination: URL(string: "hydroreminder://log?amount=\(entry.preset1)")!) {
-                                Text("\(entry.preset1Emoji) +\(entry.preset1)")
-                                    .font(.system(size: 10, weight: .heavy, design: .rounded))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.white)
-                                    .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
-                                    .cornerRadius(10)
-                            }
-                        }
+                    // Bottom info pill: Current / Daily Goal
+                    HStack {
+                        Text("\(entry.todayConsumed) / \(entry.dailyGoal) ml")
+                            .font(.system(size: 9.5, weight: .black, design: .rounded))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(Color.black.opacity(0.35))
+                            .cornerRadius(7)
                         Spacer()
-                        ZStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.22))
-                                .frame(width: 44, height: 44)
-                            MascotWidgetView(entry: entry, size: 36)
-                        }
                     }
                 }
+                .padding(11)
             }
             .widgetURL(URL(string: "hydroreminder://open"))
         default:
-            // Medium Card (4x2) with Streak, Water Progress Bar, 5-Day Checkmarks & Mascot Character
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 5) {
+            // Medium Card (4x2) with Streak, Water Progress Bar, 5-Day Checkmarks & GIANT Mascot Hero
+            HStack(spacing: 8) {
+                // Left Column: Stats, Slogans & Actions
+                VStack(alignment: .leading, spacing: 4) {
                     // Streak + Progress Pill
-                    HStack(spacing: 8) {
-                        Text("🔥 \(entry.streakDays) gün")
-                            .font(.system(size: 19, weight: .black, design: .rounded))
-                            .foregroundColor(.white)
+                    HStack(spacing: 6) {
+                        HStack(spacing: 3) {
+                            Text("🔥")
+                                .font(.system(size: 15))
+                            Text("\(entry.streakDays) gün")
+                                .font(.system(size: 16, weight: .black, design: .rounded))
+                                .foregroundColor(.white)
+                        }
                         Text("💧 %\(entry.percentage)")
-                            .font(.system(size: 11, weight: .heavy, design: .rounded))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color.white.opacity(0.24))
+                            .font(.system(size: 10.5, weight: .heavy, design: .rounded))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2.5)
+                            .background(Color.black.opacity(0.24))
                             .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .cornerRadius(8)
                     }
 
-                    // Dynamic Mascot Callout
-                    Text(entry.mascotSubtitle)
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
-                        .foregroundColor(Color.white.opacity(0.95))
-                        .lineLimit(1)
+                    // Slogan Title & Subtitle (Clean & Large)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(entry.mascotTitle)
+                            .font(.system(size: 13.5, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                        if !entry.mascotSubtitle.isEmpty {
+                            Text(entry.mascotSubtitle)
+                                .font(.system(size: 10, weight: .medium, design: .rounded))
+                                .foregroundColor(Color.white.opacity(0.90))
+                                .lineLimit(1)
+                        }
+                    }
 
                     // Live Water Progress Bar (Su Barı)
-                    HydroWaterProgressBar(percentage: entry.percentage, height: 7)
+                    HydroWaterProgressBar(percentage: entry.percentage, height: 6)
 
-                    // 5-Day Checkmark Row (Pe Cu Ct Pa Pt)
-                    HStack(spacing: 7) {
+                    // 5-Day Checkmark Row
+                    HStack(spacing: 6) {
                         ForEach(0..<5, id: \.self) { idx in
                             let isDone = entry.dayStatuses[idx] > 0
-                            VStack(spacing: 2) {
+                            VStack(spacing: 1) {
                                 Text(entry.dayLabels[idx])
-                                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                                    .font(.system(size: 8.5, weight: .bold, design: .rounded))
                                     .foregroundColor(Color.white.opacity(0.85))
                                 ZStack {
                                     Circle()
                                         .fill(isDone ? Color.white.opacity(0.95) : Color.black.opacity(0.22))
-                                        .frame(width: 20, height: 20)
+                                        .frame(width: 18, height: 18)
                                     Text(isDone ? "✓" : "•")
-                                        .font(.system(size: 10, weight: .black))
+                                        .font(.system(size: 9.5, weight: .black))
                                         .foregroundColor(
                                             isDone
                                                 ? Color(red: 0.01, green: 0.41, blue: 0.63)
@@ -516,48 +578,46 @@ struct WaterProgressWidgetEntryView: View {
                     }
 
                     // Quick 1-Tap Water Buttons
-                    HStack(spacing: 6) {
+                    HStack(spacing: 5) {
                         Link(destination: URL(string: "hydroreminder://log?amount=\(entry.preset1)")!) {
-                            Text("\(entry.preset1Emoji) +\(entry.preset1) ml")
-                                .font(.system(size: 10, weight: .heavy, design: .rounded))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                            Text("\(entry.preset1Emoji) +\(entry.preset1)")
+                                .font(.system(size: 9.5, weight: .heavy, design: .rounded))
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3.5)
                                 .background(Color.white.opacity(0.95))
                                 .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
-                                .cornerRadius(8)
+                                .cornerRadius(7)
                         }
                         Link(destination: URL(string: "hydroreminder://log?amount=\(entry.preset2)")!) {
-                            Text("\(entry.preset2Emoji) +\(entry.preset2) ml")
-                                .font(.system(size: 10, weight: .heavy, design: .rounded))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                            Text("\(entry.preset2Emoji) +\(entry.preset2)")
+                                .font(.system(size: 9.5, weight: .heavy, design: .rounded))
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 3.5)
                                 .background(Color.white.opacity(0.24))
                                 .foregroundColor(.white)
-                                .cornerRadius(8)
+                                .cornerRadius(7)
                         }
                     }
                 }
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 4)
 
-                // Right Side Mascot Character Stage
-                VStack(spacing: 4) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .fill(Color.white.opacity(0.20))
-                            .frame(width: 80, height: 80)
-                        VStack(spacing: 1) {
-                            MascotWidgetView(entry: entry, size: 48)
-                            Text("\(entry.todayConsumed) ml")
-                                .font(.system(size: 10.5, weight: .black, design: .rounded))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    Text("Hedef: \(entry.dailyGoal) ml")
-                        .font(.system(size: 9.5, weight: .bold, design: .rounded))
-                        .foregroundColor(Color.white.opacity(0.85))
+                // Right Column: KOCAMAN Hero Mascot Stage (Full Height!)
+                VStack(spacing: 3) {
+                    Spacer(minLength: 0)
+                    MascotHeroView(entry: entry, height: 114)
+                    Spacer(minLength: 0)
+                    Text("\(entry.todayConsumed) / \(entry.dailyGoal) ml")
+                        .font(.system(size: 9.5, weight: .black, design: .rounded))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2.5)
+                        .background(Color.black.opacity(0.28))
+                        .cornerRadius(6)
                 }
+                .frame(width: 114)
             }
+            .padding(11)
             .widgetURL(URL(string: "hydroreminder://open"))
         }
     }
@@ -648,31 +708,55 @@ struct WaterMiniWidgetEntryView: View {
         case .accessoryInline:
             Label("🔥\(entry.streakDays)g · Su %\(entry.percentage) (\(entry.dailyRemaining) ml kalan)", systemImage: "drop.fill")
         default:
-            VStack(spacing: 4) {
-                HStack {
-                    Text("🔥 \(entry.streakDays)")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundColor(.white)
+            VStack(spacing: 3) {
+                HStack(alignment: .center) {
+                    HStack(spacing: 3) {
+                        Text("🔥")
+                            .font(.system(size: 13))
+                        Text("\(entry.streakDays)")
+                            .font(.system(size: 14, weight: .black, design: .rounded))
+                            .foregroundColor(.white)
+                    }
                     Spacer()
                     Text("%\(entry.percentage)")
-                        .font(.system(size: 11, weight: .heavy, design: .rounded))
-                        .foregroundColor(Color.white.opacity(0.9))
-                }
-                MascotWidgetView(entry: entry, size: 36)
-                Text("\(entry.todayConsumed) ml")
-                    .font(.system(size: 13, weight: .black, design: .rounded))
-                    .foregroundColor(.white)
-                HydroWaterProgressBar(percentage: entry.percentage, height: 5)
-                Link(destination: URL(string: "hydroreminder://log?amount=\(entry.preset1)")!) {
-                    Text("\(entry.preset1Emoji) +\(entry.preset1) ml Ekle")
                         .font(.system(size: 10, weight: .heavy, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 4)
-                        .background(Color.white.opacity(0.95))
-                        .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
-                        .cornerRadius(8)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.black.opacity(0.24))
+                        .foregroundColor(.white)
+                        .cornerRadius(6)
+                }
+
+                Text(entry.mascotTitle)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer(minLength: 0)
+
+                // Large Mascot Hero
+                MascotHeroView(entry: entry, height: 68)
+
+                Spacer(minLength: 0)
+
+                // 1-Tap Quick Add Button
+                Link(destination: URL(string: "hydroreminder://log?amount=\(entry.preset1)")!) {
+                    HStack(spacing: 4) {
+                        Text(entry.preset1Emoji)
+                            .font(.system(size: 11))
+                        Text("+\(entry.preset1) ml Ekle")
+                            .font(.system(size: 10.5, weight: .heavy, design: .rounded))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 5)
+                    .background(Color.white.opacity(0.95))
+                    .foregroundColor(Color(red: 0.01, green: 0.41, blue: 0.63))
+                    .cornerRadius(9)
+                    .shadow(color: Color.black.opacity(0.15), radius: 2, y: 1)
                 }
             }
+            .padding(11)
             .widgetURL(URL(string: "hydroreminder://open"))
         }
     }

@@ -896,6 +896,8 @@ class WaterProvider with ChangeNotifier {
         lastLogTime: _logs.isNotEmpty ? _logs.first.timestamp : null,
       );
       final String mascotEmoji = status['emoji']!;
+      final String mascotTitle = status['title'] ?? 'Durumunuz';
+      final String mascotMessage = status['message'] ?? '';
       final String mascotSubtitle = status['title'] != null
           ? '${status['title']!} • ${status['message']!}'
           : status['message']!;
@@ -919,7 +921,8 @@ class WaterProvider with ChangeNotifier {
         dayLabels: labels.join(','),
         dayStatuses: statuses.join(','),
         mascotEmoji: mascotEmoji,
-        mascotSubtitle: mascotSubtitle,
+        mascotTitle: mascotTitle,
+        mascotSubtitle: mascotMessage.isNotEmpty ? mascotMessage : mascotSubtitle,
         widgetTheme: _widgetTheme,
         mascotType: _mascotType,
         imageAsset: status['imageAsset'],

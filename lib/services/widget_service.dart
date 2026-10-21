@@ -168,7 +168,7 @@ class WidgetService {
     }
   }
 
-  Future<Uint8List> _resizeAssetBytes(Uint8List bytes, {int targetSize = 200}) async {
+  Future<Uint8List> _resizeAssetBytes(Uint8List bytes, {int targetSize = 512}) async {
     final codec = await ui.instantiateImageCodec(
       bytes,
       targetWidth: targetSize,
@@ -192,6 +192,7 @@ class WidgetService {
     String dayLabels = 'Çr,Pe,Cu,Ct,Pa',
     String dayStatuses = '0,0,0,0,0',
     String mascotEmoji = '🥱',
+    String mascotTitle = 'Durumunuz',
     String mascotSubtitle = 'Güne susuz başladın! Hemen bir bardak su al.',
     String preset1Emoji = '🥛',
     String preset2Emoji = '🥤',
@@ -212,7 +213,7 @@ class WidgetService {
         try {
           final ByteData byteData = await rootBundle.load(imageAsset);
           final rawBytes = byteData.buffer.asUint8List();
-          final resizedBytes = await _resizeAssetBytes(rawBytes, targetSize: 200);
+          final resizedBytes = await _resizeAssetBytes(rawBytes, targetSize: 512);
           mascotBase64 = base64Encode(resizedBytes);
         } catch (e) {
           debugPrint('Error preparing widget mascot image: $e');
@@ -230,6 +231,7 @@ class WidgetService {
       await HomeWidget.saveWidgetData<String>('dayLabels', dayLabels);
       await HomeWidget.saveWidgetData<String>('dayStatuses', dayStatuses);
       await HomeWidget.saveWidgetData<String>('mascotEmoji', mascotEmoji);
+      await HomeWidget.saveWidgetData<String>('mascotTitle', mascotTitle);
       await HomeWidget.saveWidgetData<String>('mascotSubtitle', mascotSubtitle);
       await HomeWidget.saveWidgetData<String>('preset1Emoji', preset1Emoji);
       await HomeWidget.saveWidgetData<String>('preset2Emoji', preset2Emoji);
@@ -252,6 +254,7 @@ class WidgetService {
             'dayLabels': dayLabels,
             'dayStatuses': dayStatuses,
             'mascotEmoji': mascotEmoji,
+            'mascotTitle': mascotTitle,
             'mascotSubtitle': mascotSubtitle,
             'preset1Emoji': preset1Emoji,
             'preset2Emoji': preset2Emoji,

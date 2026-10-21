@@ -63,7 +63,7 @@ class MascotCatalog {
     personalityTr: 'Her yudumda neşelenen klasik canlılık ifadeleri.',
     personalityEn: 'Classic vitality expressions that cheer up with each sip.',
     emoji: '🥱',
-    defaultImageAsset: 'assets/mascots/owl_afternoon_slump.png',
+    defaultImageAsset: 'assets/mascots/cat_morning.png',
   );
 
   static const MascotCharacter cat = MascotCharacter(
@@ -106,15 +106,18 @@ class MascotCatalog {
     defaultImageAsset: 'assets/mascots/panda_work_focus.png',
   );
 
-  static const MascotCharacter owl = MascotCharacter(
-    id: 'owl',
-    nameTr: 'Bilge Baykuş (Duolingo)',
-    nameEn: 'Wise Owl (Duolingo)',
-    personalityTr: 'Duolingo tarzı bilge, kurnaz ve yan gözle süzen hoca.',
-    personalityEn: 'Duolingo-style intellectual, witty and watchful mentor.',
-    emoji: '🦉',
-    defaultImageAsset: 'assets/mascots/owl_afternoon_slump.png',
+  static const MascotCharacter squirrel = MascotCharacter(
+    id: 'squirrel',
+    nameTr: 'Fındık (Sincap)',
+    nameEn: 'Nutty (Squirrel)',
+    personalityTr: 'Pofuduk kuyruklu, enerjik ve su molalarını hiç kaçırmayan sevimli sincap.',
+    personalityEn: 'Fluffy-tailed, energetic squirrel who never misses a water break.',
+    emoji: '🐿️',
+    defaultImageAsset: 'assets/mascots/squirrel_afternoon_slump.png',
   );
+
+  // Backward compatibility alias for saved user settings
+  static const MascotCharacter owl = squirrel;
 
   static const MascotCharacter plant = MascotCharacter(
     id: 'plant',
@@ -132,7 +135,7 @@ class MascotCatalog {
     dog,
     penguin,
     panda,
-    owl,
+    squirrel,
     plant,
   ];
 
@@ -144,8 +147,9 @@ class MascotCatalog {
         return penguin;
       case 'panda':
         return panda;
+      case 'squirrel':
       case 'owl':
-        return owl;
+        return squirrel;
       case 'plant':
         return plant;
       case 'vitality':
@@ -351,6 +355,9 @@ class MascotResolver {
         case 'panda':
           emoji = '🐼';
           break;
+        case 'squirrel':
+          emoji = '🍂';
+          break;
         case 'owl':
         default:
           emoji = '🥱';
@@ -370,6 +377,9 @@ class MascotResolver {
           break;
         case 'panda':
           emoji = '🌱';
+          break;
+        case 'squirrel':
+          emoji = '🐿️';
           break;
         case 'owl':
         default:
@@ -391,6 +401,9 @@ class MascotResolver {
         case 'panda':
           emoji = '🎍';
           break;
+        case 'squirrel':
+          emoji = '🌰';
+          break;
         case 'owl':
         default:
           emoji = '😊';
@@ -411,6 +424,9 @@ class MascotResolver {
         case 'panda':
           emoji = '☕';
           break;
+        case 'squirrel':
+          emoji = '⚡';
+          break;
         case 'owl':
         default:
           emoji = '😎';
@@ -430,6 +446,9 @@ class MascotResolver {
           break;
         case 'panda':
           emoji = '🎉';
+          break;
+        case 'squirrel':
+          emoji = '👑';
           break;
         case 'owl':
         default:
@@ -458,12 +477,16 @@ class MascotResolver {
                 ? 'Meow! So thirsty, could you spare a sip of water?'
                 : (mascot.id == 'penguin'
                     ? 'Ice is melting! Refresh yourself with cool water.'
-                    : 'Parched like a desert! Please share a glass of water!'))
+                    : (mascot.id == 'squirrel'
+                        ? 'Dropping all acorns! Need fresh water right now!'
+                        : 'Parched like a desert! Please share a glass of water!')))
             : (mascot.id == 'cat'
                 ? 'Miyav! Çok susadım, bir yudum su verir misin?'
                 : (mascot.id == 'penguin'
                     ? 'Buzlar eriyor! Hemen taze suyla ferahla.'
-                    : 'Çöl sıcağında kuruduk kaldık! Lütfen bana bir bardak su ver!'));
+                    : (mascot.id == 'squirrel'
+                        ? 'Fındıklar kurudu, boğazım çöl oldu! Hemen su molası ver!'
+                        : 'Çöl sıcağında kuruduk kaldık! Lütfen bana bir bardak su ver!')));
         break;
 
       case MascotState.bedtime:

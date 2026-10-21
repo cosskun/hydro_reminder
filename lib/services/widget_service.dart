@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
@@ -166,6 +168,17 @@ class WidgetService {
     }
   }
 
+  Future<Uint8List> _resizeAssetBytes(Uint8List bytes, {int targetSize = 200}) async {
+    final codec = await ui.instantiateImageCodec(
+      bytes,
+      targetWidth: targetSize,
+      targetHeight: targetSize,
+    );
+    final frameInfo = await codec.getNextFrame();
+    final byteData = await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
+  }
+
   // Sync latest hydration data across all widgets (including Duolingo-style streak & 5-day tracker)
   Future<void> updateWidgets({
     required int todayConsumed,
@@ -185,6 +198,7 @@ class WidgetService {
     String preset3Emoji = '🫙',
     String widgetTheme = 'ocean',
     String mascotType = 'vitality',
+    String? imageAsset,
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
@@ -192,6 +206,21 @@ class WidgetService {
       try {
         await HomeWidget.setAppGroupId(appGroupId);
       } catch (_) {}
+
+      String? mascotBase64;
+      if (imageAsset != null &&
+          imageAsset.isNotEmpty &&
+          mascotType != 'vitality' &&
+          mascotType != 'plant') {
+        try {
+          final ByteData byteData = await rootBundle.load(imageAsset);
+          final rawBytes = byteData.buffer.asUint8List();
+          final resizedBytes = await _resizeAssetBytes(rawBytes, targetSize: 200);
+          mascotBase64 = base64Encode(resizedBytes);
+        } catch (e) {
+          debugPrint('Error preparing widget mascot image: $e');
+        }
+      }
 
       await HomeWidget.saveWidgetData<int>('todayConsumed', todayConsumed);
       await HomeWidget.saveWidgetData<int>('dailyGoal', dailyGoal);
@@ -210,6 +239,7 @@ class WidgetService {
       await HomeWidget.saveWidgetData<String>('preset3Emoji', preset3Emoji);
       await HomeWidget.saveWidgetData<String>('widgetTheme', widgetTheme);
       await HomeWidget.saveWidgetData<String>('mascotType', mascotType);
+      await HomeWidget.saveWidgetData<String>('mascotBase64', mascotBase64 ?? '');
 
       if (Platform.isIOS) {
         try {
@@ -231,6 +261,7 @@ class WidgetService {
             'preset3Emoji': preset3Emoji,
             'widgetTheme': widgetTheme,
             'mascotType': mascotType,
+            'mascotBase64': mascotBase64 ?? '',
           });
         } catch (e) {
           debugPrint('syncIosWidgetData error: $e');

@@ -50,7 +50,30 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
 
             views.setTextViewText(R.id.tv_mini_streak, "🔥 $streak")
             views.setTextViewText(R.id.tv_mini_percent, "%$percent")
-            views.setTextViewText(R.id.tv_mini_mascot, mascotEmoji)
+
+            val base64Str = widgetData.getString("mascotBase64", null)
+            val mascotType = widgetData.getString("mascotType", "vitality") ?: "vitality"
+            var bitmapLoaded = false
+
+            if (mascotType != "vitality" && mascotType != "plant" && !base64Str.isNullOrBlank()) {
+                try {
+                    val imageBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
+                    val bitmap = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    if (bitmap != null) {
+                        views.setImageViewBitmap(R.id.iv_mini_mascot, bitmap)
+                        views.setViewVisibility(R.id.iv_mini_mascot, android.view.View.VISIBLE)
+                        views.setViewVisibility(R.id.tv_mini_mascot, android.view.View.GONE)
+                        bitmapLoaded = true
+                    }
+                } catch (_: Exception) {}
+            }
+
+            if (!bitmapLoaded) {
+                views.setViewVisibility(R.id.iv_mini_mascot, android.view.View.GONE)
+                views.setViewVisibility(R.id.tv_mini_mascot, android.view.View.VISIBLE)
+                views.setTextViewText(R.id.tv_mini_mascot, mascotEmoji)
+            }
+
             views.setTextViewText(R.id.tv_mini_subtext, "$consumed ml")
             views.setProgressBar(R.id.pb_mini_progress, 100, percent.coerceIn(0, 100), false)
             views.setTextViewText(R.id.btn_mini_quick_add, "$p1Emoji +$p1 ml")

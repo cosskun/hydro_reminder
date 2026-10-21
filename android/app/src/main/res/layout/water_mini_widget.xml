@@ -40,6 +40,13 @@
     </LinearLayout>
 
     <!-- Big Mascot Character -->
+    <ImageView
+        android:id="@+id/iv_mini_mascot"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tv_mini_mascot"
         android:layout_width="wrap_content"

@@ -65,7 +65,8 @@ class AppTranslations {
       'mascot_dog': 'Neşeli Köpek',
       'mascot_penguin': 'Kutup Pengueni',
       'mascot_panda': 'Tembel Panda',
-      'mascot_owl': 'Bilge Baykuş (Duolingo)',
+      'mascot_squirrel': 'Fındık (Sincap)',
+      'mascot_owl': 'Fındık (Sincap)',
       'mascot_plant': 'Yeşil Filiz & Doğa',
 
       // Theme Names
@@ -139,7 +140,8 @@ class AppTranslations {
       'mascot_dog': 'Playful Dog',
       'mascot_penguin': 'Polar Penguin',
       'mascot_panda': 'Zen Panda',
-      'mascot_owl': 'Wise Owl (Duolingo)',
+      'mascot_squirrel': 'Nutty (Squirrel)',
+      'mascot_owl': 'Nutty (Squirrel)',
       'mascot_plant': 'Sprout & Nature',
 
       // Theme Names

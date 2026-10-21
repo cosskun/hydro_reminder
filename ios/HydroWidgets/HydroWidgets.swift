@@ -351,6 +351,41 @@ private func duolingoGradient(for percentage: Int, theme: String = "ocean") -> L
     }
 }
 
+func getSharedMascotImage() -> UIImage? {
+    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) {
+        let fileURL = containerURL.appendingPathComponent("widget_mascot.png")
+        if let data = try? Data(contentsOf: fileURL), let img = UIImage(data: data) {
+            return img
+        }
+    }
+    if let prefs = UserDefaults(suiteName: appGroupId),
+       let b64 = prefs.string(forKey: "mascotBase64"), !b64.isEmpty,
+       let data = Data(base64Encoded: b64),
+       let img = UIImage(data: data) {
+        return img
+    }
+    return nil
+}
+
+struct MascotWidgetView: View {
+    let entry: WaterWidgetEntry
+    let size: CGFloat
+
+    var body: some View {
+        if entry.mascotType != "vitality" && entry.mascotType != "plant",
+           let uiImage = getSharedMascotImage() {
+            Image(uiImage: uiImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: size, height: size)
+                .clipShape(RoundedRectangle(cornerRadius: size * 0.22, style: .continuous))
+        } else {
+            Text(entry.mascotEmoji)
+                .font(.system(size: size * 0.72))
+        }
+    }
+}
+
 // 1. Duolingo-Style Streak, Mascot, Water Bar & 5-Day Checkmark Widget
 struct WaterProgressWidgetEntryView: View {
     var entry: WaterWidgetEntry
@@ -418,8 +453,7 @@ struct WaterProgressWidgetEntryView: View {
                             Circle()
                                 .fill(Color.white.opacity(0.22))
                                 .frame(width: 44, height: 44)
-                            Text(entry.mascotEmoji)
-                                .font(.system(size: 26))
+                            MascotWidgetView(entry: entry, size: 36)
                         }
                     }
                 }
@@ -508,8 +542,7 @@ struct WaterProgressWidgetEntryView: View {
                             .fill(Color.white.opacity(0.20))
                             .frame(width: 80, height: 80)
                         VStack(spacing: 1) {
-                            Text(entry.mascotEmoji)
-                                .font(.system(size: 40))
+                            MascotWidgetView(entry: entry, size: 48)
                             Text("\(entry.todayConsumed) ml")
                                 .font(.system(size: 10.5, weight: .black, design: .rounded))
                                 .foregroundColor(.white)
@@ -603,7 +636,7 @@ struct WaterMiniWidgetEntryView: View {
                     .foregroundColor(.cyan)
                     .rotationEffect(Angle(degrees: 270.0))
                 VStack(spacing: 0) {
-                    Text(entry.mascotEmoji).font(.system(size: 11))
+                    MascotWidgetView(entry: entry, size: 14)
                     Text("%\(entry.percentage)").font(.system(size: 10, weight: .black))
                 }
             }
@@ -620,8 +653,7 @@ struct WaterMiniWidgetEntryView: View {
                         .font(.system(size: 11, weight: .heavy, design: .rounded))
                         .foregroundColor(Color.white.opacity(0.9))
                 }
-                Text(entry.mascotEmoji)
-                    .font(.system(size: 32))
+                MascotWidgetView(entry: entry, size: 36)
                 Text("\(entry.todayConsumed) ml")
                     .font(.system(size: 13, weight: .black, design: .rounded))
                     .foregroundColor(.white)

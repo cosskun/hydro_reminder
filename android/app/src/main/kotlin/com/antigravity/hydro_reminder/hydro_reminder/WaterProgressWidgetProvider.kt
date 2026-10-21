@@ -66,7 +66,30 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
             views.setTextViewText(R.id.tv_progress_percent, "💧 %$percent")
             views.setTextViewText(R.id.tv_progress_message, mascotSub)
             views.setProgressBar(R.id.pb_water_progress, 100, percent.coerceIn(0, 100), false)
-            views.setTextViewText(R.id.tv_mascot_emoji, mascotEmoji)
+
+            val base64Str = widgetData.getString("mascotBase64", null)
+            val mascotType = widgetData.getString("mascotType", "vitality") ?: "vitality"
+            var bitmapLoaded = false
+
+            if (mascotType != "vitality" && mascotType != "plant" && !base64Str.isNullOrBlank()) {
+                try {
+                    val imageBytes = android.util.Base64.decode(base64Str, android.util.Base64.DEFAULT)
+                    val bitmap = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    if (bitmap != null) {
+                        views.setImageViewBitmap(R.id.iv_mascot_image, bitmap)
+                        views.setViewVisibility(R.id.iv_mascot_image, android.view.View.VISIBLE)
+                        views.setViewVisibility(R.id.tv_mascot_emoji, android.view.View.GONE)
+                        bitmapLoaded = true
+                    }
+                } catch (_: Exception) {}
+            }
+
+            if (!bitmapLoaded) {
+                views.setViewVisibility(R.id.iv_mascot_image, android.view.View.GONE)
+                views.setViewVisibility(R.id.tv_mascot_emoji, android.view.View.VISIBLE)
+                views.setTextViewText(R.id.tv_mascot_emoji, mascotEmoji)
+            }
+
             views.setTextViewText(R.id.tv_progress_consumed, "$consumed ml")
             views.setTextViewText(R.id.tv_progress_goal, "Hedef: $goal ml")
 

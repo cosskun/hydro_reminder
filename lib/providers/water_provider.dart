@@ -917,6 +917,7 @@ class WaterProvider with ChangeNotifier {
         mascotSubtitle: mascotSubtitle,
         widgetTheme: _widgetTheme,
         mascotType: _mascotType,
+        imageAsset: status['imageAsset'],
       );
     } catch (_) {}
   }

@@ -97,6 +97,14 @@ import WidgetKit
       UserDefaults.standard.set(value, forKey: "hydro_widget_\(key)")
     }
 
+    // 3.5. Save mascot image file to App Group container if present
+    if let b64 = args["mascotBase64"] as? String, !b64.isEmpty,
+       let data = Data(base64Encoded: b64),
+       let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) {
+        let fileURL = containerURL.appendingPathComponent("widget_mascot.png")
+        try? data.write(to: fileURL)
+    }
+
     // 4. Reload all WidgetKit timelines immediately
     reloadWidgetsNow()
   }

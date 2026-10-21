@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+30: Su seviyesi hidrasyon enerji görselleri ana ekranda mutlak önceliğe alındı. Maskot vitrini 88x88 boyutuna büyütülerek belirginleştirildi."
+          releaseNotes: "Hydro Reminder v1.0.0+30: Su seviyesi hidrasyon enerji görselleri ana ekranda mutlak önceliğe alındı, maskot vitrini 88x88 boyutuna büyütüldü. Kutup Pengueni (Pip) 15 yeni görsel ve tam enerji basamaklarıyla eklendi."

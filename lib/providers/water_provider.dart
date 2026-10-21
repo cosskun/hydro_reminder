@@ -131,6 +131,11 @@ class WaterProvider with ChangeNotifier {
       'message': dialogue.message,
       'color': dialogue.hexColor,
       'imageAsset': dialogue.imageAsset,
+      'energyImageAsset': dialogue.energyImageAsset,
+      'routineImageAsset': dialogue.routineImageAsset,
+      'energyPercentage': dialogue.energyPercentage.toString(),
+      'energyTitle': dialogue.energyTitle,
+      'energyMessage': dialogue.energyMessage,
       'state': dialogue.state.name,
     };
   }

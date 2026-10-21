@@ -339,4 +339,63 @@ void main() {
       );
     });
   });
+
+  group('Buddy (Brown Poodle Dog) 10 States & Asset Tests', () {
+    test('All 10 states resolve to valid dog assets that exist on disk', () {
+      final expectedAssets = {
+        MascotState.morning: 'assets/mascots/dog_morning.png',
+        MascotState.workFocus: 'assets/mascots/dog_work_focus.png',
+        MascotState.lunch: 'assets/mascots/dog_lunch.png',
+        MascotState.afternoonSlump: 'assets/mascots/dog_afternoon_slump.png',
+        MascotState.workout: 'assets/mascots/dog_workout.png',
+        MascotState.evening: 'assets/mascots/dog_evening.png',
+        MascotState.bedtime: 'assets/mascots/dog_bedtime.png',
+        MascotState.goalReached: 'assets/mascots/dog_goal_reached.png',
+        MascotState.thirsty: 'assets/mascots/dog_thirsty.png',
+        MascotState.streakFire: 'assets/mascots/dog_streak_fire.png',
+      };
+
+      for (final state in MascotState.values) {
+        final expected = expectedAssets[state]!;
+        final actual = 'assets/mascots/dog_${state.assetSuffix}.png';
+        expect(actual, expected);
+        expect(File(actual).existsSync(), isTrue, reason: '$actual should exist on disk');
+      }
+    });
+  });
+
+  group('Hydration Energy Ladder (Cat & Dog 5 Tiers) Tests', () {
+    test('All 5 Cat and Dog energy ladder image assets exist on disk', () {
+      final catEnergyTiers = [0, 25, 50, 75, 100];
+      for (final step in catEnergyTiers) {
+        final catAsset = 'assets/mascots/cat_energy_$step.png';
+        expect(File(catAsset).existsSync(), isTrue, reason: '$catAsset must exist');
+
+        final dogAsset = 'assets/mascots/dog_energy_$step.png';
+        expect(File(dogAsset).existsSync(), isTrue, reason: '$dogAsset must exist');
+      }
+    });
+
+    test('MascotEnergyLadder accurately resolves tiers and dialogues across 0-100%', () {
+      expect(MascotEnergyLadder.getTier(0.0), MascotEnergyTier.energy0);
+      expect(MascotEnergyLadder.getTier(0.20), MascotEnergyTier.energy25);
+      expect(MascotEnergyLadder.getTier(0.50), MascotEnergyTier.energy50);
+      expect(MascotEnergyLadder.getTier(0.75), MascotEnergyTier.energy75);
+      expect(MascotEnergyLadder.getTier(1.00), MascotEnergyTier.energy100);
+
+      final cat0 = MascotEnergyLadder.getDialogue(
+        mascotId: 'cat',
+        tier: MascotEnergyTier.energy0,
+        isEn: false,
+      );
+      expect(cat0['title'], contains('Sıfır Enerji'));
+
+      final dog100 = MascotEnergyLadder.getDialogue(
+        mascotId: 'dog',
+        tier: MascotEnergyTier.energy100,
+        isEn: false,
+      );
+      expect(dog100['title'], contains('Tam Şarj'));
+    });
+  });
 }

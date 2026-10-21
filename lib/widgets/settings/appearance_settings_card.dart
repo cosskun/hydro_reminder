@@ -137,45 +137,62 @@ class AppearanceSettingsCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        Column(
           children: [
-            _buildThemePill(
-              context,
-              id: 'ocean',
-              name: AppTranslations.get('theme_ocean', lang: lang),
-              colors: [const Color(0xFF0369A1), const Color(0xFF38BDF8)],
-              isSelected: provider.widgetTheme == 'ocean',
-              onTap: () => provider.updateWidgetTheme('ocean'),
-              isDark: isDark,
+            Row(
+              children: [
+                Expanded(
+                  child: _buildThemePill(
+                    context,
+                    id: 'ocean',
+                    name: AppTranslations.get('theme_ocean', lang: lang),
+                    colors: [const Color(0xFF0369A1), const Color(0xFF38BDF8)],
+                    isSelected: provider.widgetTheme == 'ocean',
+                    onTap: () => provider.updateWidgetTheme('ocean'),
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildThemePill(
+                    context,
+                    id: 'glass',
+                    name: AppTranslations.get('theme_glass', lang: lang),
+                    colors: [const Color(0xFF0F172A), const Color(0xFF334155)],
+                    isSelected: provider.widgetTheme == 'glass',
+                    onTap: () => provider.updateWidgetTheme('glass'),
+                    isDark: isDark,
+                  ),
+                ),
+              ],
             ),
-            _buildThemePill(
-              context,
-              id: 'glass',
-              name: AppTranslations.get('theme_glass', lang: lang),
-              colors: [const Color(0xFF0F172A), const Color(0xFF334155)],
-              isSelected: provider.widgetTheme == 'glass',
-              onTap: () => provider.updateWidgetTheme('glass'),
-              isDark: isDark,
-            ),
-            _buildThemePill(
-              context,
-              id: 'neon',
-              name: AppTranslations.get('theme_neon', lang: lang),
-              colors: [const Color(0xFF2E0249), const Color(0xFFD946EF)],
-              isSelected: provider.widgetTheme == 'neon',
-              onTap: () => provider.updateWidgetTheme('neon'),
-              isDark: isDark,
-            ),
-            _buildThemePill(
-              context,
-              id: 'emerald',
-              name: AppTranslations.get('theme_emerald', lang: lang),
-              colors: [const Color(0xFF064E3B), const Color(0xFF10B981)],
-              isSelected: provider.widgetTheme == 'emerald',
-              onTap: () => provider.updateWidgetTheme('emerald'),
-              isDark: isDark,
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildThemePill(
+                    context,
+                    id: 'neon',
+                    name: AppTranslations.get('theme_neon', lang: lang),
+                    colors: [const Color(0xFF2E0249), const Color(0xFFD946EF)],
+                    isSelected: provider.widgetTheme == 'neon',
+                    onTap: () => provider.updateWidgetTheme('neon'),
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildThemePill(
+                    context,
+                    id: 'emerald',
+                    name: AppTranslations.get('theme_emerald', lang: lang),
+                    colors: [const Color(0xFF064E3B), const Color(0xFF10B981)],
+                    isSelected: provider.widgetTheme == 'emerald',
+                    onTap: () => provider.updateWidgetTheme('emerald'),
+                    isDark: isDark,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -474,50 +491,58 @@ class AppearanceSettingsCard extends StatelessWidget {
     required VoidCallback onTap,
     required bool isDark,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
-              : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 8),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
             color: isSelected
-                ? const Color(0xFF38BDF8)
-                : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
-            width: isSelected ? 1.8 : 1.0,
+                ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+                : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF38BDF8)
+                  : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
+              width: 1.2,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: colors),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 14,
+                height: 14,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: colors),
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              name,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected
-                    ? const Color(0xFF38BDF8)
-                    : (isDark ? Colors.white : Colors.blue.shade900),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                    color: isSelected
+                        ? const Color(0xFF38BDF8)
+                        : (isDark ? Colors.white : Colors.blue.shade900),
+                  ),
+                ),
               ),
-            ),
-            if (isSelected) ...[
-              const SizedBox(width: 6),
-              const Icon(Icons.check_rounded, size: 14, color: Color(0xFF38BDF8)),
+              if (isSelected) ...[
+                const SizedBox(width: 4),
+                const Icon(Icons.check_rounded, size: 14, color: Color(0xFF38BDF8)),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

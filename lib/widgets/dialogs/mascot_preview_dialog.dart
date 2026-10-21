@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../models/mascot_model.dart';
 
@@ -72,6 +73,12 @@ void showMascotStatePreviewDialog(BuildContext context, MascotCharacter mascot, 
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (ctx) {
+      final double navBarHeight = math.max(
+        MediaQuery.of(ctx).viewPadding.bottom,
+        MediaQuery.of(ctx).padding.bottom,
+      );
+      final double bottomPadding = navBarHeight > 0 ? navBarHeight + 14 : 16.0;
+
       return DraggableScrollableSheet(
         initialChildSize: 0.85,
         minChildSize: 0.5,
@@ -79,7 +86,7 @@ void showMascotStatePreviewDialog(BuildContext context, MascotCharacter mascot, 
         expand: false,
         builder: (context, scrollController) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, bottomPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

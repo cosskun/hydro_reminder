@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/water_provider.dart';
@@ -16,9 +17,15 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final double navBarHeight = math.max(
+          MediaQuery.of(ctx).viewPadding.bottom,
+          MediaQuery.of(ctx).padding.bottom,
+        );
+        final double bottomPadding = navBarHeight > 0 ? navBarHeight + 14 : 20.0;
         return SafeArea(
+          bottom: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,9 +108,15 @@ class IosShortcutsSettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final double navBarHeight = math.max(
+          MediaQuery.of(ctx).viewPadding.bottom,
+          MediaQuery.of(ctx).padding.bottom,
+        );
+        final double bottomPadding = navBarHeight > 0 ? navBarHeight + 14 : 20.0;
         return SafeArea(
+          bottom: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

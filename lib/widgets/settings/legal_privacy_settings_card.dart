@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'settings_card_wrapper.dart';
 
@@ -20,6 +21,12 @@ class LegalPrivacySettingsCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final double navBarHeight = math.max(
+          MediaQuery.of(ctx).viewPadding.bottom,
+          MediaQuery.of(ctx).padding.bottom,
+        );
+        final double bottomPadding = navBarHeight > 0 ? navBarHeight + 14 : 20.0;
+
         return DraggableScrollableSheet(
           expand: false,
           initialChildSize: 0.72,
@@ -27,7 +34,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
           maxChildSize: 0.92,
           builder: (_, scrollController) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

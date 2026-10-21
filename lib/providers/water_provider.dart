@@ -70,7 +70,7 @@ class WaterProvider with ChangeNotifier {
   // Ongoing Live Progress Notification State (Android & iOS)
   bool _isOngoingNotificationEnabled = false;
 
-  // Duolingo-style Streak Freeze / Shield State
+  // Streak Freeze / Shield State
   int _streakShields = 1;
   List<String> _frozenDates = [];
   DateTime? _lastShieldRefillDate;

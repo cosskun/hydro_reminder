@@ -179,7 +179,7 @@ class WidgetService {
     return byteData!.buffer.asUint8List();
   }
 
-  // Sync latest hydration data across all widgets (including Duolingo-style streak & 5-day tracker)
+  // Sync latest hydration data across all widgets (including streak & 5-day tracker)
   Future<void> updateWidgets({
     required int todayConsumed,
     required int dailyGoal,

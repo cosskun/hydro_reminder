@@ -76,7 +76,7 @@
             android:progress="0"
             android:progressDrawable="@drawable/widget_progress_bar" />
 
-        <!-- 5-Day Duolingo Checkmark Row (Pe Cu Ct Pa Pt) -->
+        <!-- 5-Day Streak Checkmark Row (Pe Cu Ct Pa Pt) -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -267,7 +267,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Right Column: Mascot Character Stage (Duolingo Duo Style) -->
+    <!-- Right Column: Mascot Character Stage -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

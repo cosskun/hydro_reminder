@@ -87,7 +87,7 @@ void main() {
     });
   });
 
-  group('2. Duolingo-Style Streak Freeze / Shield Recovery Tests', () {
+  group('2. Streak Freeze / Shield Recovery Tests', () {
     testWidgets('Shield recovers missed yesterday without breaking the streak',
         (WidgetTester tester) async {
       tester.view.physicalSize = const Size(1080, 2400);

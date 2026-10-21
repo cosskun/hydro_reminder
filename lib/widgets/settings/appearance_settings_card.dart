@@ -60,7 +60,7 @@ class AppearanceSettingsCard extends StatelessWidget {
         ),
         const Divider(height: 24, thickness: 0.5),
 
-        // 2. Custom Mascot Selection (Özel Maskotlar - Duolingo Tarzı)
+        // 2. Custom Mascot Selection (Özel Maskotlar)
         Row(
           children: [
             Expanded(
@@ -93,7 +93,7 @@ class AppearanceSettingsCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           lang == 'en'
-              ? 'Choose which mascot accompanies your hydration journey with time-aware Duolingo-style illustrations.'
+              ? 'Choose which mascot accompanies your hydration journey with time-aware smart illustrations.'
               : 'Gün boyu saate ve su hedefinize göre size eğlenceli sözler ve çizimlerle eşlik edecek maskotunuzu seçin.',
           style: TextStyle(
             fontSize: 11,

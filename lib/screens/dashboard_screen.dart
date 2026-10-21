@@ -176,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: Column(
                     children: [
-                      // Duolingo-style Streak Recovery Banner (if yesterday was missed and user has an active shield)
+                      // Streak Recovery Banner (if yesterday was missed and user has an active shield)
                       if (provider.canRecoverYesterday)
                         Container(
                           margin: const EdgeInsets.only(bottom: 12),

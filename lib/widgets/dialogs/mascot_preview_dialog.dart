@@ -135,8 +135,8 @@ void showMascotStatePreviewDialog(BuildContext context, MascotCharacter mascot, 
                           const SizedBox(height: 2),
                           Text(
                             isEn
-                                ? '10 Daily Expressions & Duolingo-style Reminders'
-                                : '10 Farklı Gün İçi Durum & Duolingo Tarzı Uyarılar',
+                                ? '10 Daily Expressions & Smart Reminders'
+                                : '10 Farklı Gün İçi Durum & Akıllı Uyarılar',
                             style: TextStyle(
                               fontSize: 12,
                               color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,

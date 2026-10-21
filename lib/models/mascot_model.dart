@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// 10 Contextual & Emotional States for Duolingo-style hydration mascots
+/// 10 Contextual & Emotional States for hydration mascots
 enum MascotState {
   morning, // 06:00 - 09:30: Waking up, fresh morning glass
   workFocus, // 09:30 - 11:30: Desk work & studying
   lunch, // 11:30 - 14:00: Pre-lunch hydration
-  afternoonSlump, // 14:00 - 16:30: Duolingo-style judging side-eye in bed/desk
+  afternoonSlump, // 14:00 - 16:30: Judging side-eye in bed/desk
   workout, // 16:30 - 19:00: Active, sweatband, afternoon energy
   evening, // 19:00 - 21:30: Evening chill, unwinding
   bedtime, // 21:30 - 02:00: Night sleeping cap, "Hadi son bir yudum"

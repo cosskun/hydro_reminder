@@ -40,7 +40,7 @@ class HydrationStatusCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // 1. Left: Mascot Character Stage (Duolingo Style)
+          // 1. Left: Mascot Character Stage
           Container(
             width: 58,
             height: 58,

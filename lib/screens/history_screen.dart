@@ -133,7 +133,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Duolingo-style Streak Freeze / Shield Status Card
+          // Streak Freeze / Shield Status Card
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(

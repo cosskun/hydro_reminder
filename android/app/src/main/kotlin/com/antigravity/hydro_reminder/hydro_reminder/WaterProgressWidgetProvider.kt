@@ -96,7 +96,7 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
             views.setTextViewText(R.id.btn_progress_preset1, "$p1Emoji +$p1 ml")
             views.setTextViewText(R.id.btn_progress_preset2, "$p2Emoji +$p2 ml")
 
-            // 5-Day Duolingo Checkmark Tracker
+            // 5-Day Streak Checkmark Tracker
             val rawLabels = widgetData.getString("dayLabels", "Pe,Cu,Ct,Pa,Pt") ?: "Pe,Cu,Ct,Pa,Pt"
             val labels = rawLabels.split(",").let { if (it.size == 5) it else listOf("Pe", "Cu", "Ct", "Pa", "Pt") }
 

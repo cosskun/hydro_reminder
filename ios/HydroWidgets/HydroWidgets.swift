@@ -272,7 +272,7 @@ struct HydroWaterProgressBar: View {
 }
 
 // Dynamic HydroSoft theme gradients based on hydration percentage and selected theme
-private func duolingoGradient(for percentage: Int, theme: String = "ocean") -> LinearGradient {
+private func widgetCardGradient(for percentage: Int, theme: String = "ocean") -> LinearGradient {
     switch theme {
     case "glass":
         return LinearGradient(
@@ -386,7 +386,7 @@ struct MascotWidgetView: View {
     }
 }
 
-// 1. Duolingo-Style Streak, Mascot, Water Bar & 5-Day Checkmark Widget
+// 1. Streak, Mascot, Water Bar & 5-Day Checkmark Widget
 struct WaterProgressWidgetEntryView: View {
     var entry: WaterWidgetEntry
     @Environment(\.widgetFamily) var family
@@ -460,7 +460,7 @@ struct WaterProgressWidgetEntryView: View {
             }
             .widgetURL(URL(string: "hydroreminder://open"))
         default:
-            // Duolingo-style Medium Card (4x2) with Streak, Water Progress Bar, 5-Day Checkmarks & Mascot Character
+            // Medium Card (4x2) with Streak, Water Progress Bar, 5-Day Checkmarks & Mascot Character
             HStack(spacing: 10) {
                 VStack(alignment: .leading, spacing: 5) {
                     // Streak + Progress Pill
@@ -486,7 +486,7 @@ struct WaterProgressWidgetEntryView: View {
                     // Live Water Progress Bar (Su Barı)
                     HydroWaterProgressBar(percentage: entry.percentage, height: 7)
 
-                    // 5-Day Duolingo Checkmark Row (Pe Cu Ct Pa Pt)
+                    // 5-Day Checkmark Row (Pe Cu Ct Pa Pt)
                     HStack(spacing: 7) {
                         ForEach(0..<5, id: \.self) { idx in
                             let isDone = entry.dayStatuses[idx] > 0
@@ -693,10 +693,10 @@ struct WaterProgressWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterProgressWidgetEntryView(entry: entry)
-                .widgetBackground(duolingoGradient(for: entry.percentage, theme: entry.widgetTheme))
+                .widgetBackground(widgetCardGradient(for: entry.percentage, theme: entry.widgetTheme))
         }
         .configurationDisplayName("🔥 HydroSoft Seri & Maskot")
-        .description("Duolingo tarzı günlük seri, su barı, 5 günlük su takvimi, canlı maskot ve hızlı su ekleme.")
+        .description("Günlük seri, su barı, 5 günlük su takvimi, canlı maskot ve hızlı su ekleme.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
     }
 }
@@ -707,7 +707,7 @@ struct WaterQuickLogWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterQuickLogWidgetEntryView(entry: entry)
-                .widgetBackground(duolingoGradient(for: entry.percentage, theme: entry.widgetTheme))
+                .widgetBackground(widgetCardGradient(for: entry.percentage, theme: entry.widgetTheme))
         }
         .configurationDisplayName("⚡ Hızlı Su Ekleme Barı")
         .description("Bardak veya şişe sembolüne basarak tek dokunuşla su içtiğinizi kaydedin.")
@@ -721,7 +721,7 @@ struct WaterMiniWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WaterTimelineProvider()) { entry in
             WaterMiniWidgetEntryView(entry: entry)
-                .widgetBackground(duolingoGradient(for: entry.percentage, theme: entry.widgetTheme))
+                .widgetBackground(widgetCardGradient(for: entry.percentage, theme: entry.widgetTheme))
         }
         .configurationDisplayName("💧 Mini Maskot & Kilit Ekranı")
         .description("Ana ekran ve kilit ekranı için emojili mini maskot ve su barı.")

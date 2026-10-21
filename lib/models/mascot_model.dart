@@ -219,6 +219,44 @@ class MascotEnergyLadder {
                 : 'Kutup dalgasını yakaladık! Kristal kadehle zirvedeyiz, harikasın! 👑❄️',
           };
       }
+    } else if (mascotId == 'panda') {
+      switch (tier) {
+        case MascotEnergyTier.energy0:
+          return {
+            'title': isEn ? 'Zero Energy • Bamboo Dried' : 'Sıfır Enerji • Bambu Kurudu',
+            'message': isEn
+                ? 'Collapsed on the cushion! My bamboo cup is dry, need fresh water... 🎋'
+                : 'Minderin üstüne yığıldım kaldım! Bambu bardağım bomboş, biraz su ver... 🎋',
+          };
+        case MascotEnergyTier.energy25:
+          return {
+            'title': isEn ? 'First Sip • Zen Awakening' : 'İlk Yudum • Zen Uyanış',
+            'message': isEn
+                ? 'First fresh sip felt peaceful. Slowly opening my eyes, feeling calm.'
+                : 'İlk taze yudum iyi geldi. Gözlerimi yavaşça açıyorum, huzur doluyor.',
+          };
+        case MascotEnergyTier.energy50:
+          return {
+            'title': isEn ? 'Half Energy • Bamboo Tumbler' : 'Yarı Enerji • Bambu Bardağı',
+            'message': isEn
+                ? 'Sipping peacefully from my bamboo tumbler. Tank is halfway full!'
+                : 'Yeşil bambu bardağımdan tatlı tatlı yudumluyorum. Keyfim yarı yarıya doldu!',
+          };
+        case MascotEnergyTier.energy75:
+          return {
+            'title': isEn ? 'High Vitality • Fluffy Power' : 'Yüksek Canlılık • Pofuduk Güç',
+            'message': isEn
+                ? 'On our feet! Fresh green leaves and cool water got my energy soaring.'
+                : 'Ayaktayız! Taze yapraklar ve serin suyla enerjim tavan yaptı.',
+          };
+        case MascotEnergyTier.energy100:
+          return {
+            'title': isEn ? 'Full Charge • Zen Master' : 'Tam Şarj • Zen Ustası',
+            'message': isEn
+                ? 'Fully charged! Our golden bamboo chalice is overflowing, fantastic! 🎋✨'
+                : 'Tam şarj olduk! Altın bambu kupamız dolup taştı, harikasın! 🎋✨',
+          };
+      }
     }
 
     // Generic Fallback
@@ -344,7 +382,7 @@ class MascotCatalog {
     personalityTr: 'Pofuduk, koltuğunda yayılan zen ve huzur pınarı.',
     personalityEn: 'Fluffy, zen couch potato who sips peacefully.',
     emoji: '🐼',
-    defaultImageAsset: 'assets/mascots/panda_work_focus.png',
+    defaultImageAsset: 'assets/mascots/panda_morning.png',
   );
 
   static const MascotCharacter squirrel = MascotCharacter(
@@ -710,14 +748,18 @@ class MascotResolver {
                     ? "Trophy won, confetti flying! You are today's hydration champion! 🏆🎉"
                     : (mascot.id == 'penguin'
                         ? "Polar trophy raised, confetti on ice! You are today's hydration champion! 🏆❄️"
-                        : 'Congratulations! You reached your daily goal!')))
+                        : (mascot.id == 'panda'
+                            ? "Golden trophy raised, bamboo confetti bursting! You are today's hydration champion! 🏆🎋"
+                            : 'Congratulations! You reached your daily goal!'))))
             : (mascot.id == 'cat'
                 ? 'Kupayı kaldırdık, konfetiler patladı! Günün şampiyon kedisi sensin! 🏆🎉'
                 : (mascot.id == 'dog'
                     ? 'Kupayı kaptık, konfetiler havada! Günün şampiyon köpüşü sensin! 🏆🎉'
                     : (mascot.id == 'penguin'
                         ? 'Buz kupasını kaldırdık, konfetiler havada! Günün kutup şampiyonu sensin! 🏆❄️'
-                        : 'Tebrikler! Günlük su hedefini tamamladın!')));
+                        : (mascot.id == 'panda'
+                            ? 'Altın kupayı kaldırdık, konfetiler patladı! Günün şampiyon pandası sensin! 🏆🎋'
+                            : 'Tebrikler! Günlük su hedefini tamamladın!'))));
         break;
 
       case MascotState.thirsty:
@@ -881,10 +923,10 @@ class MascotResolver {
         state == MascotState.thirsty;
 
     // Primary Image Selection:
-    // When a mascot has an energy ladder (Cat, Dog, Penguin), hydration level energy ladder has
+    // When a mascot has an energy ladder (Cat, Dog, Penguin, Panda), hydration level energy ladder has
     // absolute priority on the in-app screen and widgets!
     // Time-based routine events (bedtime, afternoon slump) do NOT override the user's water energy progress.
-    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog' || mascot.id == 'penguin';
+    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog' || mascot.id == 'penguin' || mascot.id == 'panda';
     final String resolvedImageAsset;
     final String finalTitle;
     final String finalMessage;

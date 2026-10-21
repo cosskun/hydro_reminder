@@ -45,6 +45,11 @@ jobs:
       - name: Prepare Flutter iOS Workspace
         run: flutter build ios --release --no-codesign
 
+      - name: Clean Old CI Keychains
+        run: |
+          security delete-keychain ~/Library/Keychains/ci_keychain-db 2>/dev/null || true
+          security delete-keychain ~/Library/Keychains/ci_keychain 2>/dev/null || true
+
       - name: Run Fastlane & Deploy to TestFlight
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}

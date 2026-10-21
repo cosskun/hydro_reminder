@@ -273,6 +273,19 @@ platform :ios do
     keychain_name = "ci_keychain"
     keychain_password = "ci_password"
 
+    kc_path_db = File.expand_path("~/Library/Keychains/#{keychain_name}-db")
+    kc_path_raw = File.expand_path("~/Library/Keychains/#{keychain_name}")
+
+    # Ensure any stale CI keychain from prior runner jobs is completely deleted
+    if File.exist?(kc_path_db) || File.exist?(kc_path_raw)
+      begin
+        delete_keychain(name: keychain_name)
+      rescue => e
+        UI.important("Notice when clearing keychain: #{e.message}")
+      end
+      [kc_path_db, kc_path_raw].each { |p| File.delete(p) if File.exist?(p) }
+    end
+
     create_keychain(
       name: keychain_name,
       password: keychain_password,
@@ -282,9 +295,10 @@ platform :ios do
       lock_when_sleeps: false
     )
 
-    kc_path_db = File.expand_path("~/Library/Keychains/#{keychain_name}-db")
-    kc_path_raw = File.expand_path("~/Library/Keychains/#{keychain_name}")
     kc_path = File.exist?(kc_path_db) ? kc_path_db : kc_path_raw
+
+    # Confine keychain search list strictly to ci_keychain + System roots so stale identities cannot be picked
+    sh("security list-keychains -s \"#{kc_path}\" /Library/Keychains/System.keychain /System/Library/Keychains/SystemRootCertificates.keychain || true")
 
     # Always ensure clean, fresh and valid distribution certificate
     revoke_old_distribution_certs(
@@ -381,7 +395,7 @@ platform :ios do
           widget_bundle_id => widget_profile_name
         }
       },
-      xcargs: "DEVELOPMENT_TEAM=BHYTLHA722",
+      xcargs: "DEVELOPMENT_TEAM=BHYTLHA722 CODE_SIGN_KEYCHAIN=#{kc_path}",
       output_directory: "./build_fastlane",
       output_name: "hydro_reminder.ipa"
     )

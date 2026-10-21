@@ -507,7 +507,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '🔘 İkona Basılı Tutma Kısayolları',
+                          'İkona Basılı Tutma Kısayolları',
                           style: TextStyle(
                             fontSize: 13.5,
                             fontWeight: FontWeight.bold,
@@ -529,33 +529,50 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+              Column(
                 children: [
-                  _buildShortcutChip(
-                    context,
-                    emoji: '🥛',
-                    label: '+200 ml Bardak',
-                    isDark: isDark,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildShortcutChip(
+                          context,
+                          emoji: '🥛',
+                          label: '+200 ml Bardak',
+                          isDark: isDark,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildShortcutChip(
+                          context,
+                          emoji: '🥤',
+                          label: '+330 ml Şişe',
+                          isDark: isDark,
+                        ),
+                      ),
+                    ],
                   ),
-                  _buildShortcutChip(
-                    context,
-                    emoji: '🥤',
-                    label: '+330 ml Şişe',
-                    isDark: isDark,
-                  ),
-                  _buildShortcutChip(
-                    context,
-                    emoji: '🫙',
-                    label: '+500 ml Büyük',
-                    isDark: isDark,
-                  ),
-                  _buildShortcutChip(
-                    context,
-                    emoji: '📊',
-                    label: 'İstatistikler',
-                    isDark: isDark,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildShortcutChip(
+                          context,
+                          emoji: '🫙',
+                          label: '+500 ml Büyük',
+                          isDark: isDark,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _buildShortcutChip(
+                          context,
+                          emoji: '📊',
+                          label: 'İstatistikler',
+                          isDark: isDark,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -841,7 +858,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 11),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
@@ -850,16 +867,20 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
             ),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(emoji, style: const TextStyle(fontSize: 14)),
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0288D1),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0288D1),
+                  ),
                 ),
               ),
             ],

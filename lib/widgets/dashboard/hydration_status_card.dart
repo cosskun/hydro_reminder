@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class HydrationStatusCard extends StatefulWidget {
@@ -24,8 +22,6 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.status['title'] ?? 'Durumunuz';
-    final message = widget.status['message'] ?? '';
     final emoji = widget.status['emoji'] ?? '💧';
     final primaryAsset = widget.status['imageAsset'];
     final routineAsset = widget.status['routineImageAsset'];
@@ -37,6 +33,12 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
         routineAsset != primaryAsset;
 
     final displayAsset = (_showRoutineVisual && canToggle) ? routineAsset : primaryAsset;
+    final displayTitle = (_showRoutineVisual && canToggle && widget.status['routineTitle']?.isNotEmpty == true)
+        ? widget.status['routineTitle']!
+        : (widget.status['title'] ?? 'Durumunuz');
+    final displayMessage = (_showRoutineVisual && canToggle && widget.status['routineMessage']?.isNotEmpty == true)
+        ? widget.status['routineMessage']!
+        : (widget.status['message'] ?? '');
 
     return GestureDetector(
       onTap: canToggle
@@ -52,7 +54,7 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: widget.isDark ? const Color(0xFF1E293B) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: widget.statusColor.withOpacity(0.35),
             width: 1.5,
@@ -68,26 +70,33 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 1. Left: Mascot Character Stage
+            // 1. Left: Mascot Character Stage (Enlarged to 88x88 for prominent impact)
             Container(
-              width: 58,
-              height: 58,
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: widget.isDark
                       ? [const Color(0xFF334155), const Color(0xFF1E293B)]
-                      : [widget.statusColor.withOpacity(0.15), Colors.white],
+                      : [widget.statusColor.withOpacity(0.18), Colors.white],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: widget.statusColor.withOpacity(0.4),
-                  width: 1.2,
+                  width: 1.5,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.statusColor.withOpacity(widget.isDark ? 0.25 : 0.12),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(18),
                 child: displayAsset != null
                     ? Image.asset(
                         displayAsset,
@@ -95,14 +104,14 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                         errorBuilder: (context, error, stackTrace) => Center(
                           child: Text(
                             emoji,
-                            style: const TextStyle(fontSize: 32),
+                            style: const TextStyle(fontSize: 40),
                           ),
                         ),
                       )
                     : Center(
                         child: Text(
                           emoji,
-                          style: const TextStyle(fontSize: 32),
+                          style: const TextStyle(fontSize: 40),
                         ),
                       ),
               ),
@@ -119,17 +128,17 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                     children: [
                       Flexible(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                           decoration: BoxDecoration(
                             color: widget.statusColor.withOpacity(0.18),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            title,
+                            displayTitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 11.5,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                               color: widget.statusColor,
                             ),
@@ -139,19 +148,19 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                       if (energyPercentage != null && energyPercentage.isNotEmpty) ...[
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                           decoration: BoxDecoration(
                             color: widget.isDark ? const Color(0xFF334155) : const Color(0xFFEFF6FF),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: widget.statusColor.withOpacity(0.25),
+                              color: widget.statusColor.withOpacity(0.3),
                               width: 1,
                             ),
                           ),
                           child: Text(
-                            '⚡ %$energyPercentage',
+                            _showRoutineVisual ? '🌙 Rutin' : '⚡ %$energyPercentage',
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 10.5,
                               fontWeight: FontWeight.w800,
                               color: widget.statusColor,
                             ),
@@ -160,16 +169,27 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                       ],
                     ],
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 6),
                   Text(
-                    message,
+                    displayMessage,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      height: 1.3,
+                      height: 1.35,
                       color: widget.isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                     ),
                   ),
+                  if (canToggle) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _showRoutineVisual ? '⚡ Enerji moduna dönmek için dokun' : '🔄 Saat rutinini görmek için dokun',
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w500,
+                        color: widget.isDark ? Colors.white38 : Colors.black38,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

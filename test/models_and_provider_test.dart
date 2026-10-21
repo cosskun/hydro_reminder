@@ -170,7 +170,8 @@ void main() {
       expect(enVitality['message'], 'Congratulations! You reached your daily goal!');
 
       final enCat = WaterProvider.getHydrationStatus(0.0, mascotType: 'cat', lang: 'en');
-      expect(enCat['message'], 'Meow! So thirsty, could you spare a sip of water?');
+      expect(enCat['message'], 'Purrr... Glass is empty, feeling so drained!');
+      expect(enCat['routineMessage'], 'Meow! So thirsty, could you spare a sip of water?');
     });
   });
 
@@ -396,6 +397,43 @@ void main() {
         isEn: false,
       );
       expect(dog100['title'], contains('Tam Şarj'));
+    });
+
+    test('Energy ladder has absolute priority on dashboard even during bedtime hours (22:00+)', () {
+      final nightTime = DateTime(2026, 1, 1, 23, 15);
+
+      // At 24% intake during bedtime hours
+      final status24 = WaterProvider.getHydrationStatus(
+        0.24,
+        mascotType: 'cat',
+        now: nightTime,
+      );
+      expect(status24['imageAsset'], 'assets/mascots/cat_energy_25.png');
+      expect(status24['routineImageAsset'], 'assets/mascots/cat_bedtime.png');
+      expect(status24['title'], contains('İlk Yudum'));
+      expect(status24['routineTitle'], 'Hadi son bir yudum!');
+
+      // At 80% intake during bedtime hours (Energy 75)
+      final status80 = WaterProvider.getHydrationStatus(
+        0.80,
+        mascotType: 'cat',
+        now: nightTime,
+      );
+      expect(status80['imageAsset'], 'assets/mascots/cat_energy_75.png');
+      expect(status80['routineImageAsset'], 'assets/mascots/cat_bedtime.png');
+      expect(status80['title'], contains('Yüksek Canlılık'));
+      expect(status80['routineTitle'], 'Hadi son bir yudum!');
+
+      // At 95% intake during bedtime hours (Energy 100)
+      final status95 = WaterProvider.getHydrationStatus(
+        0.95,
+        mascotType: 'cat',
+        now: nightTime,
+      );
+      expect(status95['imageAsset'], 'assets/mascots/cat_energy_100.png');
+      expect(status95['routineImageAsset'], 'assets/mascots/cat_bedtime.png');
+      expect(status95['title'], contains('Tam Şarj'));
+      expect(status95['routineTitle'], 'Hadi son bir yudum!');
     });
   });
 }

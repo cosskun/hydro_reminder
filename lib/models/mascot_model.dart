@@ -237,6 +237,8 @@ class MascotDialogue {
   final String energyTitle;
   final String energyMessage;
   final String routineImageAsset;
+  final String routineTitle;
+  final String routineMessage;
 
   const MascotDialogue({
     required this.title,
@@ -250,6 +252,8 @@ class MascotDialogue {
     this.energyTitle = '',
     this.energyMessage = '',
     this.routineImageAsset = '',
+    this.routineTitle = '',
+    this.routineMessage = '',
   });
 }
 
@@ -424,6 +428,7 @@ class MascotResolver {
     DateTime? lastLogTime,
     String lang = 'tr',
     DateTime? now,
+    bool preferEnergyAsset = true,
   }) {
     final state = resolveCurrentState(
       percentage: percentage,
@@ -819,7 +824,10 @@ class MascotResolver {
       isEn: isEn,
     );
 
-    // Contextual Show / Reminder events take priority when triggered:
+    final routineTitle = title;
+    final routineMessage = message;
+
+    // Contextual Show / Reminder events:
     final bool isSpecialShowEvent = state == MascotState.goalReached ||
         state == MascotState.bedtime ||
         state == MascotState.afternoonSlump ||
@@ -827,23 +835,31 @@ class MascotResolver {
         state == MascotState.thirsty;
 
     // Primary Image Selection:
-    // When a special show/reminder event is triggered, display its thematic illustration.
-    // Otherwise, as water is logged throughout the day (for Cat and Dog), display the Energy Level!
+    // When a mascot has an energy ladder (Cat and Dog), hydration level energy ladder has
+    // absolute priority on the in-app screen and widgets!
+    // Time-based routine events (bedtime, afternoon slump) do NOT override the user's water energy progress.
     final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog';
     final String resolvedImageAsset;
-    if (isSpecialShowEvent) {
-      resolvedImageAsset = routineImageAsset;
-    } else if (hasEnergyLadder) {
+    final String finalTitle;
+    final String finalMessage;
+
+    if (hasEnergyLadder && preferEnergyAsset) {
       resolvedImageAsset = energyImageAsset;
-      title = energyData['title']!;
-      message = energyData['message']!;
+      finalTitle = energyData['title']!;
+      finalMessage = energyData['message']!;
+    } else if (isSpecialShowEvent) {
+      resolvedImageAsset = routineImageAsset;
+      finalTitle = routineTitle;
+      finalMessage = routineMessage;
     } else {
       resolvedImageAsset = routineImageAsset;
+      finalTitle = routineTitle;
+      finalMessage = routineMessage;
     }
 
     return MascotDialogue(
-      title: title,
-      message: message,
+      title: finalTitle,
+      message: finalMessage,
       emoji: emoji,
       imageAsset: resolvedImageAsset,
       state: state,
@@ -853,6 +869,8 @@ class MascotResolver {
       energyTitle: energyData['title']!,
       energyMessage: energyData['message']!,
       routineImageAsset: routineImageAsset,
+      routineTitle: routineTitle,
+      routineMessage: routineMessage,
     );
   }
 }

@@ -116,6 +116,7 @@ class WaterProvider with ChangeNotifier {
     int streakDays = 0,
     DateTime? lastLogTime,
     DateTime? now,
+    bool preferEnergyAsset = true,
   }) {
     final dialogue = MascotResolver.resolveDialogue(
       mascotType: mascotType,
@@ -124,6 +125,7 @@ class WaterProvider with ChangeNotifier {
       lastLogTime: lastLogTime,
       lang: lang,
       now: now,
+      preferEnergyAsset: preferEnergyAsset,
     );
     return {
       'emoji': dialogue.emoji,
@@ -136,6 +138,8 @@ class WaterProvider with ChangeNotifier {
       'energyPercentage': dialogue.energyPercentage.toString(),
       'energyTitle': dialogue.energyTitle,
       'energyMessage': dialogue.energyMessage,
+      'routineTitle': dialogue.routineTitle,
+      'routineMessage': dialogue.routineMessage,
       'state': dialogue.state.name,
     };
   }

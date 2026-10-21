@@ -62,7 +62,7 @@ class AppTranslations {
       // Mascot Names
       'mascot_vitality': 'Canlılık Yüzleri (Klasik)',
       'mascot_cat': 'Luna (Kedi)',
-      'mascot_dog': 'Neşeli Köpek',
+      'mascot_dog': 'Kahverengi Poodle',
       'mascot_penguin': 'Kutup Pengueni',
       'mascot_panda': 'Tembel Panda',
       'mascot_squirrel': 'Fındık (Sincap)',
@@ -137,7 +137,7 @@ class AppTranslations {
       // Mascot Names
       'mascot_vitality': 'Vitality Expressions (Classic)',
       'mascot_cat': 'Luna (Cat)',
-      'mascot_dog': 'Playful Dog',
+      'mascot_dog': 'Brown Poodle',
       'mascot_penguin': 'Polar Penguin',
       'mascot_panda': 'Zen Panda',
       'mascot_squirrel': 'Nutty (Squirrel)',

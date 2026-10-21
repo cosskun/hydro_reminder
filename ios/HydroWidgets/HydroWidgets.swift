@@ -364,6 +364,12 @@ func getSharedMascotImage() -> UIImage? {
        let img = UIImage(data: data) {
         return img
     }
+    if let kc = loadKeychainPayload(),
+       let b64 = kc["mascotBase64"] as? String, !b64.isEmpty,
+       let data = Data(base64Encoded: b64),
+       let img = UIImage(data: data) {
+        return img
+    }
     return nil
 }
 

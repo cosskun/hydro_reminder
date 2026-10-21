@@ -167,13 +167,13 @@ void main() {
 
       // Check all 5 official animal mascot options are present
       expect(find.text('Luna (Kedi)'), findsOneWidget);
-      expect(find.text('Neşeli Köpek'), findsOneWidget);
+      expect(find.text('Kahverengi Poodle'), findsOneWidget);
       expect(find.text('Kutup Pengueni'), findsOneWidget);
       expect(find.text('Tembel Panda'), findsOneWidget);
       expect(find.text('Fındık (Sincap)'), findsOneWidget);
 
       // 1. Switch to Dog mascot
-      await tester.tap(find.text('Neşeli Köpek'));
+      await tester.tap(find.text('Kahverengi Poodle'));
       await tester.pumpAndSettle();
       expect(provider.mascotType, 'dog');
       expect(await StorageService().getMascotType(), 'dog');

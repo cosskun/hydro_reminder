@@ -105,12 +105,12 @@ class MascotCatalog {
 
   static const MascotCharacter dog = MascotCharacter(
     id: 'dog',
-    nameTr: 'Neşeli Köpek',
-    nameEn: 'Playful Dog',
-    personalityTr: 'Enerjik, sadık, kuyruk sallayan motivasyon ustası.',
-    personalityEn: 'Energetic, loyal, tail-wagging cheerleader.',
-    emoji: '🐶',
-    defaultImageAsset: 'assets/mascots/dog_afternoon_slump.png',
+    nameTr: 'Kahverengi Poodle',
+    nameEn: 'Brown Poodle',
+    personalityTr: 'Kıvırcık pofuduk kahverengi tüyleri ve neşeli enerjisiyle sadık dost.',
+    personalityEn: 'Fluffy brown curly poodle with cheerful puppy energy and loyalty.',
+    emoji: '🐩',
+    defaultImageAsset: 'assets/mascots/dog_morning.png',
   );
 
   static const MascotCharacter penguin = MascotCharacter(
@@ -218,24 +218,26 @@ class MascotResolver {
       }
     }
 
-    // Afternoon Slump: 14:00 - 16:30 ("Sen hazır uyanıkken...")
-    if (hour >= 14 && hour < 16 || (hour == 16 && current.minute <= 30)) {
-      return MascotState.afternoonSlump;
+    // Afternoon Slump: 14:00 - 16:30 ("Sen hazır uyanıkken..."), only if behind on water (< 50%)
+    if ((hour >= 14 && hour < 16) || (hour == 16 && current.minute <= 30)) {
+      if (percentage < 0.50) {
+        return MascotState.afternoonSlump;
+      }
     }
 
-    // Flame Streak: 3+ days streak with good progress
-    if (streakDays >= 3 && percentage >= 0.60) {
+    // Flame Streak: 3+ days streak with strong progress (75%+)
+    if (streakDays >= 3 && percentage >= 0.75) {
       return MascotState.streakFire;
     }
 
-    // Daytime progression
-    if (hour >= 6 && (hour < 9 || (hour == 9 && current.minute <= 30))) {
+    // Dynamic Hydration Energy Ladder (Su içtikçe artan enerji ve canlılık)
+    if (percentage < 0.25) {
       return MascotState.morning;
-    } else if ((hour == 9 && current.minute > 30) || hour == 10 || (hour == 11 && current.minute <= 30)) {
+    } else if (percentage < 0.50) {
       return MascotState.workFocus;
-    } else if ((hour == 11 && current.minute > 30) || (hour >= 12 && hour < 14)) {
+    } else if (percentage < 0.70) {
       return MascotState.lunch;
-    } else if ((hour == 16 && current.minute > 30) || hour == 17 || (hour == 18 && current.minute <= 30)) {
+    } else if (percentage < 0.88) {
       return MascotState.workout;
     } else {
       return MascotState.evening;

@@ -255,56 +255,64 @@ void main() {
       }
     });
 
-    test('resolveCurrentState maps correct time windows for daily progression', () {
+    test('resolveCurrentState maps dynamic energy ladder and contextual triggers', () {
+      // 1. Initial Morning Energy (< 25%)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
-          now: DateTime(2026, 1, 1, 8, 0),
+          percentage: 0.20,
+          now: DateTime(2026, 1, 1, 10, 0),
         ),
         MascotState.morning,
       );
+      // 2. Focused Desk Work Energy (25% - 50%)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
+          percentage: 0.35,
           now: DateTime(2026, 1, 1, 10, 0),
         ),
         MascotState.workFocus,
       );
+      // 3. Balanced Midday Freshness (50% - 70%)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
+          percentage: 0.60,
           now: DateTime(2026, 1, 1, 12, 30),
         ),
         MascotState.lunch,
       );
+      // 4. Afternoon Slump when hydration is behind (< 50% between 14:00-16:30)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
+          percentage: 0.30,
           now: DateTime(2026, 1, 1, 15, 0),
         ),
         MascotState.afternoonSlump,
       );
+      // 5. High Workout Stamina (70% - 88%)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
+          percentage: 0.75,
           now: DateTime(2026, 1, 1, 17, 30),
         ),
         MascotState.workout,
       );
+      // 6. Evening Wind Down (88% - 99%)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
+          percentage: 0.90,
           now: DateTime(2026, 1, 1, 20, 0),
         ),
         MascotState.evening,
       );
+      // 7. Bedtime wrap up (21:30+)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.5,
+          percentage: 0.50,
           now: DateTime(2026, 1, 1, 22, 30),
         ),
         MascotState.bedtime,
       );
+      // 8. Goal Reached (100%+)
       expect(
         MascotResolver.resolveCurrentState(
           percentage: 1.0,
@@ -312,6 +320,7 @@ void main() {
         ),
         MascotState.goalReached,
       );
+      // 9. Zero thirst
       expect(
         MascotResolver.resolveCurrentState(
           percentage: 0.0,
@@ -319,9 +328,10 @@ void main() {
         ),
         MascotState.thirsty,
       );
+      // 10. Superhero Streak Fire (Streak >= 3 and 75%+)
       expect(
         MascotResolver.resolveCurrentState(
-          percentage: 0.7,
+          percentage: 0.80,
           streakDays: 4,
           now: DateTime(2026, 1, 1, 12, 0),
         ),

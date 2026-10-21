@@ -1,13 +1,6 @@
 name: Deploy to TestFlight
 
 on:
-  push:
-    branches: [ main, master ]
-    paths-ignore:
-      - '.github/workflows/build_apk.yml'
-      - '.github/workflows/build_ios.yml'
-      - 'android/**'
-      - 'README.md'
   workflow_dispatch:
 
 jobs:

@@ -166,7 +166,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check all 5 official animal mascot options are present
-      expect(find.text('Sevimli Kedi'), findsOneWidget);
+      expect(find.text('Luna (Kedi)'), findsOneWidget);
       expect(find.text('Neşeli Köpek'), findsOneWidget);
       expect(find.text('Kutup Pengueni'), findsOneWidget);
       expect(find.text('Tembel Panda'), findsOneWidget);
@@ -200,7 +200,7 @@ void main() {
       expect(squirrelStatus['emoji'], '👑');
 
       // 4. Switch back to Cat
-      await tester.tap(find.text('Sevimli Kedi'));
+      await tester.tap(find.text('Luna (Kedi)'));
       await tester.pumpAndSettle();
       expect(provider.mascotType, 'cat');
       expect(await StorageService().getMascotType(), 'cat');
@@ -288,7 +288,7 @@ void main() {
       expect(find.text('App Language'), findsOneWidget);
       expect(find.text('Custom Mascot Character'), findsOneWidget);
       expect(find.text('Widget Theme'), findsOneWidget);
-      expect(find.text('Playful Cat'), findsOneWidget);
+      expect(find.text('Luna (Cat)'), findsOneWidget);
       expect(find.text('Ocean Blue'), findsOneWidget);
 
       // Verify English Mascot quotes

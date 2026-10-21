@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hydro_reminder/models/badge_item.dart';
 import 'package:hydro_reminder/models/beverage_type.dart';
+import 'package:hydro_reminder/models/mascot_model.dart';
 import 'package:hydro_reminder/models/water_log.dart';
 import 'package:hydro_reminder/providers/water_provider.dart';
 import 'package:hydro_reminder/services/review_service.dart';
@@ -180,8 +182,8 @@ void main() {
       expect(AppTranslations.get('tab_dashboard', lang: 'tr'), 'Ana Sayfa');
       expect(AppTranslations.get('tab_dashboard', lang: 'en'), 'Home');
 
-      expect(AppTranslations.get('mascot_cat', lang: 'tr'), 'Sevimli Kedi');
-      expect(AppTranslations.get('mascot_cat', lang: 'en'), 'Playful Cat');
+      expect(AppTranslations.get('mascot_cat', lang: 'tr'), 'Luna (Kedi)');
+      expect(AppTranslations.get('mascot_cat', lang: 'en'), 'Luna (Cat)');
 
       expect(AppTranslations.get('theme_glass', lang: 'tr'), 'iOS Buzlu Cam');
       expect(AppTranslations.get('theme_glass', lang: 'en'), 'iOS Frosted Glass');
@@ -227,6 +229,104 @@ void main() {
       expect(await storage.getLanguage(), 'tr');
       await storage.saveLanguage('en');
       expect(await storage.getLanguage(), 'en');
+    });
+  });
+
+  group('Luna (Cat) Mascot 10 States & Asset Tests', () {
+    test('All 10 states resolve to valid cat assets that exist on disk', () {
+      final expectedAssets = {
+        MascotState.morning: 'assets/mascots/cat_morning.png',
+        MascotState.workFocus: 'assets/mascots/cat_work_focus.png',
+        MascotState.lunch: 'assets/mascots/cat_lunch.png',
+        MascotState.afternoonSlump: 'assets/mascots/cat_afternoon_slump.png',
+        MascotState.workout: 'assets/mascots/cat_workout.png',
+        MascotState.evening: 'assets/mascots/cat_evening.png',
+        MascotState.bedtime: 'assets/mascots/cat_bedtime.png',
+        MascotState.goalReached: 'assets/mascots/cat_goal_reached.png',
+        MascotState.thirsty: 'assets/mascots/cat_thirsty.png',
+        MascotState.streakFire: 'assets/mascots/cat_streak_fire.png',
+      };
+
+      for (final state in MascotState.values) {
+        final expected = expectedAssets[state]!;
+        final actual = 'assets/mascots/cat_${state.assetSuffix}.png';
+        expect(actual, expected);
+        expect(File(actual).existsSync(), isTrue, reason: '$actual should exist on disk');
+      }
+    });
+
+    test('resolveCurrentState maps correct time windows for daily progression', () {
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 8, 0),
+        ),
+        MascotState.morning,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 10, 0),
+        ),
+        MascotState.workFocus,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 12, 30),
+        ),
+        MascotState.lunch,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 15, 0),
+        ),
+        MascotState.afternoonSlump,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 17, 30),
+        ),
+        MascotState.workout,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 20, 0),
+        ),
+        MascotState.evening,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.5,
+          now: DateTime(2026, 1, 1, 22, 30),
+        ),
+        MascotState.bedtime,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.0,
+          now: DateTime(2026, 1, 1, 15, 0),
+        ),
+        MascotState.goalReached,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.0,
+          now: DateTime(2026, 1, 1, 15, 0),
+        ),
+        MascotState.thirsty,
+      );
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 0.7,
+          streakDays: 4,
+          now: DateTime(2026, 1, 1, 12, 0),
+        ),
+        MascotState.streakFire,
+      );
     });
   });
 }

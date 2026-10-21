@@ -95,12 +95,12 @@ class MascotCatalog {
 
   static const MascotCharacter cat = MascotCharacter(
     id: 'cat',
-    nameTr: 'Sevimli Kedi',
-    nameEn: 'Playful Cat',
+    nameTr: 'Luna (Kedi)',
+    nameEn: 'Luna (Cat)',
     personalityTr: 'Uykucu, tatlı ve hafif sitemkar mırıltılı kedi.',
     personalityEn: 'Sleepy, cozy, slightly sassy purring cat.',
     emoji: '🐱',
-    defaultImageAsset: 'assets/mascots/cat_afternoon_slump.png',
+    defaultImageAsset: 'assets/mascots/cat_morning.png',
   );
 
   static const MascotCharacter dog = MascotCharacter(
@@ -229,13 +229,13 @@ class MascotResolver {
     }
 
     // Daytime progression
-    if (hour >= 6 && hour < 9 || (hour == 9 && current.minute <= 30)) {
+    if (hour >= 6 && (hour < 9 || (hour == 9 && current.minute <= 30))) {
       return MascotState.morning;
-    } else if (hour >= 9 && hour < 11 || (hour == 11 && current.minute <= 30)) {
+    } else if ((hour == 9 && current.minute > 30) || hour == 10 || (hour == 11 && current.minute <= 30)) {
       return MascotState.workFocus;
-    } else if (hour >= 11 && hour < 14) {
+    } else if ((hour == 11 && current.minute > 30) || (hour >= 12 && hour < 14)) {
       return MascotState.lunch;
-    } else if (hour >= 16 && hour < 19) {
+    } else if ((hour == 16 && current.minute > 30) || hour == 17 || (hour == 18 && current.minute <= 30)) {
       return MascotState.workout;
     } else {
       return MascotState.evening;
@@ -308,7 +308,7 @@ class MascotResolver {
         title: title,
         message: message,
         emoji: emoji,
-        imageAsset: 'assets/mascots/owl_afternoon_slump.png',
+        imageAsset: 'assets/mascots/cat_morning.png',
         state: state,
         hexColor: hexColor,
       );
@@ -488,10 +488,10 @@ class MascotResolver {
         title = isEn ? 'You Champion!' : 'İşte bu, şampiyon!';
         message = isEn
             ? (mascot.id == 'cat'
-                ? "Roar time! You are today's hydration champion!"
+                ? "Trophy raised, confetti bursting! You are today's hydration champion! 🏆🎉"
                 : 'Congratulations! You reached your daily goal!')
             : (mascot.id == 'cat'
-                ? 'Kükreme vakti! Günün şampiyon kedisi sensin!'
+                ? 'Kupayı kaldırdık, konfetiler patladı! Günün şampiyon kedisi sensin! 🏆🎉'
                 : 'Tebrikler! Günlük su hedefini tamamladın!');
         break;
 
@@ -506,7 +506,7 @@ class MascotResolver {
                         ? 'Dropping all acorns! Need fresh water right now!'
                         : 'Parched like a desert! Please share a glass of water!')))
             : (mascot.id == 'cat'
-                ? 'Miyav! Çok susadım, bir yudum su verir misin?'
+                ? 'Miyav! Boğazım kurudu, bardağım bomboş kaldı. Lütfen hemen bir bardak su ver!'
                 : (mascot.id == 'penguin'
                     ? 'Buzlar eriyor! Hemen taze suyla ferahla.'
                     : (mascot.id == 'squirrel'
@@ -532,12 +532,12 @@ class MascotResolver {
         title = isEn ? 'Start with 1 Glass!' : 'Güne 1 bardak suyla başla!';
         message = isEn
             ? (mascot.id == 'cat'
-                ? "Feeling refreshed! Let's keep drinking water together."
+                ? "Purrr... Stretching time! Let's start the day with a fresh glass of water."
                 : (mascot.id == 'penguin'
                     ? 'Waddling towards the goal! First sip was great.'
                     : 'Good morning! Kickstart your body with fresh water.'))
             : (mascot.id == 'cat'
-                ? 'Biraz ferahladım! Birlikte su içmeye devam edelim.'
+                ? 'Mırrr... Gerinme vakti! Güne 1 bardak taze suyla enerjik başlayalım.'
                 : (mascot.id == 'penguin'
                     ? 'Paytak adımlarla hedefe! İlk yudum harika.'
                     : 'Günaydın! Güne 1 bardak taze suyla enerjik başla.'));
@@ -547,12 +547,12 @@ class MascotResolver {
         title = isEn ? "Don't Dry Up at Desk!" : 'Masa başında kuruma!';
         message = isEn
             ? (mascot.id == 'cat'
-                ? 'Happy purrs! Our hydration level is super.'
+                ? 'Glasses on, focus mode activated! Keep your water tumbler close at the desk.'
                 : (mascot.id == 'penguin'
                     ? 'Cool as the ocean! Gliding with the waves.'
                     : 'Send fresh oxygen to your brain with a crisp sip.'))
             : (mascot.id == 'cat'
-                ? 'Harika bir mırıltı! Hidrasyon seviyemiz süper.'
+                ? 'Gözlükler takıldı, çalışma başladı! Masa başında suyunu yudumlamayı unutma.'
                 : (mascot.id == 'penguin'
                     ? 'Serin sular gibisin! Dalgalarla akıyoruz.'
                     : 'Beynine taze bir yudum oksijen gönder, zihnin açılsın.'));
@@ -561,7 +561,7 @@ class MascotResolver {
       case MascotState.lunch:
         title = isEn ? 'Pre-Meal Water Break!' : 'Yemekten önce su molası!';
         message = isEn
-            ? 'Drinking water before eating eases digestion.'
+            ? 'A fresh glass of water before lunch aids digestion. Bon appétit!'
             : 'Yemek öncesi su içmek sindirimi rahatlatır, afiyet olsun!';
         break;
 
@@ -569,12 +569,12 @@ class MascotResolver {
         title = isEn ? 'Keep Energy High!' : 'Mataranı tazele!';
         message = isEn
             ? (mascot.id == 'cat'
-                ? 'Pawsome! Just a tiny bit left to reach the goal.'
+                ? 'Sweatband on, workout mode! Keep your hydration and stamina high.'
                 : (mascot.id == 'penguin'
                     ? 'Catching the polar wave! Summit is so close.'
                     : 'Active day! Maintain your hydration and stamina.'))
             : (mascot.id == 'cat'
-                ? 'Sana bayılıyorum! Hedefe çok ama çok az kaldı.'
+                ? 'Spor bandı takıldı, tempo yükseldi! Enerjini korumak için suyunu ihmal etme.'
                 : (mascot.id == 'penguin'
                     ? 'Kutup dalgasını yakaladık! Zirve çok yakın.'
                     : 'Günün temposu yüksek! Enerjini korumak için suyunu ihmal etme.'));
@@ -584,12 +584,12 @@ class MascotResolver {
         title = isEn ? 'Almost Reached Goal!' : 'Hedefe bir adım kaldı!';
         message = isEn
             ? (mascot.id == 'cat'
-                ? 'Pawsome! Just a tiny bit left to reach the goal.'
+                ? 'Cozy armchair purrs... Unwind from the day with a refreshing cup of water.'
                 : (mascot.id == 'penguin'
                     ? 'Catching the polar wave! Summit is so close.'
                     : 'Unwind from today. Just a couple of cups left to finish.'))
             : (mascot.id == 'cat'
-                ? 'Sana bayılıyorum! Hedefe çok ama çok az kaldı.'
+                ? 'Koltukta huzurlu mırıltılar... Günün yorgunluğunu taze bir bardak suyla atalım.'
                 : (mascot.id == 'penguin'
                     ? 'Kutup dalgasını yakaladık! Zirve çok yakın.'
                     : 'Günün yorgunluğunu atıyoruz. Hedefe ulaşmaya çok az kaldı!'));
@@ -598,8 +598,12 @@ class MascotResolver {
       case MascotState.streakFire:
         title = isEn ? 'Streak on Fire!' : 'Serimiz alev alev! 🔥';
         message = isEn
-            ? '$streakDays days strong! Keep this legendary habit blazing!'
-            : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın!';
+            ? (mascot.id == 'cat'
+                ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
+                : '$streakDays days strong! Keep this legendary habit blazing!')
+            : (mascot.id == 'cat'
+                ? '$streakDays günlük seriyi süper kahraman gibi koruyoruz! Alevler sönmesin! 🔥'
+                : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın!');
         break;
     }
 

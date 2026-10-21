@@ -229,24 +229,28 @@ void main() {
       expect(find.text('Zümrüt Yeşili Doğa'), findsOneWidget);
 
       // Select iOS Frosted Glass
+      await tester.ensureVisible(find.text('iOS Buzlu Cam'));
       await tester.tap(find.text('iOS Buzlu Cam'));
       await tester.pumpAndSettle();
       expect(provider.widgetTheme, 'glass');
       expect(await StorageService().getWidgetTheme(), 'glass');
 
       // Select Neon Cyber
+      await tester.ensureVisible(find.text('Neon Siber Gece'));
       await tester.tap(find.text('Neon Siber Gece'));
       await tester.pumpAndSettle();
       expect(provider.widgetTheme, 'neon');
       expect(await StorageService().getWidgetTheme(), 'neon');
 
       // Select Emerald Forest
+      await tester.ensureVisible(find.text('Zümrüt Yeşili Doğa'));
       await tester.tap(find.text('Zümrüt Yeşili Doğa'));
       await tester.pumpAndSettle();
       expect(provider.widgetTheme, 'emerald');
       expect(await StorageService().getWidgetTheme(), 'emerald');
 
       // Select Ocean Blue
+      await tester.ensureVisible(find.text('Okyanus Mavisi'));
       await tester.tap(find.text('Okyanus Mavisi'));
       await tester.pumpAndSettle();
       expect(provider.widgetTheme, 'ocean');

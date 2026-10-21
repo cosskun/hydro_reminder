@@ -62,7 +62,10 @@ class AppTranslations {
       // Mascot Names
       'mascot_vitality': 'Canlılık Yüzleri (Klasik)',
       'mascot_cat': 'Sevimli Kedi',
+      'mascot_dog': 'Neşeli Köpek',
       'mascot_penguin': 'Kutup Pengueni',
+      'mascot_panda': 'Tembel Panda',
+      'mascot_owl': 'Bilge Baykuş (Duolingo)',
       'mascot_plant': 'Yeşil Filiz & Doğa',
 
       // Theme Names
@@ -133,7 +136,10 @@ class AppTranslations {
       // Mascot Names
       'mascot_vitality': 'Vitality Expressions (Classic)',
       'mascot_cat': 'Playful Cat',
+      'mascot_dog': 'Playful Dog',
       'mascot_penguin': 'Polar Penguin',
+      'mascot_panda': 'Zen Panda',
+      'mascot_owl': 'Wise Owl (Duolingo)',
       'mascot_plant': 'Sprout & Nature',
 
       // Theme Names

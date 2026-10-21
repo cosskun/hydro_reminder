@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_translations.dart';
+import '../../models/mascot_model.dart';
 import '../../providers/water_provider.dart';
+import '../dialogs/mascot_preview_dialog.dart';
 import 'settings_card_wrapper.dart';
 
 class AppearanceSettingsCard extends StatelessWidget {
@@ -58,65 +60,61 @@ class AppearanceSettingsCard extends StatelessWidget {
         ),
         const Divider(height: 24, thickness: 0.5),
 
-        // 2. Custom Mascot Selection (Özel Maskotlar)
-        Text(
-          AppTranslations.get('section_mascot', lang: lang),
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
-          ),
+        // 2. Custom Mascot Selection (Özel Maskotlar - Duolingo Tarzı)
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                AppTranslations.get('section_mascot', lang: lang),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: const Color(0xFF38BDF8).withOpacity(0.18),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                '5 Maskot • 10 Durum',
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0284C7),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
         Text(
           lang == 'en'
-              ? 'Choose which mascot accompanies your hydration journey in the app and home widgets.'
-              : 'Uygulamada ve ana ekran widget\'larında size eşlik edecek maskotu seçin.',
+              ? 'Choose which mascot accompanies your hydration journey with time-aware Duolingo-style illustrations.'
+              : 'Gün boyu saate ve su hedefinize göre size eğlenceli sözler ve çizimlerle eşlik edecek maskotunuzu seçin.',
           style: TextStyle(
             fontSize: 11,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
           ),
         ),
         const SizedBox(height: 10),
-        _buildMascotOption(
-          context,
-          id: 'vitality',
-          name: AppTranslations.get('mascot_vitality', lang: lang),
-          preview: '🥱  🙂  😊  😎  🥳',
-          isSelected: provider.mascotType == 'vitality',
-          onTap: () => provider.updateMascotType('vitality'),
-          isDark: isDark,
-        ),
-        const SizedBox(height: 8),
-        _buildMascotOption(
-          context,
-          id: 'cat',
-          name: AppTranslations.get('mascot_cat', lang: lang),
-          preview: '😿  🐱  😺  😻  🦁',
-          isSelected: provider.mascotType == 'cat',
-          onTap: () => provider.updateMascotType('cat'),
-          isDark: isDark,
-        ),
-        const SizedBox(height: 8),
-        _buildMascotOption(
-          context,
-          id: 'penguin',
-          name: AppTranslations.get('mascot_penguin', lang: lang),
-          preview: '🧊  🐧  🦭  🏄  👑',
-          isSelected: provider.mascotType == 'penguin',
-          onTap: () => provider.updateMascotType('penguin'),
-          isDark: isDark,
-        ),
-        const SizedBox(height: 8),
-        _buildMascotOption(
-          context,
-          id: 'plant',
-          name: AppTranslations.get('mascot_plant', lang: lang),
-          preview: '🥀  🌱  🌿  🪴  🌳',
-          isSelected: provider.mascotType == 'plant',
-          onTap: () => provider.updateMascotType('plant'),
-          isDark: isDark,
-        ),
+        ...MascotCatalog.allMascots.map((m) {
+          final isSelected = provider.mascotType == m.id;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: _buildMascotOption(
+              context,
+              mascot: m,
+              lang: lang,
+              isSelected: isSelected,
+              onTap: () => provider.updateMascotType(m.id),
+              isDark: isDark,
+            ),
+          );
+        }),
         const Divider(height: 24, thickness: 0.5),
 
         // 3. Widget & Color Theme Selector (Widget Teması)
@@ -350,23 +348,26 @@ class AppearanceSettingsCard extends StatelessWidget {
 
   Widget _buildMascotOption(
     BuildContext context, {
-    required String id,
-    required String name,
-    required String preview,
+    required MascotCharacter mascot,
+    required String lang,
     required bool isSelected,
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final isEn = lang == 'en';
+    final name = AppTranslations.get('mascot_${mascot.id}', lang: lang);
+    final personality = isEn ? mascot.personalityEn : mascot.personalityTr;
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
               : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
                 ? const Color(0xFF38BDF8)
@@ -376,6 +377,38 @@ class AppearanceSettingsCard extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // Mascot Thumbnail / Avatar
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFF38BDF8).withOpacity(0.2)
+                    : (isDark ? const Color(0xFF0F172A) : Colors.white),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isSelected
+                      ? const Color(0xFF38BDF8).withOpacity(0.5)
+                      : Colors.transparent,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  mascot.defaultImageAsset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Text(
+                      mascot.emoji,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+
+            // Name & Personality
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,8 +416,8 @@ class AppearanceSettingsCard extends StatelessWidget {
                   Text(
                     name,
                     style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                       color: isSelected
                           ? const Color(0xFF38BDF8)
                           : (isDark ? Colors.white : Colors.blue.shade900),
@@ -392,12 +425,33 @@ class AppearanceSettingsCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    preview,
-                    style: const TextStyle(fontSize: 13, letterSpacing: 1.5),
+                    personality,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+                    ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 6),
+
+            // Preview 10 States Button
+            IconButton(
+              tooltip: isEn ? 'Preview 10 States' : '10 Durumu İncele',
+              icon: Icon(
+                Icons.visibility_outlined,
+                size: 20,
+                color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
+              ),
+              onPressed: () {
+                showMascotStatePreviewDialog(context, mascot, lang: lang);
+              },
+            ),
+
+            // Selection Radio Indicator
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: isSelected

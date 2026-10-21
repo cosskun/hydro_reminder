@@ -5,6 +5,7 @@ import '../models/water_log.dart';
 import '../models/alarm_setting.dart';
 import '../models/beverage_type.dart';
 import '../models/badge_item.dart';
+import '../models/mascot_model.dart';
 import '../config/app_constants.dart';
 import '../services/storage_service.dart';
 import '../services/alarm_service.dart';
@@ -107,187 +108,31 @@ class WaterProvider with ChangeNotifier {
     }
   }
 
-  // Unified Hydration Status (used by both DashboardScreen and Android/iOS Widgets so logos & texts are 100% in sync)
+  // Unified Hydration Status (used by DashboardScreen and Android/iOS Widgets so characters & texts are 100% in sync)
   static Map<String, String> getHydrationStatus(
     double percentage, {
     String mascotType = 'vitality',
     String lang = 'tr',
+    int streakDays = 0,
+    DateTime? lastLogTime,
+    DateTime? now,
   }) {
-    final isEn = lang == 'en';
-    switch (mascotType) {
-      case 'cat':
-        if (percentage <= 0.0) {
-          return {
-            'emoji': '😿',
-            'message': isEn
-                ? 'Meow! So thirsty, could you spare a sip of water?'
-                : 'Miyav! Çok susadım, bir yudum su verir misin?',
-            'color': 'E11D48',
-          };
-        } else if (percentage < 0.35) {
-          return {
-            'emoji': '🐱',
-            'message': isEn
-                ? "Feeling refreshed! Let's keep drinking water together."
-                : 'Biraz ferahladım! Birlikte su içmeye devam edelim.',
-            'color': 'F59E0B',
-          };
-        } else if (percentage < 0.70) {
-          return {
-            'emoji': '😺',
-            'message': isEn
-                ? 'Happy purrs! Our hydration level is super.'
-                : 'Harika bir mırıltı! Hidrasyon seviyemiz süper.',
-            'color': '10B981',
-          };
-        } else if (percentage < 1.0) {
-          return {
-            'emoji': '😻',
-            'message': isEn
-                ? 'Pawsome! Just a tiny bit left to reach the goal.'
-                : 'Sana bayılıyorum! Hedefe çok ama çok az kaldı.',
-            'color': '06B6D4',
-          };
-        } else {
-          return {
-            'emoji': '🦁',
-            'message': isEn
-                ? "Roar time! You are today's hydration champion!"
-                : 'Kükreme vakti! Günün şampiyon kedisi sensin!',
-            'color': '8B5CF6',
-          };
-        }
-
-      case 'penguin':
-        if (percentage <= 0.0) {
-          return {
-            'emoji': '🧊',
-            'message': isEn
-                ? 'Ice is melting! Refresh yourself with cool water.'
-                : 'Buzlar eriyor! Hemen taze suyla ferahla.',
-            'color': 'E11D48',
-          };
-        } else if (percentage < 0.35) {
-          return {
-            'emoji': '🐧',
-            'message': isEn
-                ? 'Waddling towards the goal! First sip was great.'
-                : 'Paytak adımlarla hedefe! İlk yudum harika.',
-            'color': 'F59E0B',
-          };
-        } else if (percentage < 0.70) {
-          return {
-            'emoji': '🦭',
-            'message': isEn
-                ? 'Cool as the ocean! Gliding with the waves.'
-                : 'Serin sular gibisin! Dalgalarla akıyoruz.',
-            'color': '10B981',
-          };
-        } else if (percentage < 1.0) {
-          return {
-            'emoji': '🏄',
-            'message': isEn
-                ? 'Catching the polar wave! Summit is so close.'
-                : 'Kutup dalgasını yakaladık! Zirve çok yakın.',
-            'color': '06B6D4',
-          };
-        } else {
-          return {
-            'emoji': '👑',
-            'message': isEn
-                ? 'King of the Arctic! Daily goal accomplished!'
-                : 'Kutupların Kralı! Günlük hedef tamamlandı!',
-            'color': '8B5CF6',
-          };
-        }
-
-      case 'plant':
-        if (percentage <= 0.0) {
-          return {
-            'emoji': '🥀',
-            'message': isEn
-                ? 'Leaves are drooping! Time for some revitalizing water.'
-                : 'Yapraklar boyun büktü! Biraz can suyu ver.',
-            'color': 'E11D48',
-          };
-        } else if (percentage < 0.35) {
-          return {
-            'emoji': '🌱',
-            'message': isEn
-                ? 'First green shoot sprouted! Reviving with water.'
-                : 'İlk filiz yeşerdi! Suyla yeniden canlanıyoruz.',
-            'color': 'F59E0B',
-          };
-        } else if (percentage < 0.70) {
-          return {
-            'emoji': '🌿',
-            'message': isEn
-                ? 'Branches growing strong, freshness everywhere.'
-                : 'Dallar uzuyor, tazelik her yere yayılıyor.',
-            'color': '10B981',
-          };
-        } else if (percentage < 1.0) {
-          return {
-            'emoji': '🪴',
-            'message': isEn
-                ? 'Blooming bright! Just a little left to full bloom.'
-                : 'Işıl ışıl parlıyorsun! Çiçek açmaya çok az kaldı.',
-            'color': '06B6D4',
-          };
-        } else {
-          return {
-            'emoji': '🌳',
-            'message': isEn
-                ? 'Standing tall and vibrant! Congratulations!'
-                : 'Koca bir çınar gibi dipdirisin! Tebrikler!',
-            'color': '8B5CF6',
-          };
-        }
-
-      case 'vitality':
-      default:
-        if (percentage <= 0.0) {
-          return {
-            'emoji': '🥱',
-            'message': isEn
-                ? 'Started the day dehydrated! Grab a glass of water.'
-                : 'Güne susuz başladın! Hemen bir bardak su al.',
-            'color': 'E11D48',
-          };
-        } else if (percentage < 0.35) {
-          return {
-            'emoji': '🙂',
-            'message': isEn
-                ? 'First step taken! Stepping steadily towards your goal.'
-                : 'İlk adımı attın! Yavaş yavaş hedefe ilerliyorsun.',
-            'color': 'F59E0B',
-          };
-        } else if (percentage < 0.70) {
-          return {
-            'emoji': '😊',
-            'message': isEn
-                ? 'Going great! Your body thanks you.'
-                : 'Harika gidiyorsun! Vücudun sana teşekkür ediyor.',
-            'color': '10B981',
-          };
-        } else if (percentage < 1.0) {
-          return {
-            'emoji': '😎',
-            'message': isEn
-                ? 'Almost there! Your energy is peaking.'
-                : 'Neredeyse tamamladın! Enerjin tam yerinde.',
-            'color': '06B6D4',
-          };
-        } else {
-          return {
-            'emoji': '🥳',
-            'message': isEn
-                ? 'Congratulations! You reached your daily goal!'
-                : 'Tebrikler! Günlük su hedefini tamamladın!',
-            'color': '8B5CF6',
-          };
-        }
-    }
+    final dialogue = MascotResolver.resolveDialogue(
+      mascotType: mascotType,
+      percentage: percentage,
+      streakDays: streakDays,
+      lastLogTime: lastLogTime,
+      lang: lang,
+      now: now,
+    );
+    return {
+      'emoji': dialogue.emoji,
+      'title': dialogue.title,
+      'message': dialogue.message,
+      'color': dialogue.hexColor,
+      'imageAsset': dialogue.imageAsset,
+      'state': dialogue.state.name,
+    };
   }
 
   // Getters
@@ -1042,9 +887,13 @@ class WaterProvider with ChangeNotifier {
         todayPercentage,
         mascotType: _mascotType,
         lang: _language,
+        streakDays: displayStreak,
+        lastLogTime: _logs.isNotEmpty ? _logs.first.timestamp : null,
       );
       final String mascotEmoji = status['emoji']!;
-      final String mascotSubtitle = status['message']!;
+      final String mascotSubtitle = status['title'] != null
+          ? '${status['title']!} • ${status['message']!}'
+          : status['message']!;
 
       final p1Emoji = WaterProvider.getPresetMeta(preset1)['emoji'] ?? '🥛';
       final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';

@@ -401,6 +401,8 @@ class AlarmService with WidgetsBindingObserver {
           scheduledDate = scheduledDate.add(const Duration(days: 1));
         }
 
+        const alarmTitle = '💧 Su İçme Vakti!';
+        const alarmBody = 'Hidrasyon hedefin seni bekliyor. Hemen bir bardak su içerek tazelen!';
         const androidDetails = AndroidNotificationDetails(
           _channelId,
           _channelName,
@@ -413,7 +415,10 @@ class AlarmService with WidgetsBindingObserver {
           category: AndroidNotificationCategory.alarm,
           audioAttributesUsage: AudioAttributesUsage.alarm,
           visibility: NotificationVisibility.public,
-          styleInformation: BigTextStyleInformation(''),
+          styleInformation: BigTextStyleInformation(
+            alarmBody,
+            contentTitle: alarmTitle,
+          ),
         );
 
         const darwinDetails = DarwinNotificationDetails(
@@ -507,7 +512,7 @@ class AlarmService with WidgetsBindingObserver {
       body = 'Bugün hedefinize ulaşmak için kalan miktar: $remainingMl ml (İçilen: $consumedMl / $dailyGoalMl ml). Yatmadan önce su içmeyi unutmayın! 💧';
     }
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       _summaryChannelId,
       _summaryChannelName,
       channelDescription: _summaryChannelDesc,
@@ -516,7 +521,10 @@ class AlarmService with WidgetsBindingObserver {
       playSound: true,
       enableVibration: true,
       visibility: NotificationVisibility.public,
-      styleInformation: BigTextStyleInformation(''),
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: title,
+      ),
     );
 
     const darwinDetails = DarwinNotificationDetails(
@@ -527,7 +535,7 @@ class AlarmService with WidgetsBindingObserver {
       interruptionLevel: InterruptionLevel.active,
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: darwinDetails,
     );
@@ -589,17 +597,6 @@ class AlarmService with WidgetsBindingObserver {
       eveningDate = eveningDate.add(const Duration(days: 1));
     }
 
-    const androidDetails = AndroidNotificationDetails(
-      _tipsChannelId,
-      _tipsChannelName,
-      channelDescription: _tipsChannelDesc,
-      importance: Importance.high,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-      visibility: NotificationVisibility.public,
-    );
-
     const darwinDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
@@ -607,18 +604,53 @@ class AlarmService with WidgetsBindingObserver {
       sound: 'sound_water_drop.wav',
     );
 
-    const notificationDetails = NotificationDetails(
-      android: androidDetails,
+    final middayTitle = '💧 Gün Ortası Hidrasyon Kontrolü';
+    final middayBody = 'Saat 14:00 oldu! Günlük hedefin %$percent seviyesinde. Öğleden sonraki enerjini yüksek tutmak için bir bardak taze su al! 🧊';
+    final middayDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        _tipsChannelId,
+        _tipsChannelName,
+        channelDescription: _tipsChannelDesc,
+        importance: Importance.high,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        visibility: NotificationVisibility.public,
+        styleInformation: BigTextStyleInformation(
+          middayBody,
+          contentTitle: middayTitle,
+        ),
+      ),
+      iOS: darwinDetails,
+    );
+
+    final eveningTitle = '⏰ Akşam Öncesi Su Zamanı';
+    final eveningBody = "Günün bitmesine az kaldı ve hedefin %$percent'inde. Akşam rahat uyumak ve susuz kalmamak için hedefini tamamlamaya başla! 💧";
+    final eveningDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        _tipsChannelId,
+        _tipsChannelName,
+        channelDescription: _tipsChannelDesc,
+        importance: Importance.high,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        visibility: NotificationVisibility.public,
+        styleInformation: BigTextStyleInformation(
+          eveningBody,
+          contentTitle: eveningTitle,
+        ),
+      ),
       iOS: darwinDetails,
     );
 
     try {
       await _notificationsPlugin.zonedSchedule(
         id: _smartPacingMiddayId,
-        title: '💧 Gün Ortası Hidrasyon Kontrolü',
-        body: 'Saat 14:00 oldu! Günlük hedefin %$percent seviyesinde. Öğleden sonraki enerjini yüksek tutmak için bir bardak taze su al! 🧊',
+        title: middayTitle,
+        body: middayBody,
         scheduledDate: middayDate,
-        notificationDetails: notificationDetails,
+        notificationDetails: middayDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: 'smart_pacing_midday',
@@ -626,10 +658,10 @@ class AlarmService with WidgetsBindingObserver {
 
       await _notificationsPlugin.zonedSchedule(
         id: _smartPacingEveningId,
-        title: '⏰ Akşam Öncesi Su Zamanı',
-        body: 'Günün bitmesine az kaldı ve hedefin %$percent\'inde. Akşam rahat uyumak ve susuz kalmamak için hedefini tamamlamaya başla! 💧',
+        title: eveningTitle,
+        body: eveningBody,
         scheduledDate: eveningDate,
-        notificationDetails: notificationDetails,
+        notificationDetails: eveningDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
         payload: 'smart_pacing_evening',

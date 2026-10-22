@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+31: Zen Panda (Bobo) & Fındık (Sincap) 15 basamaklı tam enerji ve egzersiz görselleri entegre edildi. iOS widget'ları tam kare maskot kartları ve yumuşak oval tasarım ile yenilendi."
+          releaseNotes: "Hydro Reminder v1.0.0+32: Uygulama genelinde maskot temelli dinamik tema sistemi, palet seçici ve widget renk senkronizasyonu entegre edildi."

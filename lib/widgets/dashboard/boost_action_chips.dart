@@ -13,6 +13,7 @@ class BoostActionChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: 8,
@@ -27,7 +28,7 @@ class BoostActionChips extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: provider.isWorkoutBoostActive
-                  ? (isDark ? const Color(0xFF0369A1) : Colors.blue.shade600)
+                  ? (isDark ? theme.colorScheme.primary.withOpacity(0.5) : theme.colorScheme.primary)
                   : (isDark ? const Color(0xFF1C2541) : Colors.white),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
@@ -39,7 +40,7 @@ class BoostActionChips extends StatelessWidget {
               boxShadow: provider.isWorkoutBoostActive
                   ? [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.25),
+                        color: theme.colorScheme.primary.withOpacity(0.25),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       )

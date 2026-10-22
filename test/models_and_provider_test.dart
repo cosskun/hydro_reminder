@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hydro_reminder/models/badge_item.dart';
@@ -10,6 +11,7 @@ import 'package:hydro_reminder/services/review_service.dart';
 import 'package:hydro_reminder/services/sound_service.dart';
 import 'package:hydro_reminder/services/storage_service.dart';
 import 'package:hydro_reminder/l10n/app_translations.dart';
+import 'package:hydro_reminder/config/app_theme.dart';
 
 void main() {
   group('BeverageType Tests', () {
@@ -230,6 +232,96 @@ void main() {
       expect(await storage.getLanguage(), 'tr');
       await storage.saveLanguage('en');
       expect(await storage.getLanguage(), 'en');
+    });
+
+    test('Saves and loads useMascotTheme and customThemePreset', () async {
+      final storage = StorageService();
+      expect(await storage.getUseMascotTheme(), isTrue);
+      await storage.saveUseMascotTheme(false);
+      expect(await storage.getUseMascotTheme(), isFalse);
+
+      expect(await storage.getCustomThemePreset(), 'ocean');
+      await storage.saveCustomThemePreset('panda');
+      expect(await storage.getCustomThemePreset(), 'panda');
+    });
+  });
+
+  group('Mascot Color Themes & Dynamic Theming Tests', () {
+    test('AppTheme defines palettes for all 5 mascots and original ocean', () {
+      expect(AppTheme.palettes.containsKey('ocean'), isTrue);
+      expect(AppTheme.palettes.containsKey('cat'), isTrue);
+      expect(AppTheme.palettes.containsKey('dog'), isTrue);
+      expect(AppTheme.palettes.containsKey('penguin'), isTrue);
+      expect(AppTheme.palettes.containsKey('panda'), isTrue);
+      expect(AppTheme.palettes.containsKey('squirrel'), isTrue);
+
+      for (final palette in AppTheme.palettes.values) {
+        expect(palette.nameTr.isNotEmpty, isTrue);
+        expect(palette.nameEn.isNotEmpty, isTrue);
+        expect(palette.emoji.isNotEmpty, isTrue);
+        expect(palette.waterGradientLight.length, greaterThanOrEqualTo(2));
+        expect(palette.waterGradientDark.length, greaterThanOrEqualTo(2));
+      }
+    });
+
+    test('AppTheme.getTheme generates valid light and dark ThemeData with expected colors', () {
+      final pandaLight = AppTheme.getTheme('panda', isDark: false);
+      expect(pandaLight.brightness, Brightness.light);
+      expect(pandaLight.colorScheme.primary, AppTheme.palettes['panda']!.primary);
+
+      final catDark = AppTheme.getTheme('cat', isDark: true);
+      expect(catDark.brightness, Brightness.dark);
+      expect(catDark.colorScheme.primary, AppTheme.palettes['cat']!.primaryDark);
+
+      final fallback = AppTheme.getTheme('unknown_preset', isDark: false);
+      expect(fallback.colorScheme.primary, AppTheme.palettes['ocean']!.primary);
+    });
+
+    test('WaterProvider effectiveThemePreset reflects active mascot when useMascotTheme is true', () async {
+      SharedPreferences.setMockInitialValues({});
+      await StorageService().init();
+      final provider = WaterProvider();
+      await provider.init();
+
+      expect(provider.useMascotTheme, isTrue);
+
+      await provider.updateMascotType('cat');
+      expect(provider.effectiveThemePreset, 'cat');
+
+      await provider.updateMascotType('dog');
+      expect(provider.effectiveThemePreset, 'dog');
+
+      await provider.updateMascotType('penguin');
+      expect(provider.effectiveThemePreset, 'penguin');
+
+      await provider.updateMascotType('panda');
+      expect(provider.effectiveThemePreset, 'panda');
+
+      await provider.updateMascotType('squirrel');
+      expect(provider.effectiveThemePreset, 'squirrel');
+    });
+
+    test('WaterProvider effectiveThemePreset preserves custom theme when useMascotTheme is false', () async {
+      SharedPreferences.setMockInitialValues({});
+      await StorageService().init();
+      final provider = WaterProvider();
+      await provider.init();
+
+      await provider.updateUseMascotTheme(false);
+      await provider.updateCustomThemePreset('ocean');
+
+      // Mascot is panda, but theme is locked to ocean
+      await provider.updateMascotType('panda');
+      expect(provider.useMascotTheme, isFalse);
+      expect(provider.effectiveThemePreset, 'ocean');
+
+      // Changing mascot does not affect theme when auto-theme is off
+      await provider.updateMascotType('cat');
+      expect(provider.effectiveThemePreset, 'ocean');
+
+      // Re-enabling auto theme immediately syncs to current mascot (cat)
+      await provider.updateUseMascotTheme(true);
+      expect(provider.effectiveThemePreset, 'cat');
     });
   });
 

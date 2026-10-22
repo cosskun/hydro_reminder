@@ -117,6 +117,179 @@ class AppearanceSettingsCard extends StatelessWidget {
         }),
         const Divider(height: 24, thickness: 0.5),
 
+        // 2.5. Auto Mascot Theme Switch (Maskota Göre Tema)
+        InkWell(
+          onTap: () => provider.updateUseMascotTheme(!provider.useMascotTheme),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          Text(
+                            AppTranslations.get('auto_mascot_theme', lang: lang),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: provider.useMascotTheme
+                                  ? (isDark ? const Color(0xFF065F46) : const Color(0xFFD1FAE5))
+                                  : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              provider.useMascotTheme
+                                  ? (lang == 'en' ? 'Active' : 'Devrede')
+                                  : (lang == 'en' ? 'Original' : 'Orijinal'),
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                color: provider.useMascotTheme
+                                    ? (isDark ? const Color(0xFF34D399) : const Color(0xFF047857))
+                                    : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        AppTranslations.get('auto_mascot_theme_desc', lang: lang),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: provider.useMascotTheme,
+                  activeThumbColor: theme.colorScheme.primary,
+                  onChanged: (val) => provider.updateUseMascotTheme(val),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const Divider(height: 24, thickness: 0.5),
+
+        // 2.6. Manual Mascot Palette Picker (Shown when auto-theme is off)
+        if (!provider.useMascotTheme) ...[
+          const SizedBox(height: 10),
+          Text(
+            lang == 'en' ? 'Manual Palette' : 'Manuel Renk Paleti',
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildThemePill(
+                      context,
+                      id: 'ocean',
+                      name: lang == 'en' ? '💧 Original Ocean' : '💧 Orijinal Mavi',
+                      colors: [const Color(0xFF0369A1), const Color(0xFF38BDF8)],
+                      isSelected: provider.customThemePreset == 'ocean',
+                      onTap: () => provider.updateCustomThemePreset('ocean'),
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildThemePill(
+                      context,
+                      id: 'cat',
+                      name: lang == 'en' ? '🐱 Luna Lavender' : '🐱 Luna Moru',
+                      colors: [const Color(0xFF7C3AED), const Color(0xFFEC4899)],
+                      isSelected: provider.customThemePreset == 'cat',
+                      onTap: () => provider.updateCustomThemePreset('cat'),
+                      isDark: isDark,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildThemePill(
+                      context,
+                      id: 'dog',
+                      name: lang == 'en' ? '🐩 Caramel Amber' : '🐩 Karamel Amber',
+                      colors: [const Color(0xFFD97706), const Color(0xFFFBBF24)],
+                      isSelected: provider.customThemePreset == 'dog',
+                      onTap: () => provider.updateCustomThemePreset('dog'),
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildThemePill(
+                      context,
+                      id: 'penguin',
+                      name: lang == 'en' ? '🐧 Glacier Ice' : '🐧 Buzul Kristali',
+                      colors: [const Color(0xFF0284C7), const Color(0xFF2DD4BF)],
+                      isSelected: provider.customThemePreset == 'penguin',
+                      onTap: () => provider.updateCustomThemePreset('penguin'),
+                      isDark: isDark,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildThemePill(
+                      context,
+                      id: 'panda',
+                      name: lang == 'en' ? '🐼 Bamboo Emerald' : '🐼 Bambu Zümrüt',
+                      colors: [const Color(0xFF059669), const Color(0xFF84CC16)],
+                      isSelected: provider.customThemePreset == 'panda',
+                      onTap: () => provider.updateCustomThemePreset('panda'),
+                      isDark: isDark,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildThemePill(
+                      context,
+                      id: 'squirrel',
+                      name: lang == 'en' ? '🐿️ Autumn Amber' : '🐿️ Sonbahar Amberi',
+                      colors: [const Color(0xFFEA580C), const Color(0xFFFB923C)],
+                      isSelected: provider.customThemePreset == 'squirrel',
+                      onTap: () => provider.updateCustomThemePreset('squirrel'),
+                      isDark: isDark,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+        const Divider(height: 24, thickness: 0.5),
+
         // 3. Widget & Color Theme Selector (Widget Teması)
         Text(
           AppTranslations.get('section_widget_theme', lang: lang),
@@ -129,8 +302,8 @@ class AppearanceSettingsCard extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           lang == 'en'
-              ? 'Personalize widget backgrounds and accents for Android & iOS.'
-              : 'Android ve iOS araç takımlarının arka plan ve renk paletini özelleştirin.',
+              ? 'Choose color scheme for iOS Home Screen & Lock Screen widgets.'
+              : 'iOS Ana Ekran ve Kilit Ekranı araç takımlarının renk temasını seçin.',
           style: TextStyle(
             fontSize: 11,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -158,7 +331,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                     context,
                     id: 'glass',
                     name: AppTranslations.get('theme_glass', lang: lang),
-                    colors: [const Color(0xFF0F172A), const Color(0xFF334155)],
+                    colors: [const Color(0xFF334155), const Color(0xFF94A3B8)],
                     isSelected: provider.widgetTheme == 'glass',
                     onTap: () => provider.updateWidgetTheme('glass'),
                     isDark: isDark,
@@ -174,7 +347,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                     context,
                     id: 'neon',
                     name: AppTranslations.get('theme_neon', lang: lang),
-                    colors: [const Color(0xFF2E0249), const Color(0xFFD946EF)],
+                    colors: [const Color(0xFF2E0249), const Color(0xFFA91079)],
                     isSelected: provider.widgetTheme == 'neon',
                     onTap: () => provider.updateWidgetTheme('neon'),
                     isDark: isDark,
@@ -491,6 +664,9 @@ class AppearanceSettingsCard extends StatelessWidget {
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final theme = Theme.of(context);
+    final activeColor = colors.isNotEmpty ? colors.first : theme.colorScheme.primary;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -501,12 +677,12 @@ class AppearanceSettingsCard extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: isSelected
-                ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+                ? (isDark ? activeColor.withOpacity(0.18) : activeColor.withOpacity(0.12))
                 : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? const Color(0xFF38BDF8)
+                  ? activeColor
                   : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
               width: 1.2,
             ),
@@ -532,14 +708,14 @@ class AppearanceSettingsCard extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                     color: isSelected
-                        ? const Color(0xFF38BDF8)
+                        ? activeColor
                         : (isDark ? Colors.white : Colors.blue.shade900),
                   ),
                 ),
               ),
               if (isSelected) ...[
                 const SizedBox(width: 4),
-                const Icon(Icons.check_rounded, size: 14, color: Color(0xFF38BDF8)),
+                Icon(Icons.check_rounded, size: 14, color: activeColor),
               ],
             ],
           ),

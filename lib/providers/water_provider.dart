@@ -85,6 +85,8 @@ class WaterProvider with ChangeNotifier {
   String _mascotType = 'cat';
   String _widgetTheme = 'ocean';
   String _language = 'tr';
+  bool _useMascotTheme = true;
+  String _customThemePreset = 'ocean';
 
   // Customizable Quick Add Presets
   List<int> _quickPresets = [200, 330, 500];
@@ -327,11 +329,47 @@ class WaterProvider with ChangeNotifier {
   String get mascotType => _mascotType;
   String get widgetTheme => _widgetTheme;
   String get language => _language;
+  bool get useMascotTheme => _useMascotTheme;
+  String get customThemePreset => _customThemePreset;
+
+  String get effectiveThemePreset {
+    if (_useMascotTheme) {
+      switch (_mascotType) {
+        case 'cat':
+          return 'cat';
+        case 'dog':
+          return 'dog';
+        case 'penguin':
+          return 'penguin';
+        case 'panda':
+          return 'panda';
+        case 'squirrel':
+          return 'squirrel';
+        default:
+          return 'ocean';
+      }
+    }
+    return _customThemePreset;
+  }
 
   // Mascot, Theme and Language Update Methods
   Future<void> updateMascotType(String type) async {
     _mascotType = type;
     await _storageService.saveMascotType(type);
+    await _syncWidgets();
+    notifyListeners();
+  }
+
+  Future<void> updateUseMascotTheme(bool value) async {
+    _useMascotTheme = value;
+    await _storageService.saveUseMascotTheme(value);
+    await _syncWidgets();
+    notifyListeners();
+  }
+
+  Future<void> updateCustomThemePreset(String preset) async {
+    _customThemePreset = preset;
+    await _storageService.saveCustomThemePreset(preset);
     await _syncWidgets();
     notifyListeners();
   }
@@ -511,6 +549,8 @@ class WaterProvider with ChangeNotifier {
     _mascotType = await _storageService.getMascotType();
     _widgetTheme = await _storageService.getWidgetTheme();
     _language = await _storageService.getLanguage();
+    _useMascotTheme = await _storageService.getUseMascotTheme();
+    _customThemePreset = await _storageService.getCustomThemePreset();
 
     await _syncWidgets();
     await _syncEndOfDaySummary();
@@ -927,7 +967,7 @@ class WaterProvider with ChangeNotifier {
         mascotEmoji: mascotEmoji,
         mascotTitle: mascotTitle,
         mascotSubtitle: mascotMessage.isNotEmpty ? mascotMessage : mascotSubtitle,
-        widgetTheme: _widgetTheme,
+        widgetTheme: effectiveThemePreset,
         mascotType: _mascotType,
         imageAsset: status['imageAsset'],
       );

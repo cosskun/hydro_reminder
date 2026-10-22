@@ -309,6 +309,56 @@ private func widgetCardGradient(for percentage: Int, theme: String = "ocean") ->
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
+    case "cat":
+        return LinearGradient(
+            colors: [
+                Color(red: 0.22, green: 0.10, blue: 0.42), // #381A6B
+                Color(red: 0.48, green: 0.23, blue: 0.93), // #7C3AED
+                Color(red: 0.92, green: 0.28, blue: 0.60)  // #EC4899
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    case "dog":
+        return LinearGradient(
+            colors: [
+                Color(red: 0.45, green: 0.24, blue: 0.05), // #733D0D
+                Color(red: 0.85, green: 0.47, blue: 0.02), // #D97706
+                Color(red: 0.98, green: 0.75, blue: 0.14)  // #FBBF24
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    case "penguin":
+        return LinearGradient(
+            colors: [
+                Color(red: 0.01, green: 0.28, blue: 0.45), // #024773
+                Color(red: 0.01, green: 0.52, blue: 0.78), // #0284C7
+                Color(red: 0.08, green: 0.72, blue: 0.65)  // #14B8A6
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    case "panda":
+        return LinearGradient(
+            colors: [
+                Color(red: 0.02, green: 0.28, blue: 0.20), // #054733
+                Color(red: 0.02, green: 0.59, blue: 0.41), // #059669
+                Color(red: 0.52, green: 0.80, blue: 0.09)  // #84CC16
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    case "squirrel":
+        return LinearGradient(
+            colors: [
+                Color(red: 0.46, green: 0.18, blue: 0.03), // #752E08
+                Color(red: 0.92, green: 0.35, blue: 0.05), // #EA580C
+                Color(red: 0.98, green: 0.60, blue: 0.15)  // #F97316
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     case "neon":
         return LinearGradient(
             colors: [

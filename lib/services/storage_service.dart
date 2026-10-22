@@ -12,7 +12,7 @@ class StorageService {
   SharedPreferences? _prefs;
 
   Future<void> init() async {
-    _prefs ??= await SharedPreferences.getInstance();
+    _prefs = await SharedPreferences.getInstance();
   }
 
   SharedPreferences get _prefsSync {
@@ -61,6 +61,8 @@ class StorageService {
   static const String _keyMascotType = 'custom_mascot_type';
   static const String _keyWidgetTheme = 'custom_widget_theme';
   static const String _keyAppLanguage = 'app_language';
+  static const String _keyUseMascotTheme = 'use_mascot_theme';
+  static const String _keyCustomThemePreset = 'custom_theme_preset';
 
   // Save profile information
   Future<void> saveProfile({
@@ -454,6 +456,26 @@ class StorageService {
   Future<String> getLanguage() async {
     final prefs = _prefsSync;
     return prefs.getString(_keyAppLanguage) ?? 'tr';
+  }
+
+  Future<void> saveUseMascotTheme(bool value) async {
+    final prefs = _prefsSync;
+    await prefs.setBool(_keyUseMascotTheme, value);
+  }
+
+  Future<bool> getUseMascotTheme() async {
+    final prefs = _prefsSync;
+    return prefs.getBool(_keyUseMascotTheme) ?? true;
+  }
+
+  Future<void> saveCustomThemePreset(String preset) async {
+    final prefs = _prefsSync;
+    await prefs.setString(_keyCustomThemePreset, preset);
+  }
+
+  Future<String> getCustomThemePreset() async {
+    final prefs = _prefsSync;
+    return prefs.getString(_keyCustomThemePreset) ?? 'ocean';
   }
 
   // Clear all data

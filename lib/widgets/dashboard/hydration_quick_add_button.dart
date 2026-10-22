@@ -62,7 +62,7 @@ class HydrationQuickAddButton extends StatelessWidget {
                   ),
                 ],
               ),
-              backgroundColor: const Color(0xFF0288D1),
+              backgroundColor: Theme.of(context).colorScheme.primary,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               duration: const Duration(seconds: 2),
@@ -152,10 +152,10 @@ class HydrationCustomAddButton extends StatelessWidget {
           width: isExpanded ? null : 74,
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1C2541) : const Color(0xFFEFF6FF),
+            color: isDark ? const Color(0xFF1C2541) : Theme.of(context).colorScheme.primary.withOpacity(0.08),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isDark ? const Color(0xFF38BDF8).withOpacity(0.6) : Colors.blue.shade200,
+              color: isDark ? Theme.of(context).colorScheme.primary.withOpacity(0.6) : Theme.of(context).colorScheme.primary.withOpacity(0.35),
               width: 1.2,
             ),
             boxShadow: [
@@ -172,7 +172,7 @@ class HydrationCustomAddButton extends StatelessWidget {
               Icon(
                 Icons.add_circle_outline_rounded,
                 size: 26,
-                color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 4),
               FittedBox(
@@ -195,7 +195,7 @@ class HydrationCustomAddButton extends StatelessWidget {
                   maxLines: 1,
                   style: TextStyle(
                     fontSize: 10,
-                    color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade600,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

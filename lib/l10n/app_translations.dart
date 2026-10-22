@@ -74,6 +74,13 @@ class AppTranslations {
       'theme_glass': 'iOS Buzlu Cam',
       'theme_neon': 'Neon Siber Gece',
       'theme_emerald': 'Zümrüt Yeşili Doğa',
+      'auto_mascot_theme': '🎭 Maskota Göre Renk Teması',
+      'auto_mascot_theme_desc': 'Uygulamanın butonları, arayüzü ve su çubuğu seçtiğiniz maskota göre renklensin.',
+      'theme_cat': 'Gece Leylağı (Luna)',
+      'theme_dog': 'Sıcak Karamel (Buddy)',
+      'theme_penguin': 'Buzul Kristali (Pip)',
+      'theme_panda': 'Zen Bambu (Bobo)',
+      'theme_squirrel': 'Sonbahar Amberi (Fındık)',
     },
     'en': {
       // General & Navigation
@@ -149,6 +156,13 @@ class AppTranslations {
       'theme_glass': 'iOS Frosted Glass',
       'theme_neon': 'Neon Cyber Night',
       'theme_emerald': 'Emerald Forest',
+      'auto_mascot_theme': '🎭 Mascot Color Theme',
+      'auto_mascot_theme_desc': 'App buttons, interface and hydration bar adapt to your selected mascot.',
+      'theme_cat': 'Night Lavender (Luna)',
+      'theme_dog': 'Warm Caramel (Buddy)',
+      'theme_penguin': 'Glacier Ice (Pip)',
+      'theme_panda': 'Zen Bamboo (Bobo)',
+      'theme_squirrel': 'Autumn Amber (Nutty)',
     },
   };
 

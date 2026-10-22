@@ -24,7 +24,7 @@ void main() async {
         padding: const EdgeInsets.all(16),
         alignment: Alignment.center,
         child: const Text(
-          'Bir arayüz yükleme sorunu oluştu.',
+          'Bir arayÃ¼z yÃ¼kleme sorunu oluÅŸtu.',
           style: TextStyle(color: Colors.blueGrey, fontSize: 13),
           textAlign: TextAlign.center,
         ),
@@ -61,10 +61,10 @@ void main() async {
           SnackBar(
             content: Row(
               children: [
-                const Text('💧 ', style: TextStyle(fontSize: 18)),
+                const Text('ğŸ’§ ', style: TextStyle(fontSize: 18)),
                 Expanded(
                   child: Text(
-                    '$amount ml su başarıyla kaydedildi!',
+                    '$amount ml su baÅŸarÄ±yla kaydedildi!',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -121,8 +121,8 @@ class HydroReminderApp extends StatelessWidget {
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       themeMode: provider.themeMode,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.getTheme(provider.effectiveThemePreset, isDark: false),
+      darkTheme: AppTheme.getTheme(provider.effectiveThemePreset, isDark: true),
       locale: const Locale('tr', 'TR'),
       supportedLocales: const [
         Locale('tr', 'TR'),

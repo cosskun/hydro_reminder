@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// 10 Contextual & Emotional States for hydration mascots
 enum MascotState {
   morning, // 06:00 - 09:30: Waking up, fresh morning glass

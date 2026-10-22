@@ -12,6 +12,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
     required String title,
     required List<Map<String, String>> sections,
   }) {
+    final primary = Theme.of(context).colorScheme.primary;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -59,7 +60,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                             ),
                           ),
                         ),
@@ -79,7 +80,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                               color: isDark ? const Color(0xFF0B132B) : const Color(0xFFF8FAFC),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                                color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.2),
                                 width: 0.8,
                               ),
                             ),
@@ -91,7 +92,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                                    color: primary,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -115,7 +116,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(ctx),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0288D1),
+                          backgroundColor: primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -140,10 +141,11 @@ class LegalPrivacySettingsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return SettingsCardWrapper(
       title: 'Yasal Bilgiler, KVKK ve Gizlilik 🔒',
-      titleTrailing: const Icon(Icons.verified_user_outlined, color: Color(0xFF38BDF8)),
+      titleTrailing: Icon(Icons.verified_user_outlined, color: Theme.of(context).colorScheme.primary),
       children: [
         Text(
           'HydroSoft verilerinizi hiçbir dış sunucuya aktarmaz; tüm bilgileriniz %100 cihazınızda saklanır.',
@@ -242,10 +244,10 @@ class LegalPrivacySettingsCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF0288D1).withValues(alpha: 0.12),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: const Color(0xFF0288D1), size: 20),
+              child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -257,7 +259,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 2),

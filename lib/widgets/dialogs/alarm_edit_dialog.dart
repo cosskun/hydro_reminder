@@ -16,7 +16,8 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
   String selectedSoundPath = existingAlarm?.soundPath ?? 'assets/sounds/sound_water_drop.wav';
   bool isCustomSound = existingAlarm?.isCustomSound ?? false;
   String? currentlyPlayingPath;
-  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
 
   showDialog(
     context: context,
@@ -62,10 +63,10 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50,
+                        color: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                          color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
@@ -85,7 +86,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
-                              color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ],
@@ -100,11 +101,11 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                     decoration: InputDecoration(
                       labelText: 'Alarm Başlığı',
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.3),
+                      fillColor: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                          color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -117,7 +118,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -132,12 +133,12 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                       margin: const EdgeInsets.only(bottom: 6),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? (isDark ? const Color(0xFF0B132B) : Colors.blue.shade50)
+                            ? (isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.1))
                             : (isDark ? const Color(0xFF1C2541) : Colors.white),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
-                              ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade400)
+                              ? theme.colorScheme.primary
                               : (isDark ? const Color(0xFF3A506B) : Colors.grey.shade200),
                           width: isSelected ? 1.5 : 1.0,
                         ),
@@ -154,7 +155,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                               fontSize: 13,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                               color: isSelected
-                                  ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade900)
+                                  ? theme.colorScheme.primary
                                   : (isDark ? const Color(0xFFF1F5F9) : Colors.black87),
                             ),
                           ),
@@ -164,7 +165,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                               IconButton(
                               icon: Icon(
                                 isPlaying ? Icons.stop_circle_rounded : Icons.play_circle_fill_rounded,
-                                color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade600,
+                                color: theme.colorScheme.primary,
                                 size: 26,
                               ),
                               onPressed: () async {
@@ -188,7 +189,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                             Radio<String>(
                               value: assetPath,
                               groupValue: isCustomSound ? null : selectedSoundPath,
-                              activeColor: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
+                              activeColor: theme.colorScheme.primary,
                               onChanged: (val) {
                                 if (val != null) {
                                   setState(() {
@@ -254,7 +255,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                         children: [
                           Icon(
                             Icons.folder_open_rounded,
-                            color: isCustomSound ? Colors.greenAccent : (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700),
+                            color: isCustomSound ? Colors.greenAccent : theme.colorScheme.primary,
                             size: 22,
                           ),
                           const SizedBox(width: 10),
@@ -269,7 +270,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                                     fontWeight: FontWeight.bold,
                                     color: isCustomSound
                                         ? (isDark ? const Color(0xFFF1F5F9) : Colors.green.shade900)
-                                        : (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900),
+                                        : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A)),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -363,7 +364,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0288D1),
+                        backgroundColor: theme.colorScheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

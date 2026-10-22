@@ -46,13 +46,13 @@ class ProfileSettingsCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF0288D1)
-                          : (isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.4)),
+                          ? Theme.of(context).colorScheme.primary
+                          : (isDark ? const Color(0xFF0B132B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFF0288D1)
-                            : (isDark ? const Color(0xFF3A506B) : Colors.blue.shade100),
+                            ? Theme.of(context).colorScheme.primary
+                            : (isDark ? const Color(0xFF3A506B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
                       ),
                     ),
                     child: Center(
@@ -61,7 +61,7 @@ class ProfileSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           color: isSelected
                               ? Colors.white
-                              : (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900),
+                              : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -95,11 +95,11 @@ class ProfileSettingsCard extends StatelessWidget {
                     decoration: InputDecoration(
                       suffixText: 'yıl',
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.2),
+                      fillColor: isDark ? const Color(0xFF0B132B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                          color: isDark ? const Color(0xFF3A506B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -127,11 +127,11 @@ class ProfileSettingsCard extends StatelessWidget {
                     decoration: InputDecoration(
                       suffixText: 'kg',
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.2),
+                      fillColor: isDark ? const Color(0xFF0B132B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                          color: isDark ? const Color(0xFF3A506B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -145,7 +145,7 @@ class ProfileSettingsCard extends StatelessWidget {
         ElevatedButton(
           onPressed: onSave,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0288D1),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 48),
             shape: RoundedRectangleBorder(

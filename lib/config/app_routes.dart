@@ -90,7 +90,7 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
               'HydroSoft',
               style: TextStyle(
                 fontWeight: FontWeight.w900,
-                color: isDark ? const Color(0xFF38BDF8) : Colors.blueAccent,
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(width: 6),
@@ -137,7 +137,7 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
             BoxShadow(
               color: isDark
                   ? Colors.black.withValues(alpha: 0.3)
-                  : Colors.blue.shade900.withValues(alpha: 0.04),
+                  : theme.colorScheme.primary.withValues(alpha: 0.05),
               blurRadius: 15,
               spreadRadius: 2,
             ),

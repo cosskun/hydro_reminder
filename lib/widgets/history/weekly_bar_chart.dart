@@ -13,6 +13,10 @@ class WeeklyBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final secondary = theme.colorScheme.secondary;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -20,13 +24,13 @@ class WeeklyBarChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black26 : Colors.blue.shade900.withValues(alpha: 0.02),
+            color: isDark ? Colors.black26 : primary.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
         ],
         border: Border.all(
-          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
+          color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.12),
           width: 1,
         ),
       ),
@@ -38,7 +42,7 @@ class WeeklyBarChart extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade900.withValues(alpha: 0.8),
+              color: isDark ? primary : primary,
             ),
           ),
           const SizedBox(height: 24),
@@ -63,7 +67,7 @@ class WeeklyBarChart extends StatelessWidget {
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
                           color: isToday
-                              ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800)
+                              ? primary
                               : (isDark ? const Color(0xFF64748B) : Colors.grey.shade600),
                         ),
                       ),
@@ -77,10 +81,10 @@ class WeeklyBarChart extends StatelessWidget {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: isToday
-                              ? [const Color(0xFF0288D1), const Color(0xFF38BDF8)]
+                              ? [primary, secondary]
                               : (isDark
                                   ? [const Color(0xFF334155), const Color(0xFF475569)]
-                                  : [Colors.blue.shade200, Colors.blue.shade100]),
+                                  : [primary.withValues(alpha: 0.35), primary.withValues(alpha: 0.18)]),
                         ),
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -94,7 +98,7 @@ class WeeklyBarChart extends StatelessWidget {
                           fontSize: 11,
                           fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                           color: isToday
-                              ? (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900)
+                              ? (isDark ? const Color(0xFFF1F5F9) : primary)
                               : (isDark ? const Color(0xFF64748B) : Colors.grey),
                         ),
                       ),

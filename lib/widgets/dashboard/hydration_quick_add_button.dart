@@ -78,12 +78,12 @@ class HydrationQuickAddButton extends StatelessWidget {
             color: isDark ? const Color(0xFF1C2541) : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100.withOpacity(0.6),
+              color: isDark ? const Color(0xFF3A506B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.18),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black26 : Colors.blue.shade900.withOpacity(0.03),
+                color: isDark ? Colors.black26 : Theme.of(context).colorScheme.primary.withValues(alpha: 0.03),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -105,7 +105,7 @@ class HydrationQuickAddButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                   ),
                 ),
               ),
@@ -160,7 +160,7 @@ class HydrationCustomAddButton extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black26 : Colors.blue.shade900.withOpacity(0.02),
+                color: isDark ? Colors.black26 : Theme.of(context).colorScheme.primary.withValues(alpha: 0.03),
                 blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
@@ -183,7 +183,7 @@ class HydrationCustomAddButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                   ),
                 ),
               ),

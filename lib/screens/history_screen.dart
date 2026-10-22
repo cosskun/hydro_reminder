@@ -93,7 +93,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 16),
@@ -114,7 +114,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   value: '$averageIntake ml',
                   subtitle: 'aktif günlerde',
                   icon: Icons.analytics_rounded,
-                  color: const Color(0xFF38BDF8),
+                  color: Theme.of(context).colorScheme.primary,
                   isDark: isDark,
                 ),
               ),
@@ -244,7 +244,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                                 ),
                               ),
                             ),
@@ -319,7 +319,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 12),
@@ -330,10 +330,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1C2541) : Colors.blue.shade50.withValues(alpha: 0.3),
+                color: isDark ? const Color(0xFF1C2541) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
+                  color: isDark ? const Color(0xFF3A506B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                 ),
               ),
               child: Column(
@@ -344,7 +344,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     'Henüz su içme kaydı bulunmuyor.',
                     style: TextStyle(
                       fontSize: 14,
-                      color: isDark ? const Color(0xFF94A3B8) : Colors.blue.shade900.withValues(alpha: 0.5),
+                      color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

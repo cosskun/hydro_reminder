@@ -20,7 +20,7 @@ class AppearanceSettingsCard extends StatelessWidget {
       title: lang == 'en' ? 'Appearance & Effects 🎨' : 'Görünüm & Efektler 🎨',
       titleTrailing: Icon(
         isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-        color: const Color(0xFF38BDF8),
+        color: theme.colorScheme.primary,
       ),
       children: [
         // 1. Language Switcher (Uygulama Dili)
@@ -29,7 +29,7 @@ class AppearanceSettingsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
           ),
         ),
         const SizedBox(height: 8),
@@ -69,22 +69,22 @@ class AppearanceSettingsCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                 ),
               ),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: const Color(0xFF38BDF8).withOpacity(0.18),
+                color: theme.colorScheme.primary.withOpacity(0.18),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
+              child: Text(
                 '5 Maskot • 10 Durum',
                 style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0284C7),
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
@@ -139,7 +139,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                             ),
                           ),
                           Container(
@@ -196,7 +196,7 @@ class AppearanceSettingsCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
             ),
           ),
           const SizedBox(height: 6),
@@ -296,7 +296,7 @@ class AppearanceSettingsCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
           ),
         ),
         const SizedBox(height: 4),
@@ -394,7 +394,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: isDark
                               ? const Color(0xFFF1F5F9)
-                              : Colors.blue.shade900,
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -413,7 +413,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isDarkMode,
-                  activeThumbColor: const Color(0xFF38BDF8),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) {
                     provider.updateThemeMode(
                       val ? ThemeMode.dark : ThemeMode.light,
@@ -449,7 +449,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: isDark
                               ? const Color(0xFFF1F5F9)
-                              : Colors.blue.shade900,
+                              : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -468,7 +468,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isSoundEffectsEnabled,
-                  activeThumbColor: const Color(0xFF38BDF8),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) {
                     provider.updateSoundEffectsEnabled(val);
                   },
@@ -489,6 +489,9 @@ class AppearanceSettingsCard extends StatelessWidget {
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -496,12 +499,12 @@ class AppearanceSettingsCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+              ? (isDark ? primary.withValues(alpha: 0.25) : primary.withValues(alpha: 0.12))
               : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF38BDF8)
+                ? primary
                 : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
             width: isSelected ? 1.8 : 1.0,
           ),
@@ -521,14 +524,14 @@ class AppearanceSettingsCard extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected
-                      ? const Color(0xFF38BDF8)
-                      : (isDark ? Colors.white : Colors.blue.shade900),
+                      ? primary
+                      : (isDark ? Colors.white : const Color(0xFF1E293B)),
                 ),
               ),
             ),
             if (isSelected) ...[
               const SizedBox(width: 4),
-              const Icon(Icons.check_circle_rounded, size: 14, color: Color(0xFF38BDF8)),
+              Icon(Icons.check_circle_rounded, size: 14, color: primary),
             ],
           ],
         ),
@@ -544,6 +547,8 @@ class AppearanceSettingsCard extends StatelessWidget {
     required VoidCallback onTap,
     required bool isDark,
   }) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
     final isEn = lang == 'en';
     final name = AppTranslations.get('mascot_${mascot.id}', lang: lang);
     final personality = isEn ? mascot.personalityEn : mascot.personalityTr;
@@ -555,12 +560,12 @@ class AppearanceSettingsCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? const Color(0xFF0F2B48) : const Color(0xFFE0F2FE))
+              ? (isDark ? primary.withValues(alpha: 0.25) : primary.withValues(alpha: 0.12))
               : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade50),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF38BDF8)
+                ? primary
                 : (isDark ? const Color(0xFF334155) : Colors.grey.shade300),
             width: isSelected ? 1.8 : 1.0,
           ),
@@ -573,12 +578,12 @@ class AppearanceSettingsCard extends StatelessWidget {
               height: 36,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF38BDF8).withOpacity(0.2)
+                    ? primary.withValues(alpha: 0.2)
                     : (isDark ? const Color(0xFF0F172A) : Colors.white),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xFF38BDF8).withOpacity(0.5)
+                      ? primary.withValues(alpha: 0.5)
                       : Colors.transparent,
                 ),
               ),
@@ -609,8 +614,8 @@ class AppearanceSettingsCard extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: isSelected
-                          ? const Color(0xFF38BDF8)
-                          : (isDark ? Colors.white : Colors.blue.shade900),
+                          ? primary
+                          : (isDark ? Colors.white : const Color(0xFF1E293B)),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -645,7 +650,7 @@ class AppearanceSettingsCard extends StatelessWidget {
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: isSelected
-                  ? const Color(0xFF38BDF8)
+                  ? Theme.of(context).colorScheme.primary
                   : (isDark ? Colors.grey : Colors.grey.shade400),
               size: 20,
             ),
@@ -709,7 +714,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                     color: isSelected
                         ? activeColor
-                        : (isDark ? Colors.white : Colors.blue.shade900),
+                        : (isDark ? Colors.white : const Color(0xFF0F172A)),
                   ),
                 ),
               ),

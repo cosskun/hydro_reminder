@@ -21,7 +21,7 @@ class NotificationSettingsCard extends StatelessWidget {
 
     return SettingsCardWrapper(
       title: 'Bildirim ve Alarm Ayarları',
-      titleTrailing: const Icon(Icons.notifications_active_outlined, color: Color(0xFF38BDF8)),
+      titleTrailing: Icon(Icons.notifications_active_outlined, color: Theme.of(context).colorScheme.primary),
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -65,7 +65,7 @@ class NotificationSettingsCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    foregroundColor: const Color(0xFF38BDF8),
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   child: const Text(
                     'İzin İste',
@@ -111,7 +111,7 @@ class NotificationSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -125,7 +125,7 @@ class NotificationSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isNotificationsEnabled && hasNotificationPermission,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) async {
                     final granted = await provider.updateNotificationSettings(
                       isEnabled: val,
@@ -175,7 +175,7 @@ class NotificationSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -189,7 +189,7 @@ class NotificationSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isSoundEnabled,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: provider.isNotificationsEnabled
                       ? (val) {
                           provider.updateNotificationSettings(
@@ -229,7 +229,7 @@ class NotificationSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -243,7 +243,7 @@ class NotificationSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isVibrationEnabled,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: provider.isNotificationsEnabled
                       ? (val) {
                           provider.updateNotificationSettings(
@@ -295,7 +295,7 @@ class NotificationSettingsCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                               ),
                             ),
                           ),
@@ -303,12 +303,12 @@ class NotificationSettingsCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0288D1).withValues(alpha: 0.15),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Sabit Panel',
-                              style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF0288D1)),
+                              style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                             ),
                           ),
                         ],
@@ -324,7 +324,7 @@ class NotificationSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isOngoingNotificationEnabled && hasNotificationPermission,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) async {
                     final granted = await provider.updateOngoingNotificationSetting(val);
                     onRequestPermission();

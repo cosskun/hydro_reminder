@@ -59,12 +59,12 @@ class QuickPresetsCard extends StatelessWidget {
                   decoration: InputDecoration(
                     suffixText: 'ml',
                     filled: true,
-                    fillColor: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.2),
+                    fillColor: isDark ? const Color(0xFF0B132B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                        color: isDark ? const Color(0xFF3A506B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -78,7 +78,7 @@ class QuickPresetsCard extends StatelessWidget {
 
     return SettingsCardWrapper(
       title: 'Hızlı Su Ekleme Paneli',
-      titleTrailing: const Icon(Icons.local_drink_outlined, color: Color(0xFF38BDF8)),
+      titleTrailing: Icon(Icons.local_drink_outlined, color: Theme.of(context).colorScheme.primary),
       children: [
         Text(
           'Ana ekrandaki ve araç takımlarındaki hızlı su ekleme butonlarının (ml) değerlerini özelleştirin.',
@@ -101,7 +101,7 @@ class QuickPresetsCard extends StatelessWidget {
         ElevatedButton(
           onPressed: onSave,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0288D1),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 44),
             shape: RoundedRectangleBorder(

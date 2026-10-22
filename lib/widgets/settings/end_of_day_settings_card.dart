@@ -59,7 +59,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -75,7 +75,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isEndOfDayEnabled && provider.isNotificationsEnabled,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: theme.colorScheme.primary,
                   onChanged: (val) async {
                     final granted = await provider.updateEndOfDaySettings(
                       isEnabled: val,
@@ -136,7 +136,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                         Icon(
                           Icons.access_time_rounded,
                           size: 20,
-                          color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
+                          color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -147,7 +147,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                             ),
                           ),
                         ),
@@ -158,10 +158,10 @@ class EndOfDaySettingsCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50,
+                      color: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                        color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Row(
@@ -171,14 +171,14 @@ class EndOfDaySettingsCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: 4),
                         Icon(
                           Icons.edit_outlined,
                           size: 14,
-                          color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
+                          color: theme.colorScheme.primary,
                         ),
                       ],
                     ),
@@ -218,10 +218,10 @@ class EndOfDaySettingsCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.6),
+              color: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
             child: Row(
@@ -237,7 +237,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -255,7 +255,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                 Icon(
                   Icons.send_rounded,
                   size: 18,
-                  color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
+                  color: theme.colorScheme.primary,
                 ),
               ],
             ),

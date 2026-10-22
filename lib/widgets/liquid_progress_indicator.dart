@@ -54,16 +54,12 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
                 shape: BoxShape.circle,
                 color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0F9FF),
                 border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF38BDF8).withValues(alpha: 0.65)
-                      : const Color(0xFF0284C7).withValues(alpha: 0.4),
+                  color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.65 : 0.45),
                   width: 4,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark
-                        ? const Color(0xFF38BDF8).withValues(alpha: 0.22)
-                        : Colors.blue.shade200.withValues(alpha: 0.5),
+                    color: theme.colorScheme.primary.withValues(alpha: isDark ? 0.25 : 0.35),
                     blurRadius: 18,
                     spreadRadius: 2,
                   ),
@@ -76,6 +72,8 @@ class _LiquidProgressIndicatorState extends State<LiquidProgressIndicator>
                     progress: smoothProgress,
                     animationValue: _animationController.value,
                     isDark: isDark,
+                    primaryColor: theme.colorScheme.primary,
+                    secondaryColor: theme.colorScheme.secondary,
                   ),
                 ),
               ),
@@ -110,6 +108,8 @@ class _LiquidPainter extends CustomPainter {
   final double progress;
   final double animationValue;
   final bool isDark;
+  final Color primaryColor;
+  final Color secondaryColor;
 
   static const List<_BubbleSeed> _bubbles = [
     _BubbleSeed(0.20, 3.2, 1.2, 0.1),
@@ -125,6 +125,8 @@ class _LiquidPainter extends CustomPainter {
     required this.progress,
     required this.animationValue,
     this.isDark = false,
+    this.primaryColor = const Color(0xFF0288D1),
+    this.secondaryColor = const Color(0xFF38BDF8),
   });
 
   @override
@@ -132,20 +134,15 @@ class _LiquidPainter extends CustomPainter {
     final clampedProgress = progress.clamp(0.0, 1.0);
     final waterHeight = size.height * (1.0 - clampedProgress);
 
-    // 1. Back Wave (Translucent Deep Aqua)
+    // 1. Back Wave (Translucent Deep Fluid)
     final backPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: isDark
-            ? [
-                const Color(0xFF0369A1).withValues(alpha: 0.75),
-                const Color(0xFF0C4A6E).withValues(alpha: 0.9),
-              ]
-            : [
-                const Color(0xFF38BDF8).withValues(alpha: 0.7),
-                const Color(0xFF0284C7).withValues(alpha: 0.85),
-              ],
+        colors: [
+          secondaryColor.withValues(alpha: isDark ? 0.65 : 0.6),
+          primaryColor.withValues(alpha: isDark ? 0.85 : 0.75),
+        ],
       ).createShader(Rect.fromLTWH(0, waterHeight, size.width, size.height - waterHeight))
       ..style = PaintingStyle.fill;
 
@@ -179,20 +176,15 @@ class _LiquidPainter extends CustomPainter {
       }
     }
 
-    // 3. Front Wave (Vibrant Aqua / Glowing Cyan)
+    // 3. Front Wave (Vibrant Theme Waves)
     final frontPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: isDark
-            ? [
-                const Color(0xFF38BDF8),
-                const Color(0xFF0284C7),
-              ]
-            : [
-                const Color(0xFF38BDF8),
-                const Color(0xFF0369A1),
-              ],
+        colors: [
+          secondaryColor,
+          primaryColor,
+        ],
       ).createShader(Rect.fromLTWH(0, waterHeight, size.width, size.height - waterHeight))
       ..style = PaintingStyle.fill;
 
@@ -227,7 +219,7 @@ class _LiquidPainter extends CustomPainter {
         style: TextStyle(
           color: progress > 0.42
               ? Colors.white
-              : (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1)),
+              : primaryColor,
           fontSize: (size.width * 0.20).clamp(22.0, 46.0),
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,

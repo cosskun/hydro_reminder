@@ -305,7 +305,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
             ),
           ),
           const SizedBox(height: 20),
@@ -332,10 +332,10 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1C2541) : Colors.blue.shade50.withValues(alpha: 0.4),
+              color: isDark ? const Color(0xFF1C2541) : theme.colorScheme.primary.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.15),
               ),
             ),
             child: Row(
@@ -347,7 +347,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
                     'Mevcut günlük su hedefiniz: ${provider.dailyGoal} ml. Dilediğiniz zaman bu hedefi yukarıdaki alandan manuel olarak güncelleyebilir veya kilo & yaşınıza göre yeniden hesaplatabilirsiniz.',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? const Color(0xFF94A3B8) : Colors.blue.shade900.withValues(alpha: 0.85),
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF1E293B),
                       height: 1.4,
                     ),
                   ),

@@ -23,7 +23,7 @@ void showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCall
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
-                  color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
@@ -73,7 +73,7 @@ void showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCall
                 if (onDismiss != null) onDismiss();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0288D1),
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 padding: const EdgeInsets.symmetric(vertical: 12),

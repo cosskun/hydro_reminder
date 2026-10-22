@@ -68,6 +68,9 @@ class DailyLogGroup extends StatelessWidget {
 
     final totalForDay = dayLogs.fold(0, (sum, log) => sum + log.amountMl);
 
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -82,7 +85,7 @@ class DailyLogGroup extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   color: isDateToday
-                      ? (isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800)
+                      ? primary
                       : (isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600),
                 ),
               ),
@@ -91,7 +94,7 @@ class DailyLogGroup extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                 ),
               ),
             ],
@@ -102,7 +105,7 @@ class DailyLogGroup extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: BorderSide(
-              color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
+              color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.12),
             ),
           ),
           color: isDark ? const Color(0xFF1C2541) : Colors.white,
@@ -119,7 +122,7 @@ class DailyLogGroup extends StatelessWidget {
                       leading: CircleAvatar(
                         backgroundColor: isDark
                             ? const Color(0xFF0B132B)
-                            : Colors.blue.shade50,
+                            : primary.withValues(alpha: 0.1),
                         child: Text(
                           log.beverage.icon,
                           style: const TextStyle(fontSize: 18),
@@ -129,7 +132,7 @@ class DailyLogGroup extends StatelessWidget {
                         '${log.amountMl} ml ${log.beverage.name}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                           fontSize: 13.5,
                         ),
                       ),
@@ -154,7 +157,7 @@ class DailyLogGroup extends StatelessWidget {
                     if (log != dayLogs.last)
                       Divider(
                         height: 1,
-                        color: isDark ? const Color(0xFF3A506B).withValues(alpha: 0.5) : Colors.blue.shade50,
+                        color: isDark ? const Color(0xFF3A506B).withValues(alpha: 0.5) : primary.withValues(alpha: 0.08),
                       ),
                   ],
                 );

@@ -40,7 +40,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Hızlı Ayarlar kutucuğu ekleme işlemi iptal edildi.'),
-          backgroundColor: Colors.blueGrey,
+          backgroundColor: const Color(0xFF475569),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -48,6 +48,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
   }
 
   static void _showTileSetupModal(BuildContext context, bool isDark, int presetAmount, String presetEmoji) {
+    final primary = Theme.of(context).colorScheme.primary;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -81,7 +82,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                     ),
@@ -125,11 +126,11 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildStepTile('1', 'Bildirim çubuğunu en yukarıdan iki kez aşağı kaydırın.', isDark),
+                _buildStepTile('1', 'Bildirim çubuğunu en yukarıdan iki kez aşağı kaydırın.', isDark, primary),
                 const SizedBox(height: 10),
-                _buildStepTile('2', 'Sağ üstteki "Düzenle" (Kalem ✏️) simgesine dokunun. Samsung Galaxy cihazlarda "Tam" panelini veya "Kontrol Ekle / Düğmeleri Düzenle" (+) butonuna dokunun.', isDark),
+                _buildStepTile('2', 'Sağ üstteki "Düzenle" (Kalem ✏️) simgesine dokunun. Samsung Galaxy cihazlarda "Tam" panelini veya "Kontrol Ekle / Düğmeleri Düzenle" (+) butonuna dokunun.', isDark, primary),
                 const SizedBox(height: 10),
-                _buildStepTile('3', 'Eklenebilir butonlar arasından "$presetEmoji HydroSoft Su Ekle" kutucuğunu bulun.', isDark),
+                _buildStepTile('3', 'Eklenebilir butonlar arasından "$presetEmoji HydroSoft Su Ekle" kutucuğunu bulun.', isDark, primary),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -161,14 +162,14 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildStepTile('4', 'Kutucuğu BASILI TUTARAK yukarıya aktif kutucukların arasına sürükleyip bırakın ve "Bitti"ye dokunun.', isDark),
+                _buildStepTile('4', 'Kutucuğu BASILI TUTARAK yukarıya aktif kutucukların arasına sürükleyip bırakın ve "Bitti"ye dokunun.', isDark, primary),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(ctx),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0288D1),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -220,7 +221,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                     ),
@@ -324,7 +325,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
     );
   }
 
-  static Widget _buildStepTile(String step, String text, bool isDark) {
+  static Widget _buildStepTile(String step, String text, bool isDark, [Color? color]) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -333,7 +334,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
           height: 22,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: const Color(0xFF0288D1),
+            color: color ?? (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1)),
             borderRadius: BorderRadius.circular(11),
           ),
           child: Text(
@@ -361,6 +362,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
     final p1Meta = WaterProvider.getPresetMeta(provider.preset1);
     final p1Emoji = p1Meta['emoji'] ?? '💧';
 
@@ -506,12 +508,12 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0288D1).withValues(alpha: 0.15),
+                      color: primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.app_shortcut_rounded,
-                      color: Color(0xFF0288D1),
+                      color: primary,
                       size: 20,
                     ),
                   ),
@@ -599,7 +601,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline_rounded, size: 14, color: Color(0xFF0288D1)),
+                    Icon(Icons.info_outline_rounded, size: 14, color: primary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -627,7 +629,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
             color: isDark ? const Color(0xFF0B132B) : const Color(0xFFF0F9FF),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+              color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.2),
               width: 0.8,
             ),
           ),
@@ -639,12 +641,12 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0288D1).withValues(alpha: 0.15),
+                      color: primary.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.widgets_rounded,
-                      color: Color(0xFF0288D1),
+                      color: primary,
                       size: 20,
                     ),
                   ),
@@ -740,7 +742,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                               ),
                             ),
                           ),
@@ -854,6 +856,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
     required String label,
     required bool isDark,
   }) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Material(
       color: isDark ? const Color(0xFF1E293B) : Colors.white,
       borderRadius: BorderRadius.circular(10),
@@ -864,7 +867,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
               content: Text(
                 '💡 "$label" kısayolunu kullanmak için telefonunuzun ana ekranında HydroSoft simgesine parmağınızı basılı tutun.',
               ),
-              backgroundColor: const Color(0xFF0288D1),
+              backgroundColor: Theme.of(context).colorScheme.primary,
               behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 3),
             ),
@@ -876,7 +879,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: isDark ? const Color(0xFF38BDF8).withValues(alpha: 0.4) : Colors.blue.shade200,
+              color: isDark ? primary.withValues(alpha: 0.4) : primary.withValues(alpha: 0.3),
               width: 0.9,
             ),
           ),
@@ -893,7 +896,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF0288D1),
+                    color: isDark ? const Color(0xFFE2E8F0) : primary,
                   ),
                 ),
               ),
@@ -961,7 +964,7 @@ class AndroidFeaturesSettingsCard extends StatelessWidget {
                           ? '📌 "$title" için ana ekrana ekleme penceresi açıldı!'
                           : 'Telefonunuzun ana ekranında boş bir yere basılı tutup "Widget\'lar > HydroSoft" menüsünden ekleyebilirsiniz.',
                     ),
-                    backgroundColor: pinned ? const Color(0xFF10B981) : const Color(0xFF0288D1),
+                    backgroundColor: pinned ? const Color(0xFF10B981) : Theme.of(context).colorScheme.primary,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );

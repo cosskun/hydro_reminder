@@ -17,6 +17,9 @@ void showCustomAddBeverageDialog(BuildContext context) {
         builder: (context, setState) {
           final effectiveMl = (currentAmount * selectedBeverage.hydrationFactor).round();
 
+          final theme = Theme.of(context);
+          final primary = theme.colorScheme.primary;
+
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
@@ -64,16 +67,16 @@ void showCustomAddBeverageDialog(BuildContext context) {
                           ),
                         ),
                         selected: isSelected,
-                        selectedColor: const Color(0xFF0288D1),
+                        selectedColor: primary,
                         backgroundColor: isDark
                             ? const Color(0xFF0B132B)
-                            : Colors.blue.shade50.withValues(alpha: 0.5),
+                            : primary.withValues(alpha: 0.08),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                           side: BorderSide(
                             color: isSelected
-                                ? const Color(0xFF0288D1)
-                                : (isDark ? const Color(0xFF3A506B) : Colors.blue.shade100),
+                                ? primary
+                                : (isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.2)),
                           ),
                         ),
                         onSelected: (selected) {
@@ -92,12 +95,12 @@ void showCustomAddBeverageDialog(BuildContext context) {
                     decoration: BoxDecoration(
                       color: selectedBeverage.hydrationFactor < 1.0
                           ? (isDark ? const Color(0xFF33200B) : Colors.amber.shade50)
-                          : (isDark ? const Color(0xFF0E3048) : Colors.blue.shade50),
+                          : (isDark ? const Color(0xFF0E3048) : primary.withValues(alpha: 0.08)),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: selectedBeverage.hydrationFactor < 1.0
                             ? Colors.amber.shade300
-                            : (isDark ? const Color(0xFF0288D1) : Colors.blue.shade200),
+                            : (isDark ? primary : primary.withValues(alpha: 0.25)),
                       ),
                     ),
                     child: Row(
@@ -116,7 +119,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                                 ),
                               ),
                               Text(
@@ -140,7 +143,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w900,
-                      color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800,
+                      color: primary,
                     ),
                     decoration: InputDecoration(
                       suffixText: 'ml',
@@ -148,12 +151,12 @@ void showCustomAddBeverageDialog(BuildContext context) {
                       filled: true,
                       fillColor: isDark
                           ? const Color(0xFF0B132B)
-                          : Colors.blue.shade50.withValues(alpha: 0.2),
+                          : primary.withValues(alpha: 0.05),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(
-                          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                          color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -228,19 +231,19 @@ void showCustomAddBeverageDialog(BuildContext context) {
                           fontWeight: FontWeight.w600,
                           color: currentAmount == amount
                               ? (isDark ? const Color(0xFF0B132B) : Colors.white)
-                              : (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900),
+                              : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
                         ),
                         backgroundColor: currentAmount == amount
-                            ? const Color(0xFF0288D1)
+                            ? primary
                             : (isDark
                                 ? const Color(0xFF0B132B)
-                                : Colors.blue.shade50.withValues(alpha: 0.4)),
+                                : primary.withValues(alpha: 0.08)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                           side: BorderSide(
                             color: currentAmount == amount
-                                ? const Color(0xFF0288D1)
-                                : (isDark ? const Color(0xFF3A506B) : Colors.blue.shade100),
+                                ? primary
+                                : (isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.2)),
                           ),
                         ),
                         onPressed: () {
@@ -316,7 +319,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                                 ),
                               ],
                             ),
-                            backgroundColor: const Color(0xFF0288D1),
+                            backgroundColor: primary,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             duration: const Duration(seconds: 2),
@@ -324,7 +327,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0288D1),
+                        backgroundColor: primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),

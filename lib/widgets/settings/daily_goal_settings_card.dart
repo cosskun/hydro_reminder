@@ -31,10 +31,10 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50,
+          color: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+            color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
           ),
         ),
         child: Text(
@@ -42,7 +42,7 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade800,
+            color: theme.colorScheme.primary,
           ),
         ),
       ),
@@ -63,14 +63,14 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
             labelText: 'Günlük Hedef Miktarı',
             suffixText: 'ml',
             filled: true,
-            fillColor: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50.withValues(alpha: 0.2),
+            fillColor: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.05),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
-            prefixIcon: const Icon(Icons.water_drop, color: Color(0xFF0288D1)),
+            prefixIcon: Icon(Icons.water_drop, color: theme.colorScheme.primary),
           ),
         ),
         const SizedBox(height: 12),
@@ -86,17 +86,17 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                       ),
                     ),
                   ),
                   backgroundColor: isDark
                       ? const Color(0xFF0B132B)
-                      : Colors.blue.shade50.withValues(alpha: 0.5),
+                      : theme.colorScheme.primary.withValues(alpha: 0.08),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(
-                      color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                      color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
                     ),
                   ),
                   onPressed: () {
@@ -122,9 +122,9 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
             ),
           ),
           style: OutlinedButton.styleFrom(
-            foregroundColor: const Color(0xFF0288D1),
+            foregroundColor: theme.colorScheme.primary,
             side: BorderSide(
-              color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade200,
+              color: isDark ? theme.colorScheme.primary.withValues(alpha: 0.6) : theme.colorScheme.primary.withValues(alpha: 0.4),
             ),
             minimumSize: const Size(double.infinity, 40),
             shape: RoundedRectangleBorder(
@@ -136,7 +136,7 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
         ElevatedButton(
           onPressed: widget.onSave,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0288D1),
+            backgroundColor: theme.colorScheme.primary,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 44),
             shape: RoundedRectangleBorder(

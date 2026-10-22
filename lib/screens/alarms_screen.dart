@@ -31,7 +31,7 @@ class AlarmsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                   ),
                 ),
               ),
@@ -39,8 +39,8 @@ class AlarmsScreen extends StatelessWidget {
                 onPressed: () => showAlarmEditDialog(context),
                 icon: Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF0288D1),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.add, color: Colors.white, size: 20),

@@ -20,9 +20,9 @@ class SettingsCardWrapper extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     Color bgColor = isDark ? const Color(0xFF1C2541) : Colors.white;
-    Color borderColor = isDark ? const Color(0xFF3A506B) : Colors.blue.shade50;
-    Color shadowColor = isDark ? Colors.black26 : Colors.blue.shade900.withValues(alpha: 0.03);
-    Color titleColor = isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900;
+    Color borderColor = isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.12);
+    Color shadowColor = isDark ? Colors.black26 : theme.colorScheme.primary.withValues(alpha: 0.04);
+    Color titleColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B);
 
     if (isDangerZone) {
       bgColor = isDark ? const Color(0xFF3B1219) : Colors.red.shade50.withValues(alpha: 0.3);

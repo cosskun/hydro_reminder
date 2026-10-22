@@ -18,6 +18,9 @@ class AlarmItemCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context, listen: false);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -27,7 +30,7 @@ class AlarmItemCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
+            color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.12),
           ),
         ),
         color: isDark ? const Color(0xFF1C2541) : Colors.white,
@@ -37,7 +40,7 @@ class AlarmItemCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.alarm_rounded,
-                color: alarm.isEnabled ? const Color(0xFF38BDF8) : (isDark ? const Color(0xFF64748B) : Colors.grey.shade400),
+                color: alarm.isEnabled ? primary : (isDark ? const Color(0xFF64748B) : Colors.grey.shade400),
                 size: 28,
               ),
               const SizedBox(width: 16),
@@ -51,7 +54,7 @@ class AlarmItemCard extends StatelessWidget {
                         fontSize: 20,
                         fontWeight: FontWeight.w900,
                         color: alarm.isEnabled
-                            ? (isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900)
+                            ? (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B))
                             : (isDark ? const Color(0xFF64748B) : Colors.grey.shade600),
                       ),
                     ),
@@ -72,7 +75,7 @@ class AlarmItemCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF0B132B) : Colors.blue.shade50,
+                            color: isDark ? const Color(0xFF0B132B) : primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: isDark ? const Color(0xFF3A506B) : Colors.transparent,
@@ -83,7 +86,7 @@ class AlarmItemCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 9.5,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade700,
+                              color: primary,
                             ),
                           ),
                         ),
@@ -96,8 +99,8 @@ class AlarmItemCard extends StatelessWidget {
               // Toggle switch
               Switch(
                 value: alarm.isEnabled,
-                activeThumbColor: const Color(0xFF38BDF8),
-                activeTrackColor: const Color(0xFF0288D1),
+                activeThumbColor: primary,
+                activeTrackColor: primary.withValues(alpha: 0.5),
                 inactiveThumbColor: isDark ? const Color(0xFF64748B) : Colors.grey.shade400,
                 inactiveTrackColor: isDark ? const Color(0xFF0B132B) : Colors.grey.shade200,
                 onChanged: (val) {

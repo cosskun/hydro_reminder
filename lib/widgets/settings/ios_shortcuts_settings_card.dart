@@ -8,6 +8,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   const IosShortcutsSettingsCard({super.key});
 
   void _showSiriCommandsModal(BuildContext context, bool isDark) {
+    final primary = Theme.of(context).colorScheme.primary;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -39,7 +40,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                       ),
                     ),
                   ],
@@ -59,6 +60,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   '"Hey Siri, HydroSoft ile 250 ml su içtim"',
                   'Belirttiğiniz miktarı gününüze ekler ve kalan hedefi seslendirir.',
                   isDark,
+                  primary,
                 ),
                 const SizedBox(height: 10),
                 _buildCommandTile(
@@ -66,6 +68,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   '"Hey Siri, HydroSoft ile bir bardak su ekle"',
                   'Varsayılan bardak miktarını (+200 ml) kaydeder.',
                   isDark,
+                  primary,
                 ),
                 const SizedBox(height: 10),
                 _buildCommandTile(
@@ -73,6 +76,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   '"Hey Siri, HydroSoft bugün ne kadar su içtim?"',
                   'Bugünkü toplam tüketiminizi ve kalan ihtiyacınızı sesli yanıtlar.',
                   isDark,
+                  primary,
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -80,7 +84,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(ctx),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0288D1),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -99,6 +103,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   }
 
   void _showBackTapGuideModal(BuildContext context, bool isDark) {
+    final primary = Theme.of(context).colorScheme.primary;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -130,7 +135,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                       ),
                     ),
                   ],
@@ -145,18 +150,18 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildStepTile('1', 'iPhone Ayarları > Erişilebilirlik > Dokunma menüsüne gidin.', isDark),
+                _buildStepTile('1', 'iPhone Ayarları > Erişilebilirlik > Dokunma menüsüne gidin.', isDark, primary),
                 const SizedBox(height: 10),
-                _buildStepTile('2', 'En alttaki "Arkaya Dokun" seçeneğine girip "Çift Dokunma"yı seçin.', isDark),
+                _buildStepTile('2', 'En alttaki "Arkaya Dokun" seçeneğine girip "Çift Dokunma"yı seçin.', isDark, primary),
                 const SizedBox(height: 10),
-                _buildStepTile('3', 'Kestirmeler bölümünden "Hızlı Su Seçimi" (HydroSoft) eylemini atayın.', isDark),
+                _buildStepTile('3', 'Kestirmeler bölümünden "Hızlı Su Seçimi" (HydroSoft) eylemini atayın.', isDark, primary),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(ctx),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0288D1),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -174,14 +179,15 @@ class IosShortcutsSettingsCard extends StatelessWidget {
     );
   }
 
-  static Widget _buildCommandTile(String emoji, String title, String subtitle, bool isDark) {
+  static Widget _buildCommandTile(String emoji, String title, String subtitle, bool isDark, [Color? primaryColor]) {
+    final primary = primaryColor ?? (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1));
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF0B132B) : const Color(0xFFF4F9FD),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+          color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.2),
           width: 0.8,
         ),
       ),
@@ -199,7 +205,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                    color: primary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -218,7 +224,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
     );
   }
 
-  static Widget _buildStepTile(String step, String text, bool isDark) {
+  static Widget _buildStepTile(String step, String text, bool isDark, [Color? color]) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -227,7 +233,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
           height: 22,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: const Color(0xFF0288D1),
+            color: color ?? (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1)),
             borderRadius: BorderRadius.circular(11),
           ),
           child: Text(
@@ -277,7 +283,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                        color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                       ),
                     ),
                   ],
@@ -341,21 +347,22 @@ class IosShortcutsSettingsCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
 
     return SettingsCardWrapper(
       title: 'iOS & Apple Özellikleri 🍏',
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: const Color(0xFF0288D1).withValues(alpha: 0.12),
+          color: primary.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Text(
+        child: Text(
           'iPhone Özel',
           style: TextStyle(
             fontSize: 10.5,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0288D1),
+            color: primary,
           ),
         ),
       ),
@@ -389,7 +396,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -406,7 +413,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isSiriShortcutsEnabled,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: Theme.of(context).colorScheme.primary,
                   onChanged: (val) {
                     provider.updateIosShortcutsSettings(isSiriEnabled: val);
                   },
@@ -425,7 +432,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 icon: const Icon(Icons.mic_none_rounded, size: 16),
                 label: const Text('Sesli Komutları & Cümleleri Gör', style: TextStyle(fontSize: 11.5)),
                 style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF0288D1),
+                  foregroundColor: primary,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 ),
               ),
@@ -453,7 +460,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -470,7 +477,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Switch(
                   value: provider.isBackTapEnabled,
-                  activeThumbColor: const Color(0xFF0288D1),
+                  activeThumbColor: Theme.of(context).colorScheme.primary,
                   onChanged: (val) {
                     provider.updateIosShortcutsSettings(isBackTapEnabled: val);
                   },
@@ -489,7 +496,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 icon: const Icon(Icons.touch_app_outlined, size: 16),
                 label: const Text('Arkaya Dokunma Kurulum Kılavuzu', style: TextStyle(fontSize: 11.5)),
                 style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFF0288D1),
+                  foregroundColor: primary,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 ),
               ),
@@ -531,7 +538,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                               ),
                             ),
                           ),
@@ -628,7 +635,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                      color: primary,
                     ),
                   ),
                 ],
@@ -645,7 +652,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
             color: isDark ? const Color(0xFF0B132B) : const Color(0xFFF0F9FF),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isDark ? const Color(0xFF1E3A8A) : Colors.lightBlue.shade200,
+              color: isDark ? const Color(0xFF1E3A8A) : primary.withValues(alpha: 0.25),
               width: 0.9,
             ),
           ),
@@ -654,7 +661,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.widgets_rounded, size: 18, color: Color(0xFF0288D1)),
+                  Icon(Icons.widgets_rounded, size: 18, color: primary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -662,7 +669,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0369A1),
+                        color: primary,
                       ),
                     ),
                   ),
@@ -709,8 +716,8 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
                   ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF0288D1),
-                    side: const BorderSide(color: Color(0xFF0288D1), width: 1),
+                    foregroundColor: primary,
+                    side: BorderSide(color: primary, width: 1),
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
@@ -724,6 +731,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   }
 
   void _showIosWidgetGuideModal(BuildContext context, bool isDark) {
+    final primary = Theme.of(context).colorScheme.primary;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -751,7 +759,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                          color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                         ),
                       ),
                     ),
@@ -763,35 +771,35 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                    color: primary,
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildStepTile('1', 'iPhone Ana Ekranında boş bir alana simgeler titreyene kadar basılı tutun.', isDark),
+                _buildStepTile('1', 'iPhone Ana Ekranında boş bir alana simgeler titreyene kadar basılı tutun.', isDark, primary),
                 const SizedBox(height: 8),
-                _buildStepTile('2', 'Sol üst köşedeki "+" (Düzenle > Araç Takımı Ekle) butonuna dokunun.', isDark),
+                _buildStepTile('2', 'Sol üst köşedeki "+" (Düzenle > Araç Takımı Ekle) butonuna dokunun.', isDark, primary),
                 const SizedBox(height: 8),
-                _buildStepTile('3', 'Listeden "HydroSoft"u seçip Küçük veya Orta boy etkileşimli widget\'ı ekleyin.', isDark),
+                _buildStepTile('3', 'Listeden "HydroSoft"u seçip Küçük veya Orta boy etkileşimli widget\'ı ekleyin.', isDark, primary),
                 const SizedBox(height: 14),
                 Text(
                   'Kilit Ekranına Ekleme:',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0288D1),
+                    color: primary,
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildStepTile('1', 'Kilit Ekranına basılı tutup alttaki "Özelleştir > Kilit Ekranı" seçeneğine dokunun.', isDark),
+                _buildStepTile('1', 'Kilit Ekranına basılı tutup alttaki "Özelleştir > Kilit Ekranı" seçeneğine dokunun.', isDark, primary),
                 const SizedBox(height: 8),
-                _buildStepTile('2', 'Saatin altındaki "Araç Takımı Ekle" kutusuna dokunup "HydroSoft" su halkasını seçin.', isDark),
+                _buildStepTile('2', 'Saatin altındaki "Araç Takımı Ekle" kutusuna dokunup "HydroSoft" su halkasını seçin.', isDark, primary),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(ctx),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0288D1),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

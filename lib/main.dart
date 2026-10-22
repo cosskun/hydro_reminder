@@ -70,7 +70,7 @@ void main() async {
                 ),
               ],
             ),
-            backgroundColor: const Color(0xFF0288D1),
+            backgroundColor: AppTheme.getTheme(waterProvider.customThemePreset, isDark: false).colorScheme.primary,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             duration: const Duration(seconds: 3),

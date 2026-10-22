@@ -76,6 +76,9 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
   Widget build(BuildContext context) {
     final provider = Provider.of<WaterProvider>(context);
     final alarmLabel = provider.activeAlarm?.label ?? 'Su Zamanı';
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final secondary = theme.colorScheme.secondary;
 
     if (_showCheatWarning) {
       return AlarmCheatWarningView(
@@ -86,7 +89,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
             SnackBar(
               content: Text('Harika! $_selectedAmount ml su başarıyla kaydedildi. 💧😎'),
               behavior: SnackBarBehavior.floating,
-              backgroundColor: const Color(0xFF0288D1),
+              backgroundColor: primary,
             ),
           );
         },
@@ -119,7 +122,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                 height: 320,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF0284C7).withValues(alpha: 0.28),
+                  color: primary.withValues(alpha: 0.28),
                 ),
               ),
             ),
@@ -131,7 +134,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                 height: 340,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF06B6D4).withValues(alpha: 0.22),
+                  color: secondary.withValues(alpha: 0.22),
                 ),
               ),
             ),
@@ -143,7 +146,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                 height: 220,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF38BDF8).withValues(alpha: 0.16),
+                  color: primary.withValues(alpha: 0.16),
                 ),
               ),
             ),
@@ -213,10 +216,10 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(
+                                          Icon(
                                             Icons.alarm_on_rounded,
                                             size: 16,
-                                            color: Color(0xFF38BDF8),
+                                            color: primary,
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
@@ -275,19 +278,19 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                                 shape: BoxShape.circle,
                                                 gradient: LinearGradient(
                                                   colors: [
-                                                    const Color(0xFF38BDF8).withValues(alpha: 0.25),
-                                                    const Color(0xFF0284C7).withValues(alpha: 0.35),
+                                                    primary.withValues(alpha: 0.35),
+                                                    secondary.withValues(alpha: 0.25),
                                                   ],
                                                   begin: Alignment.topLeft,
                                                   end: Alignment.bottomRight,
                                                 ),
                                                 border: Border.all(
-                                                  color: const Color(0xFF38BDF8).withValues(alpha: 0.8),
+                                                  color: primary.withValues(alpha: 0.8),
                                                   width: 2.5,
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: const Color(0xFF38BDF8).withValues(alpha: 0.3),
+                                                    color: primary.withValues(alpha: 0.3),
                                                     blurRadius: _glowAnimation.value,
                                                     spreadRadius: 4,
                                                   ),
@@ -349,10 +352,10 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                             children: [
                                               Text(
                                                 'Bugün: ${provider.todayConsumed} / ${provider.dailyGoal} ml',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 12.5,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Color(0xFF38BDF8),
+                                                  color: primary,
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
@@ -400,7 +403,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                                           decoration: BoxDecoration(
                                             color: isSelected
-                                                ? const Color(0xFF38BDF8)
+                                                ? primary
                                                 : Colors.white.withValues(alpha: 0.12),
                                             borderRadius: BorderRadius.circular(16),
                                             border: Border.all(
@@ -453,16 +456,16 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                         SnackBar(
                                           content: Text('Harika! $_selectedAmount ml su başarıyla kaydedildi. 💧😎'),
                                           behavior: SnackBarBehavior.floating,
-                                          backgroundColor: const Color(0xFF0288D1),
+                                          backgroundColor: primary,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                         ),
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF38BDF8),
-                                      foregroundColor: const Color(0xFF071930),
+                                      backgroundColor: primary,
+                                      foregroundColor: Colors.white,
                                       elevation: 8,
-                                      shadowColor: const Color(0xFF38BDF8).withValues(alpha: 0.5),
+                                      shadowColor: primary.withValues(alpha: 0.5),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(29),
                                       ),
@@ -474,7 +477,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(Icons.check_circle_rounded, size: 24, color: Color(0xFF071930)),
+                                          const Icon(Icons.check_circle_rounded, size: 24, color: Colors.white),
                                           const SizedBox(width: 8),
                                           Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -486,7 +489,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                                 style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w900,
-                                                  color: Color(0xFF071930),
+                                                  color: Colors.white,
                                                   height: 1.1,
                                                 ),
                                               ),
@@ -495,7 +498,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
-                                                  color: const Color(0xFF071930).withValues(alpha: 0.8),
+                                                  color: Colors.white.withValues(alpha: 0.9),
                                                   height: 1.1,
                                                 ),
                                               ),

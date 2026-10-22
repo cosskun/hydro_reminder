@@ -5,16 +5,18 @@ class EmptyAlarmsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1C2541) : Colors.blue.shade50.withValues(alpha: 0.3),
+        color: isDark ? const Color(0xFF1C2541) : primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade50,
+          color: isDark ? const Color(0xFF3A506B) : primary.withValues(alpha: 0.12),
         ),
       ),
       child: Column(
@@ -25,7 +27,7 @@ class EmptyAlarmsView extends StatelessWidget {
             'Kayıtlı alarm bulunmuyor.',
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900.withValues(alpha: 0.5),
+              color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF64748B),
               fontWeight: FontWeight.bold,
             ),
           ),

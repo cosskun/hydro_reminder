@@ -378,7 +378,7 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                           }
                                         : null,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0284C7),
+                                      backgroundColor: Theme.of(context).colorScheme.primary,
                                       disabledBackgroundColor:
                                           Colors.blueGrey.shade200,
                                       foregroundColor: Colors.white,

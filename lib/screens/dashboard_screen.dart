@@ -117,7 +117,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 'Merhaba 👋',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: isDark ? const Color(0xFF94A3B8) : Colors.blue.shade900.withValues(alpha: 0.65),
+                                  color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -129,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 style: TextStyle(
                                   fontSize: 19,
                                   fontWeight: FontWeight.bold,
-                                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                                 ),
                               ),
                             ],
@@ -139,22 +139,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1C2541) : Colors.blue.shade50,
+                            color: isDark ? const Color(0xFF1C2541) : theme.colorScheme.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isDark ? const Color(0xFF3A506B) : Colors.blue.shade100,
+                              color: isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.track_changes_rounded, color: Color(0xFF38BDF8), size: 16),
+                              Icon(Icons.track_changes_rounded, color: theme.colorScheme.primary, size: 16),
                               const SizedBox(width: 5),
                               Text(
                                 'Hedef: ${provider.dailyGoal} ml',
                                 style: TextStyle(
-                                  color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                                  color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                 ),
@@ -185,16 +185,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             gradient: LinearGradient(
                               colors: isDark
                                   ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
-                                  : [Colors.blue.shade50, Colors.white],
+                                  : [theme.colorScheme.primary.withValues(alpha: 0.08), Colors.white],
                             ),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color(0xFF38BDF8).withValues(alpha: 0.7),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.7),
                               width: 1.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF38BDF8).withValues(alpha: 0.15),
+                                color: theme.colorScheme.primary.withValues(alpha: 0.15),
                                 blurRadius: 10,
                               ),
                             ],
@@ -212,7 +212,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.bold,
-                                        color: isDark ? Colors.white : Colors.blue.shade900,
+                                        color: isDark ? Colors.white : const Color(0xFF0F172A),
                                       ),
                                     ),
                                     Text(
@@ -233,7 +233,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: const Text('🛡️ Harika! Seri kalkanı kullanıldı ve seriniz korundu!'),
-                                        backgroundColor: const Color(0xFF0288D1),
+                                        backgroundColor: theme.colorScheme.primary,
                                         behavior: SnackBarBehavior.floating,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                       ),
@@ -241,8 +241,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF38BDF8),
-                                  foregroundColor: const Color(0xFF071930),
+                                  backgroundColor: theme.colorScheme.primary,
+                                  foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
@@ -263,7 +263,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           fontSize: 25,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5,
-                          color: isDark ? const Color(0xFF38BDF8) : Colors.blue.shade900,
+                          color: isDark ? theme.colorScheme.primary : theme.colorScheme.primary,
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -285,7 +285,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           style: TextStyle(
                             fontSize: 14.5,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFFF1F5F9) : Colors.blue.shade900,
+                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                           ),
                         ),
                         const SizedBox(width: 8),

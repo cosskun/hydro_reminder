@@ -110,8 +110,11 @@ void showMascotStatePreviewDialog(BuildContext context, MascotCharacter mascot, 
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF0284C7), Color(0xFF38BDF8)],
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(ctx).colorScheme.primary,
+                            Theme.of(ctx).colorScheme.secondary,
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -136,7 +139,7 @@ void showMascotStatePreviewDialog(BuildContext context, MascotCharacter mascot, 
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : Colors.blue.shade900,
+                              color: isDark ? Colors.white : Theme.of(ctx).colorScheme.primary,
                             ),
                           ),
                           const SizedBox(height: 2),

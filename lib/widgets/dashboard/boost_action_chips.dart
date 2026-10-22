@@ -33,8 +33,8 @@ class BoostActionChips extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: provider.isWorkoutBoostActive
-                    ? const Color(0xFF38BDF8)
-                    : (isDark ? const Color(0xFF3A506B) : Colors.blue.shade100),
+                    ? theme.colorScheme.primary
+                    : (isDark ? const Color(0xFF3A506B) : theme.colorScheme.primary.withValues(alpha: 0.25)),
                 width: 1.2,
               ),
               boxShadow: provider.isWorkoutBoostActive
@@ -59,7 +59,7 @@ class BoostActionChips extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: provider.isWorkoutBoostActive
                         ? Colors.white
-                        : (isDark ? const Color(0xFF94A3B8) : Colors.blue.shade900),
+                        : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF0F172A)),
                   ),
                 ),
                 if (provider.isWorkoutBoostActive) ...[

@@ -145,7 +145,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
 
     return SettingsCardWrapper(
       title: 'Yasal Bilgiler, KVKK ve Gizlilik 🔒',
-      titleTrailing: Icon(Icons.verified_user_outlined, color: Theme.of(context).colorScheme.primary),
+      titleTrailing: Icon(Icons.verified_user_outlined, color: primary),
       children: [
         Text(
           'HydroSoft verilerinizi hiçbir dış sunucuya aktarmaz; tüm bilgileriniz %100 cihazınızda saklanır.',

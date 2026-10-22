@@ -413,8 +413,32 @@ void main() {
     });
   });
 
-  group('Hydration Energy Ladder (Cat, Dog, Penguin & Panda 5 Tiers) Tests', () {
-    test('All 5 Cat, Dog, Penguin and Panda energy ladder image assets exist on disk', () {
+  group('Nutty (Red Squirrel) 10 States & Asset Tests', () {
+    test('All 10 states resolve to valid squirrel assets that exist on disk', () {
+      final expectedAssets = {
+        MascotState.morning: 'assets/mascots/squirrel_morning.png',
+        MascotState.workFocus: 'assets/mascots/squirrel_work_focus.png',
+        MascotState.lunch: 'assets/mascots/squirrel_lunch.png',
+        MascotState.afternoonSlump: 'assets/mascots/squirrel_afternoon_slump.png',
+        MascotState.workout: 'assets/mascots/squirrel_workout.png',
+        MascotState.evening: 'assets/mascots/squirrel_evening.png',
+        MascotState.bedtime: 'assets/mascots/squirrel_bedtime.png',
+        MascotState.goalReached: 'assets/mascots/squirrel_goal_reached.png',
+        MascotState.thirsty: 'assets/mascots/squirrel_thirsty.png',
+        MascotState.streakFire: 'assets/mascots/squirrel_streak_fire.png',
+      };
+
+      for (final state in MascotState.values) {
+        final expected = expectedAssets[state]!;
+        final actual = 'assets/mascots/squirrel_${state.assetSuffix}.png';
+        expect(actual, expected);
+        expect(File(actual).existsSync(), isTrue, reason: '$actual should exist on disk');
+      }
+    });
+  });
+
+  group('Hydration Energy Ladder (Cat, Dog, Penguin, Panda & Squirrel 5 Tiers) Tests', () {
+    test('All 5 Cat, Dog, Penguin, Panda and Squirrel energy ladder image assets exist on disk', () {
       final energyTiers = [0, 25, 50, 75, 100];
       for (final step in energyTiers) {
         final catAsset = 'assets/mascots/cat_energy_$step.png';
@@ -428,6 +452,9 @@ void main() {
 
         final pandaAsset = 'assets/mascots/panda_energy_$step.png';
         expect(File(pandaAsset).existsSync(), isTrue, reason: '$pandaAsset must exist');
+
+        final squirrelAsset = 'assets/mascots/squirrel_energy_$step.png';
+        expect(File(squirrelAsset).existsSync(), isTrue, reason: '$squirrelAsset must exist');
       }
     });
 
@@ -479,6 +506,20 @@ void main() {
         isEn: false,
       );
       expect(panda100['title'], contains('Zen Ustası'));
+
+      final squirrel0 = MascotEnergyLadder.getDialogue(
+        mascotId: 'squirrel',
+        tier: MascotEnergyTier.energy0,
+        isEn: false,
+      );
+      expect(squirrel0['title'], contains('Fındıklar Kurudu'));
+
+      final squirrel100 = MascotEnergyLadder.getDialogue(
+        mascotId: 'squirrel',
+        tier: MascotEnergyTier.energy100,
+        isEn: false,
+      );
+      expect(squirrel100['title'], contains('Orman Şampiyonu'));
     });
 
     test('Energy ladder has absolute priority on dashboard even during bedtime hours (22:00+)', () {
@@ -516,7 +557,17 @@ void main() {
       expect(pandaStatus24['routineImageAsset'], 'assets/mascots/panda_bedtime.png');
       expect(pandaStatus24['title'], contains('İlk Yudum'));
       expect(pandaStatus24['routineTitle'], 'Hadi son bir yudum!');
-      expect(status24['routineTitle'], 'Hadi son bir yudum!');
+
+      // At 24% intake during bedtime hours (Squirrel)
+      final squirrelStatus24 = WaterProvider.getHydrationStatus(
+        0.24,
+        mascotType: 'squirrel',
+        now: nightTime,
+      );
+      expect(squirrelStatus24['imageAsset'], 'assets/mascots/squirrel_energy_25.png');
+      expect(squirrelStatus24['routineImageAsset'], 'assets/mascots/squirrel_bedtime.png');
+      expect(squirrelStatus24['title'], contains('İlk Yudum'));
+      expect(squirrelStatus24['routineTitle'], 'Hadi son bir yudum!');
 
       // At 80% intake during bedtime hours (Energy 75)
       final status80 = WaterProvider.getHydrationStatus(

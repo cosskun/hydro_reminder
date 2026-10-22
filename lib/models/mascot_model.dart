@@ -257,6 +257,44 @@ class MascotEnergyLadder {
                 : 'Tam şarj olduk! Altın bambu kupamız dolup taştı, harikasın! 🎋✨',
           };
       }
+    } else if (mascotId == 'squirrel') {
+      switch (tier) {
+        case MascotEnergyTier.energy0:
+          return {
+            'title': isEn ? 'Zero Energy • Acorns Dried' : 'Sıfır Enerji • Fındıklar Kurudu',
+            'message': isEn
+                ? 'Fluffy tail drooping to the ground! My acorn cup is empty, no energy to leap... 🍂'
+                : 'Pofuduk kuyruğum yere serildi! Palamut bardağım bomboş, hiç zıplayacak gücüm yok... 🍂',
+          };
+        case MascotEnergyTier.energy25:
+          return {
+            'title': isEn ? 'First Sip • Tail Twitching' : 'İlk Yudum • Kuyruk Sallanıyor',
+            'message': isEn
+                ? 'First fresh sip felt great! Tiny paws reviving, tail twitching happily.'
+                : 'İlk taze yudum iyi geldi! Minik patilerim canlanıyor, kuyruğum kıpırdadı.',
+          };
+        case MascotEnergyTier.energy50:
+          return {
+            'title': isEn ? 'Half Energy • Acorn Tumbler' : 'Yarı Enerji • Palamut Matarası',
+            'message': isEn
+                ? 'Crisp sip from my acorn tumbler! Halfway full, jumping branch to branch.'
+                : 'Palamut mataramdan ferah bir yudum! Yarı depoyla daldan dala atlamaya başladım.',
+          };
+        case MascotEnergyTier.energy75:
+          return {
+            'title': isEn ? 'High Vitality • Acorn Speed' : 'Yüksek Canlılık • Fındık Hızı',
+            'message': isEn
+                ? 'Energy peaking! Fluffy tail held high, hydration sparkle glowing in the forest.'
+                : 'Enerji tavan yaptı! Pofuduk kuyruğum dimdik, ormanda su ateşi parıldıyor.',
+          };
+        case MascotEnergyTier.energy100:
+          return {
+            'title': isEn ? 'Full Charge • Forest Champion' : 'Tam Şarj • Orman Şampiyonu',
+            'message': isEn
+                ? 'Fully charged! Raised the golden acorn chalice, what a glorious day! 🌰👑'
+                : 'Tam şarj olduk! Altın palamut kadehini kaldırdık, harika bir gün! 🌰👑',
+          };
+      }
     }
 
     // Generic Fallback
@@ -392,7 +430,7 @@ class MascotCatalog {
     personalityTr: 'Pofuduk kuyruklu, enerjik ve su molalarını hiç kaçırmayan sevimli sincap.',
     personalityEn: 'Fluffy-tailed, energetic squirrel who never misses a water break.',
     emoji: '🐿️',
-    defaultImageAsset: 'assets/mascots/squirrel_afternoon_slump.png',
+    defaultImageAsset: 'assets/mascots/squirrel_morning.png',
   );
 
   // Backward compatibility alias for saved user settings
@@ -923,10 +961,10 @@ class MascotResolver {
         state == MascotState.thirsty;
 
     // Primary Image Selection:
-    // When a mascot has an energy ladder (Cat, Dog, Penguin, Panda), hydration level energy ladder has
+    // When a mascot has an energy ladder (Cat, Dog, Penguin, Panda, Squirrel), hydration level energy ladder has
     // absolute priority on the in-app screen and widgets!
     // Time-based routine events (bedtime, afternoon slump) do NOT override the user's water energy progress.
-    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog' || mascot.id == 'penguin' || mascot.id == 'panda';
+    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog' || mascot.id == 'penguin' || mascot.id == 'panda' || mascot.id == 'squirrel';
     final String resolvedImageAsset;
     final String finalTitle;
     final String finalMessage;

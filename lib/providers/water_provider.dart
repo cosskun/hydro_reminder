@@ -939,12 +939,12 @@ class WaterProvider with ChangeNotifier {
         streakDays: displayStreak,
         lastLogTime: _logs.isNotEmpty ? _logs.first.timestamp : null,
       );
+      // Contextual Routine Mascot Illustration & Dialogue for Phone Widgets (iOS WidgetKit & Android AppWidget)
+      // Widgets serve as sweet timely reminders throughout the day (morning, desk focus, lunch, afternoon slump, workout, evening, bedtime, thirst)
       final String mascotEmoji = status['emoji']!;
-      final String mascotTitle = status['title'] ?? 'Durumunuz';
-      final String mascotMessage = status['message'] ?? '';
-      final String mascotSubtitle = status['title'] != null
-          ? '${status['title']!} • ${status['message']!}'
-          : status['message']!;
+      final String widgetImageAsset = status['routineImageAsset'] ?? status['imageAsset']!;
+      final String widgetTitle = status['routineTitle'] ?? status['title'] ?? 'Durumunuz';
+      final String widgetMessage = status['routineMessage'] ?? status['message'] ?? '';
 
       final p1Emoji = WaterProvider.getPresetMeta(preset1)['emoji'] ?? '🥛';
       final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';
@@ -965,11 +965,11 @@ class WaterProvider with ChangeNotifier {
         dayLabels: labels.join(','),
         dayStatuses: statuses.join(','),
         mascotEmoji: mascotEmoji,
-        mascotTitle: mascotTitle,
-        mascotSubtitle: mascotMessage.isNotEmpty ? mascotMessage : mascotSubtitle,
+        mascotTitle: widgetTitle,
+        mascotSubtitle: widgetMessage.isNotEmpty ? widgetMessage : widgetTitle,
         widgetTheme: effectiveThemePreset,
         mascotType: _mascotType,
-        imageAsset: status['imageAsset'],
+        imageAsset: widgetImageAsset,
       );
     } catch (_) {}
   }

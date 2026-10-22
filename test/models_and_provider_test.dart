@@ -684,4 +684,98 @@ void main() {
       expect(status95['routineTitle'], 'Hadi son bir yudum!');
     });
   });
+
+  group('Mascot Preview & Zero-Duplicate State Verification Tests', () {
+    test('All animal mascots have 10 distinct, non-repeating routine states and assets', () {
+      final animalMascots = ['cat', 'dog', 'penguin', 'panda', 'squirrel'];
+
+      for (final mascotId in animalMascots) {
+        final dialogues = MascotState.values.map((state) {
+          return MascotResolver.resolveDialogueForState(
+            mascotType: mascotId,
+            state: state,
+            lang: 'tr',
+          );
+        }).toList();
+
+        // 1. Exactly 10 items
+        expect(dialogues.length, 10);
+
+        // 2. All 10 images are distinct (Zero repeating illustrations)
+        final imageAssets = dialogues.map((d) => d.imageAsset).toList();
+        final uniqueImages = Set.from(imageAssets);
+        expect(uniqueImages.length, 10, reason: '$mascotId must have 10 unique routine illustrations');
+
+        // 3. All 10 image files exist on disk
+        for (final img in imageAssets) {
+          expect(File(img).existsSync(), isTrue, reason: 'Image asset $img must exist on disk');
+        }
+
+        // 4. All 10 messages are unique and tailored (Zero repeating text)
+        final messages = dialogues.map((d) => d.message).toList();
+        final uniqueMessages = Set.from(messages);
+        expect(uniqueMessages.length, 10, reason: '$mascotId must have 10 unique messages');
+
+        // 5. English versions are also all unique
+        final enDialogues = MascotState.values.map((state) {
+          return MascotResolver.resolveDialogueForState(
+            mascotType: mascotId,
+            state: state,
+            lang: 'en',
+          );
+        }).toList();
+        final enMessages = enDialogues.map((d) => d.message).toList();
+        expect(Set.from(enMessages).length, 10, reason: '$mascotId must have 10 unique English messages');
+      }
+    });
+
+    test('All 5 hydration energy tiers have distinct, non-repeating assets and copy', () {
+      final animalMascots = ['cat', 'dog', 'penguin', 'panda', 'squirrel'];
+
+      for (final mascotId in animalMascots) {
+        final energyDialogues = MascotEnergyTier.values.map((tier) {
+          return MascotResolver.resolveDialogueForEnergyTier(
+            mascotType: mascotId,
+            tier: tier,
+            lang: 'tr',
+          );
+        }).toList();
+
+        // 1. Exactly 5 items
+        expect(energyDialogues.length, 5);
+
+        // 2. All 5 images are distinct
+        final imageAssets = energyDialogues.map((d) => d.imageAsset).toList();
+        expect(Set.from(imageAssets).length, 5, reason: '$mascotId must have 5 unique energy images');
+
+        for (final img in imageAssets) {
+          expect(File(img).existsSync(), isTrue, reason: 'Energy asset $img must exist on disk');
+        }
+
+        // 3. All 5 titles and messages are distinct
+        final titles = energyDialogues.map((d) => d.title).toList();
+        expect(Set.from(titles).length, 5);
+        final messages = energyDialogues.map((d) => d.message).toList();
+        expect(Set.from(messages).length, 5);
+      }
+    });
+
+    test('MascotResolver.getStateTag produces distinct, descriptive labels for all 10 states', () {
+      final trTags = MascotState.values.map((s) => MascotResolver.getStateTag(s, false)).toList();
+      expect(Set.from(trTags).length, 10);
+      expect(trTags.contains('Sabah Uyanışı'), isTrue);
+      expect(trTags.contains('Masa Başı Odaklanma'), isTrue);
+      expect(trTags.contains('Öğle Yemeği Molası'), isTrue);
+      expect(trTags.contains('Öğleden Sonra Rehaveti & Sitem'), isTrue);
+      expect(trTags.contains('Spor & Hareket'), isTrue);
+      expect(trTags.contains('Akşam Dinlenmesi'), isTrue);
+      expect(trTags.contains('Gece Uykusu & Son Yudum'), isTrue);
+      expect(trTags.contains('Günlük Hedef Şampiyonu'), isTrue);
+      expect(trTags.contains('Kritik Susuzluk Uyarısı'), isTrue);
+      expect(trTags.contains('Seri Ateşi & Süper Kahraman'), isTrue);
+
+      final enTags = MascotState.values.map((s) => MascotResolver.getStateTag(s, true)).toList();
+      expect(Set.from(enTags).length, 10);
+    });
+  });
 }

@@ -774,169 +774,14 @@ class MascotResolver {
     }
 
     // Contextual Dialogue & Title based on 10 States
-    switch (state) {
-      case MascotState.goalReached:
-        title = isEn ? 'You Champion!' : 'İşte bu, şampiyon!';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? "Trophy raised, confetti bursting! You are today's hydration champion! 🏆🎉"
-                : (mascot.id == 'dog'
-                    ? "Trophy won, confetti flying! You are today's hydration champion! 🏆🎉"
-                    : (mascot.id == 'penguin'
-                        ? "Polar trophy raised, confetti on ice! You are today's hydration champion! 🏆❄️"
-                        : (mascot.id == 'panda'
-                            ? "Golden trophy raised, bamboo confetti bursting! You are today's hydration champion! 🏆🎋"
-                            : 'Congratulations! You reached your daily goal!'))))
-            : (mascot.id == 'cat'
-                ? 'Kupayı kaldırdık, konfetiler patladı! Günün şampiyon kedisi sensin! 🏆🎉'
-                : (mascot.id == 'dog'
-                    ? 'Kupayı kaptık, konfetiler havada! Günün şampiyon köpüşü sensin! 🏆🎉'
-                    : (mascot.id == 'penguin'
-                        ? 'Buz kupasını kaldırdık, konfetiler havada! Günün kutup şampiyonu sensin! 🏆❄️'
-                        : (mascot.id == 'panda'
-                            ? 'Altın kupayı kaldırdık, konfetiler patladı! Günün şampiyon pandası sensin! 🏆🎋'
-                            : 'Tebrikler! Günlük su hedefini tamamladın!'))));
-        break;
-
-      case MascotState.thirsty:
-        title = isEn ? 'Heeey! Forgot About Me?' : 'Alooo! Beni unuttun mu?';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? 'Meow! So thirsty, could you spare a sip of water?'
-                : (mascot.id == 'dog'
-                    ? 'Woof woof! So thirsty, my water bowl is empty! Please share some water!'
-                    : (mascot.id == 'penguin'
-                        ? 'Ice is melting! Refresh yourself with cool water.'
-                        : (mascot.id == 'squirrel'
-                            ? 'Dropping all acorns! Need fresh water right now!'
-                            : 'Parched like a desert! Please share a glass of water!'))))
-            : (mascot.id == 'cat'
-                ? 'Miyav! Boğazım kurudu, bardağım bomboş kaldı. Lütfen hemen bir bardak su ver!'
-                : (mascot.id == 'dog'
-                    ? 'Hav hav! Boğazım kurudu, su kabım bomboş kaldı! Lütfen hemen bir bardak su ver!'
-                    : (mascot.id == 'penguin'
-                        ? 'Buzlar eriyor! Hemen taze suyla ferahla.'
-                        : (mascot.id == 'squirrel'
-                            ? 'Fındıklar kurudu, boğazım çöl oldu! Hemen su molası ver!'
-                            : 'Çöl sıcağında kuruduk kaldık! Lütfen bana bir bardak su ver!'))));
-        break;
-
-      case MascotState.bedtime:
-        title = isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!';
-        message = isEn
-            ? 'One last sip before bed, sweet dreams... 🌙💤'
-            : 'Hadi son bir yudum! Gece susuz kalma, tatlı rüyalar... 🌙💤';
-        break;
-
-      case MascotState.afternoonSlump:
-        title = isEn ? 'While you are awake...' : 'Sen hazır uyanıkken...';
-        message = isEn
-            ? 'Eyes getting heavy? Grab a cold glass before nodding off!'
-            : 'Sen hazır uyanıkken... Gözler süzülmesin, hemen 1 bardak su al!';
-        break;
-
-      case MascotState.morning:
-        title = isEn ? 'Start with 1 Glass!' : 'Güne 1 bardak suyla başla!';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? "Purrr... Stretching time! Let's start the day with a fresh glass of water."
-                : (mascot.id == 'dog'
-                    ? "Waking up with tail wags! Let's start the day with a fresh glass of water."
-                    : (mascot.id == 'penguin'
-                        ? "Waddling out of the igloo! Let's start the day with a cold glass of glacier water."
-                        : 'Good morning! Kickstart your body with fresh water.')))
-            : (mascot.id == 'cat'
-                ? 'Mırrr... Gerinme vakti! Güne 1 bardak taze suyla enerjik başlayalım.'
-                : (mascot.id == 'dog'
-                    ? 'Kuyruk sallayarak uyandık! Güne 1 bardak taze suyla enerjik başlayalım.'
-                    : (mascot.id == 'penguin'
-                        ? 'İglodan paytak adımlarla çıktık! Güne 1 bardak buz gibi taze suyla başlayalım.'
-                        : 'Günaydın! Güne 1 bardak taze suyla enerjik başla.')));
-        break;
-
-      case MascotState.workFocus:
-        title = isEn ? "Don't Dry Up at Desk!" : 'Masa başında kuruma!';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? 'Glasses on, focus mode activated! Keep your water tumbler close at the desk.'
-                : (mascot.id == 'dog'
-                    ? 'Glasses on, paws on keyboard! Keep your water close at the desk.'
-                    : (mascot.id == 'penguin'
-                        ? 'Round glasses on, igloo desk mode! Sip cold water while focusing.'
-                        : 'Send fresh oxygen to your brain with a crisp sip.')))
-            : (mascot.id == 'cat'
-                ? 'Gözlükler takıldı, çalışma başladı! Masa başında suyunu yudumlamayı unutma.'
-                : (mascot.id == 'dog'
-                    ? 'Gözlükler takıldı, patiler klavyede! Masa başında suyunu yudumlamayı unutma.'
-                    : (mascot.id == 'penguin'
-                        ? 'Yuvarlak gözlükler takıldı, masa başı odaklanma! Soğuk suyunu yudumlamayı unutma.'
-                        : 'Beynine taze bir yudum oksijen gönder, zihnin açılsın.')));
-        break;
-
-      case MascotState.lunch:
-        title = isEn ? 'Pre-Meal Water Break!' : 'Yemekten önce su molası!';
-        message = isEn
-            ? 'A fresh glass of water before lunch aids digestion. Bon appétit!'
-            : 'Yemek öncesi su içmek sindirimi rahatlatır, afiyet olsun!';
-        break;
-
-      case MascotState.workout:
-        title = isEn ? 'Keep Energy High!' : 'Mataranı tazele!';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? 'Sweatband on, workout mode! Keep your hydration and stamina high.'
-                : (mascot.id == 'dog'
-                    ? 'Red headband on, workout mode! Keep your hydration high while running.'
-                    : (mascot.id == 'penguin'
-                        ? 'Red sweatband on, sliding workout! Keep your stamina high with glacier water.'
-                        : 'Active day! Maintain your hydration and stamina.')))
-            : (mascot.id == 'cat'
-                ? 'Spor bandı takıldı, tempo yükseldi! Enerjini korumak için suyunu ihmal etme.'
-                : (mascot.id == 'dog'
-                    ? 'Kırmızı kafa bandı takıldı, tempo yükseldi! Koşarken suyunu ihmal etme.'
-                    : (mascot.id == 'penguin'
-                        ? 'Kırmızı alın bandı takıldı, tempo yükseldi! Buzda kayarken suyunu ihmal etme.'
-                        : 'Günün temposu yüksek! Enerjini korumak için suyunu ihmal etme.')));
-        break;
-
-      case MascotState.evening:
-        title = isEn ? 'Almost Reached Goal!' : 'Hedefe bir adım kaldı!';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? 'Cozy armchair purrs... Unwind from the day with a refreshing cup of water.'
-                : (mascot.id == 'dog'
-                    ? 'Curled up in armchair... Unwind from the day with a fresh cup of water.'
-                    : (mascot.id == 'penguin'
-                        ? 'Cozy blanket on the armchair... Unwind from the day with a cold cup of water.'
-                        : 'Unwind from today. Just a couple of cups left to finish.')))
-            : (mascot.id == 'cat'
-                ? 'Koltukta huzurlu mırıltılar... Günün yorgunluğunu taze bir bardak suyla atalım.'
-                : (mascot.id == 'dog'
-                    ? 'Koltukta kıvrılıp dinlenme vakti... Günün yorgunluğunu taze bir bardak suyla atalım.'
-                    : (mascot.id == 'penguin'
-                        ? 'Koltukta battaniyeye sarılıp dinlenme vakti... Günün yorgunluğunu taze suyla atalım.'
-                        : 'Günün yorgunluğunu atıyoruz. Hedefe ulaşmaya çok az kaldı!')));
-        break;
-
-      case MascotState.streakFire:
-        title = isEn ? 'Streak on Fire!' : 'Serimiz alev alev! 🔥';
-        message = isEn
-            ? (mascot.id == 'cat'
-                ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
-                : (mascot.id == 'dog'
-                    ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
-                    : (mascot.id == 'penguin'
-                        ? '$streakDays days strong! Polar superhero protecting the flames! 🔥❄️'
-                        : '$streakDays days strong! Keep this legendary habit blazing!')))
-            : (mascot.id == 'cat'
-                ? '$streakDays günlük seriyi süper kahraman gibi koruyoruz! Alevler sönmesin! 🔥'
-                : (mascot.id == 'dog'
-                    ? '$streakDays günlük seriyi süper kahraman peleriniyle koruyoruz! Alevler sönmesin! 🔥'
-                    : (mascot.id == 'penguin'
-                        ? '$streakDays günlük seriyi kutup peleriniyle koruyoruz! Alevler sönmesin! 🔥❄️'
-                        : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın!')));
-        break;
-    }
+    final routineData = getRoutineDialogue(
+      mascotId: mascot.id,
+      state: state,
+      isEn: isEn,
+      streakDays: streakDays,
+    );
+    title = routineData['title']!;
+    message = routineData['message']!;
 
     final energyTier = MascotEnergyLadder.getTier(percentage);
     final energyImageAsset = 'assets/mascots/${mascot.id}_${energyTier.fileSuffix}.png';
@@ -958,11 +803,11 @@ class MascotResolver {
         state == MascotState.streakFire ||
         state == MascotState.thirsty;
 
-    // Primary Image Selection:
-    // When a mascot has an energy ladder (Cat, Dog, Penguin, Panda, Squirrel), hydration level energy ladder has
-    // absolute priority on the in-app screen and widgets!
-    // Time-based routine events (bedtime, afternoon slump) do NOT override the user's water energy progress.
-    final bool hasEnergyLadder = mascot.id == 'cat' || mascot.id == 'dog' || mascot.id == 'penguin' || mascot.id == 'panda' || mascot.id == 'squirrel';
+    final bool hasEnergyLadder = mascot.id == 'cat' ||
+        mascot.id == 'dog' ||
+        mascot.id == 'penguin' ||
+        mascot.id == 'panda' ||
+        mascot.id == 'squirrel';
     final String resolvedImageAsset;
     final String finalTitle;
     final String finalMessage;
@@ -997,4 +842,814 @@ class MascotResolver {
       routineMessage: routineMessage,
     );
   }
+
+  /// Title badge / chip label for the 10 daily routine states
+  static String getStateTag(MascotState state, bool isEn) {
+    switch (state) {
+      case MascotState.morning:
+        return isEn ? 'Morning Awakening' : 'Sabah Uyanışı';
+      case MascotState.workFocus:
+        return isEn ? 'Desk Focus' : 'Masa Başı Odaklanma';
+      case MascotState.lunch:
+        return isEn ? 'Lunch Break' : 'Öğle Yemeği Molası';
+      case MascotState.afternoonSlump:
+        return isEn ? 'Afternoon Slump & Sassy Eye' : 'Öğleden Sonra Rehaveti & Sitem';
+      case MascotState.workout:
+        return isEn ? 'Workout & Motion' : 'Spor & Hareket';
+      case MascotState.evening:
+        return isEn ? 'Evening Rest' : 'Akşam Dinlenmesi';
+      case MascotState.bedtime:
+        return isEn ? 'Bedtime & Last Sip' : 'Gece Uykusu & Son Yudum';
+      case MascotState.goalReached:
+        return isEn ? 'Daily Goal Champion' : 'Günlük Hedef Şampiyonu';
+      case MascotState.thirsty:
+        return isEn ? 'Critical Thirst Alert' : 'Kritik Susuzluk Uyarısı';
+      case MascotState.streakFire:
+        return isEn ? 'Streak Fire Hero' : 'Seri Ateşi & Süper Kahraman';
+    }
+  }
+
+  /// Unique theme accent color for each of the 10 routine states
+  static String getStateHexColor(MascotState state) {
+    switch (state) {
+      case MascotState.morning:
+        return 'F59E0B'; // Amber
+      case MascotState.workFocus:
+        return '3B82F6'; // Blue
+      case MascotState.lunch:
+        return '10B981'; // Emerald
+      case MascotState.afternoonSlump:
+        return '8B5CF6'; // Purple
+      case MascotState.workout:
+        return 'F97316'; // Orange
+      case MascotState.evening:
+        return '6366F1'; // Indigo
+      case MascotState.bedtime:
+        return '4F46E5'; // Deep Indigo
+      case MascotState.goalReached:
+        return 'EAB308'; // Gold
+      case MascotState.thirsty:
+        return 'EF4444'; // Red
+      case MascotState.streakFire:
+        return 'F97316'; // Flame
+    }
+  }
+
+  /// Expressive emoji matching character & state
+  static String getStateEmoji(String mascotId, MascotState state) {
+    switch (state) {
+      case MascotState.morning:
+        return mascotId == 'cat'
+            ? '🌅'
+            : (mascotId == 'dog'
+                ? '🐶'
+                : (mascotId == 'penguin'
+                    ? '🧊'
+                    : (mascotId == 'panda'
+                        ? '🥱'
+                        : (mascotId == 'squirrel'
+                            ? '🐿️'
+                            : (mascotId == 'plant' ? '🌱' : '🌅')))));
+      case MascotState.workFocus:
+        return mascotId == 'cat'
+            ? '👓'
+            : (mascotId == 'dog'
+                ? '💻'
+                : (mascotId == 'penguin'
+                    ? '❄️'
+                    : (mascotId == 'panda'
+                        ? '🎋'
+                        : (mascotId == 'squirrel'
+                            ? '🌰'
+                            : (mascotId == 'plant' ? '☀️' : '🧠')))));
+      case MascotState.lunch:
+        return mascotId == 'cat'
+            ? '🥗'
+            : (mascotId == 'dog'
+                ? '🍖'
+                : (mascotId == 'penguin'
+                    ? '🐟'
+                    : (mascotId == 'panda'
+                        ? '🎍'
+                        : (mascotId == 'squirrel'
+                            ? '🍓'
+                            : (mascotId == 'plant' ? '🌿' : '🍽️')))));
+      case MascotState.afternoonSlump:
+        return mascotId == 'cat'
+            ? '😼'
+            : (mascotId == 'dog'
+                ? '🐾'
+                : (mascotId == 'penguin'
+                    ? '😴'
+                    : (mascotId == 'panda'
+                        ? '💤'
+                        : (mascotId == 'squirrel'
+                            ? '🍂'
+                            : (mascotId == 'plant' ? '🥀' : '🥱')))));
+      case MascotState.workout:
+        return mascotId == 'cat'
+            ? '🏃'
+            : (mascotId == 'dog'
+                ? '🎾'
+                : (mascotId == 'penguin'
+                    ? '🏄'
+                    : (mascotId == 'panda'
+                        ? '🥋'
+                        : (mascotId == 'squirrel'
+                            ? '⚡'
+                            : (mascotId == 'plant' ? '💧' : '💪')))));
+      case MascotState.evening:
+        return mascotId == 'cat'
+            ? '🛋️'
+            : (mascotId == 'dog'
+                ? '🛋️'
+                : (mascotId == 'penguin'
+                    ? '🦭'
+                    : (mascotId == 'panda'
+                        ? '☕'
+                        : (mascotId == 'squirrel'
+                            ? '🏡'
+                            : (mascotId == 'plant' ? '🪴' : '🌙')))));
+      case MascotState.bedtime:
+        return mascotId == 'cat'
+            ? '💤'
+            : (mascotId == 'dog'
+                ? '🌙'
+                : (mascotId == 'penguin'
+                    ? '✨'
+                    : (mascotId == 'panda'
+                        ? '🛌'
+                        : (mascotId == 'squirrel'
+                            ? '🌙'
+                            : (mascotId == 'plant' ? '😴' : '💤')))));
+      case MascotState.goalReached:
+        return mascotId == 'cat'
+            ? '🏆'
+            : (mascotId == 'dog'
+                ? '🏆'
+                : (mascotId == 'penguin'
+                    ? '👑'
+                    : (mascotId == 'panda'
+                        ? '🏆'
+                        : (mascotId == 'squirrel'
+                            ? '👑'
+                            : (mascotId == 'plant' ? '🌳' : '🌟')))));
+      case MascotState.thirsty:
+        return mascotId == 'cat'
+            ? '😿'
+            : (mascotId == 'dog'
+                ? '🚨'
+                : (mascotId == 'penguin'
+                    ? '🧊'
+                    : (mascotId == 'panda'
+                        ? '🆘'
+                        : (mascotId == 'squirrel'
+                            ? '⚠️'
+                            : (mascotId == 'plant' ? '🥀' : '🚨')))));
+      case MascotState.streakFire:
+        return mascotId == 'cat'
+            ? '🔥'
+            : (mascotId == 'dog'
+                ? '🔥'
+                : (mascotId == 'penguin'
+                    ? '🔥'
+                    : (mascotId == 'panda'
+                        ? '🔥'
+                        : (mascotId == 'squirrel'
+                            ? '🔥'
+                            : (mascotId == 'plant' ? '🌿' : '🔥')))));
+    }
+  }
+
+  /// Comprehensive routine dialogue dictionary covering all 10 states for all 7 mascots
+  static Map<String, String> getRoutineDialogue({
+    required String mascotId,
+    required MascotState state,
+    required bool isEn,
+    int streakDays = 0,
+  }) {
+    switch (state) {
+      case MascotState.morning:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Start with 1 Glass!' : 'Güne 1 bardak suyla başla!',
+            'message': isEn
+                ? "Purrr... Stretching time! Let's start the day with a fresh glass of water."
+                : 'Mırrr... Gerinme vakti! Güne 1 bardak taze suyla enerjik başlayalım.',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Start with 1 Glass!' : 'Kuyruk salla, suyla uyan!',
+            'message': isEn
+                ? "Waking up with tail wags! Let's start the day with a fresh glass of water."
+                : 'Kuyruk sallayarak uyandık! Güne 1 bardak taze suyla enerjik başlayalım.',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Start with 1 Glass!' : 'İglodan serin uyanış!',
+            'message': isEn
+                ? "Waddling out of the igloo! Let's start the day with a cold glass of glacier water."
+                : 'İglodan paytak adımlarla çıktık! Güne 1 bardak buz gibi taze suyla başlayalım.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Start with 1 Glass!' : 'Uykulu panda esnemesi!',
+            'message': isEn
+                ? "Yawning and stretching paws! Let's start the morning with a fresh glass of water."
+                : 'Esneme molası bitti! Bambuların gölgesinde güne 1 bardak taze suyla başlayalım.',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Start with 1 Glass!' : 'Pofuduk kuyruk uyandı!',
+            'message': isEn
+                ? "Tiny paws stretching forward, bushy tail up! Start the day with a fresh glass of water."
+                : 'Minik patiler gerindi! Güne fındık tadında taze 1 bardak suyla enerjik başla.',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Morning Dew!' : 'Sabah çiyi vakti!',
+            'message': isEn
+                ? 'Sun has risen! Revitalize your leaves with fresh morning water.'
+                : 'Güneş doğdu! Yapraklarını taze sabah suyuyla canlandır.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Start with 1 Glass!' : 'Güne zinde başla!',
+            'message': isEn
+                ? 'Good morning! Kickstart your body with fresh water.'
+                : 'Güne 1 bardak taze suyla başlayarak metabolizmanı uyandır.',
+          };
+        }
+
+      case MascotState.workFocus:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? "Don't Dry Up at Desk!" : 'Masa başında kuruma!',
+            'message': isEn
+                ? 'Glasses on, focus mode activated! Keep your water tumbler close at the desk.'
+                : 'Gözlükler takıldı, çalışma başladı! Masa başında suyunu yudumlamayı unutma.',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? "Don't Dry Up at Desk!" : 'Patiler klavyede, su yanında!',
+            'message': isEn
+                ? 'Glasses on, paws on keyboard! Keep your water close at the desk.'
+                : 'Gözlükler takıldı, patiler klavyede! Masa başında suyunu yudumlamayı unutma.',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? "Don't Dry Up at Desk!" : 'Kutup ofisinde derin odak!',
+            'message': isEn
+                ? 'Round glasses on, igloo desk mode! Sip cold water while focusing.'
+                : 'Yuvarlak gözlükler takıldı, masa başı odaklanma! Soğuk suyunu yudumlamayı unutma.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? "Don't Dry Up at Desk!" : 'Bambu masasında konsantrasyon!',
+            'message': isEn
+                ? 'Reading glasses on, zen focus at the bamboo desk! Keep sipping your water.'
+                : 'Gözlükler takıldı, bambu masasında sessiz ve odaklıyız. Suyunu yudumlamayı unutma.',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? "Don't Dry Up at Desk!" : 'Palamut başında tam odaklanma!',
+            'message': isEn
+                ? 'Tiny glasses on nose, calculating acorn stash! Keep your water close at the desk.'
+                : 'Gözlükler burunda, hesaplar yapılıyor! Masandaki sudan bir yudum al, zihnin açılsın.',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Nourish Under Light!' : 'Işık alırken beslen!',
+            'message': isEn
+                ? 'Remember photosynthesis while working! A glass of water keeps your mind fresh.'
+                : 'Çalışırken fotosentez yapmayı unutma! Bir bardak su zihnini taze tutar.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Focus & Oxygen!' : 'Zihne taze oksijen!',
+            'message': isEn
+                ? 'Send fresh oxygen to your brain with a crisp sip.'
+                : 'Masa başında kuruma! Bir yudum suyla dikkatini ve enerjini topla.',
+          };
+        }
+
+      case MascotState.lunch:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Pre-Meal Water Break!' : 'Yemekten önce su molası!',
+            'message': isEn
+                ? 'A fresh glass of water before lunch aids digestion. Bon appétit, purrr!'
+                : 'Yemekten önce su içmek sindirimi rahatlatır. Afiyet olsun, mırrr!',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Pre-Meal Water Break!' : 'Mama saati öncesi taze su!',
+            'message': isEn
+                ? 'Water before mealtime keeps digestion smooth and happy. Woof!'
+                : 'Mama kasesinden önce bir kase taze su! Sindirime iyi gelir, afiyet olsun!',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Pre-Meal Water Break!' : 'Balık ziyafeti öncesi ferahlık!',
+            'message': isEn
+                ? 'Cold water before lunch aids digestion like an arctic fresh breeze!'
+                : 'Yemek öncesi buz gibi su içmek sindirimi rahatlatır, afiyet olsun!',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Pre-Meal Water Break!' : 'Taze bambu öncesi su yudumu!',
+            'message': isEn
+                ? 'A refreshing glass before crunchy bamboo shoots aids smooth digestion. Enjoy!'
+                : 'Taze yeşil bambulardan önce bir bardak su sindirimi rahatlatır, afiyet olsun!',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Pre-Meal Water Break!' : 'Orman meyveleri öncesi su molası!',
+            'message': isEn
+                ? 'A glass of fresh water before wild berries and nuts aids digestion!'
+                : 'Taze fındık ve böğürtlenlerden önce bir bardak su sindirimi rahatlatır, afiyet olsun!',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Midday Hydration!' : 'Öğle nemi!',
+            'message': isEn
+                ? 'Hydrate soil and roots to process nutrients comfortably under midday sun.'
+                : 'Öğle vakti besinleri sindirmek için toprağını ve gövdeni nemlendir.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Pre-Meal Water Break!' : 'Sindirim dostu yudum!',
+            'message': isEn
+                ? 'A fresh glass of water before lunch aids digestion. Bon appétit!'
+                : 'Yemek öncesi su içmek sindirimi rahatlatır, afiyet olsun!',
+          };
+        }
+
+      case MascotState.afternoonSlump:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Sen hazır uyanıkken...',
+            'message': isEn
+                ? 'Eyes getting heavy? Grab a cold glass before nodding off!'
+                : 'Sen hazır uyanıkken... Gözler süzülmesin, hemen 1 bardak su al! Yoksa uyurum bak!',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Gözüm üstünde, su nerede?',
+            'message': isEn
+                ? 'Lounging on the rug with eyes on you... Go get a glass of cold water!'
+                : 'Sen hazır uyanıkken... Halıya yayıldım ama gözüm üstünde, hemen 1 bardak su al!',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Buzda rehavet mi çöktü?',
+            'message': isEn
+                ? 'Belly-flopped on ice waiting for you... Go grab a tall glass of icy water!'
+                : 'Sen hazır uyanıkken... Gözler süzülmesin, hemen buz gibi 1 bardak su al!',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Minderde sitemkar bakış...',
+            'message': isEn
+                ? 'Lounging on the cushion giving you side-eye... Grab a cup of water right now!'
+                : 'Sen hazır uyanıkken... Minderden kalkmaya üşeniyorum ama sana bakıyorum, hemen su iç!',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Daldan sitem dolu yan bakış...',
+            'message': isEn
+                ? 'Resting on the tree branch with sassy side-eye... Grab a cup of water before nodding off!'
+                : 'Sen hazır uyanıkken... Dala uzandım seni izliyorum, rehaveti dağıtmak için hemen su iç!',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? "Don't Wilt!" : 'Yapraklar pörsümesin!',
+            'message': isEn
+                ? "Don't let afternoon slump bend your leaves. Give a quick revitalizing sip!"
+                : 'Öğleden sonra rehaveti yapraklarını bükmesin. Hemen can suyu ver!',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Break the Slump!' : 'Rehaveti dağıt!',
+            'message': isEn
+                ? 'Eyes getting heavy? Grab a cold glass before nodding off!'
+                : 'Sen hazır uyanıkken... Gözler süzülmesin, hemen 1 bardak su al!',
+          };
+        }
+
+      case MascotState.workout:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Keep Energy High!' : 'Mataranı tazele!',
+            'message': isEn
+                ? 'Sweatband on, workout mode! Keep your hydration and stamina high.'
+                : 'Spor bandı takıldı, tempo yükseldi! Enerjini korumak için suyunu ihmal etme.',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Keep Energy High!' : 'Kırmızı kafa bandıyla tam gaz!',
+            'message': isEn
+                ? 'Red headband on, workout mode! Keep your hydration high while running.'
+                : 'Kırmızı kafa bandı takıldı, tempo yükseldi! Koşarken suyunu ihmal etme.',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Keep Energy High!' : 'Buz pateni ve tempo vakti!',
+            'message': isEn
+                ? 'Red sweatband on, sliding workout! Keep your stamina high with glacier water.'
+                : 'Kırmızı alın bandı takıldı, tempo yükseldi! Buzda kayarken suyunu ihmal etme.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Keep Energy High!' : 'Panda antrenmanı başladı!',
+            'message': isEn
+                ? 'Sporty headband on! Gentle panda jogging needs steady water intake.'
+                : 'Kırmızı kafa bandı takıldı, tempo yükseldi! Ter atarken suyunu ihmal etme.',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Keep Energy High!' : 'Daldan dala tam tempo!',
+            'message': isEn
+                ? 'Sporty headband on, leaping branch to branch! Refill your flask to keep up stamina.'
+                : 'Spor kafa bandı takıldı, daldan dala koşuyoruz! Mataranı doldur, temponu koru!',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Growth Spurt!' : 'Büyüme atağı!',
+            'message': isEn
+                ? 'Recover moisture lost during activity and renew your vital cells.'
+                : 'Aktif hareket ederken terle kaybettiğin nemi geri kazan, hücrelerini yenile.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Keep Energy High!' : 'Kaybettiğin suyu geri al!',
+            'message': isEn
+                ? 'Active day! Maintain your hydration and stamina.'
+                : 'Günün temposu yüksek! Enerjini korumak için suyunu ihmal etme.',
+          };
+        }
+
+      case MascotState.evening:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Almost Reached Goal!' : 'Hedefe bir adım kaldı!',
+            'message': isEn
+                ? 'Cozy armchair purrs... Unwind from the day with a refreshing cup of water.'
+                : 'Koltukta huzurlu mırıltılar... Günün yorgunluğunu taze bir bardak suyla atalım.',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Almost Reached Goal!' : 'Koltukta kıvrılma keyfi!',
+            'message': isEn
+                ? 'Curled up in armchair... Unwind from the day with a fresh cup of water.'
+                : 'Koltukta kıvrılıp dinlenme vakti... Günün yorgunluğunu taze bir bardak suyla atalım.',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Almost Reached Goal!' : 'Sıcak yuvada akşam serinliği!',
+            'message': isEn
+                ? 'Cozy blanket on the armchair... Unwind from the day with a cold cup of water.'
+                : 'Koltukta battaniyeye sarılıp dinlenme vakti... Günün yorgunluğunu taze suyla atalım.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Almost Reached Goal!' : 'Zen çay fincanında su keyfi!',
+            'message': isEn
+                ? 'Curled up in armchair sipping peacefully. Just a few steps to the daily goal!'
+                : 'Geniş koltuğa yayıldık. Günün yorgunluğunu sakin bir fincan suyla atalım.',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Almost Reached Goal!' : 'Kuyruğuna sarılıp dinlenme!',
+            'message': isEn
+                ? 'Bushy tail wrapped like a blanket on the armchair. Just a couple of sips to reach the goal!'
+                : 'Pofuduk kuyruğuma sarıldım, koltukta dinleniyorum. Hedefe çok az kaldı, suyunu iç!',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Breathe in Cool Air!' : 'Akşam serinliğiyle nefes al!',
+            'message': isEn
+                ? 'The sun is down. Unwind by feeding roots with evening freshness.'
+                : 'Günün güneşi bitti. Akşam serinliğinde köklerine su vererek dinlen.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Almost Reached Goal!' : 'Akşam gevşemesi!',
+            'message': isEn
+                ? 'Unwind from today. Just a couple of cups left to finish.'
+                : 'Günün yorgunluğunu atıyoruz. Hedefe ulaşmaya çok az kaldı!',
+          };
+        }
+
+      case MascotState.bedtime:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'One last sip before bed, sweet dreams... 🌙💤'
+                : 'Uykucu gecelik beremi taktım! Hadi son bir yudum; gece susuz kalma, tatlı rüyalar... 🌙💤',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'Cozy nightcap on, one last sip before bedtime. Sweet dreams! 🌙💤'
+                : 'Pofuduk gece beremi taktım! Hadi son bir yudum; gece susuz kalma, tatlı rüyalar... 🌙💤',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'Striped pompom cap on, cozy igloo bed is ready. One last sip before sleep! 🌙💤'
+                : 'Ponponlu uyku beremi taktım! Hadi son bir serin yudum, tatlı rüyalar... 🌙💤',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'Sleeping nightcap on, stars are shining. One last sip before sweet dreams... 🌙💤'
+                : 'Uyku beremi taktım, esniyorum. Uyumadan önce son bir yudum su al, huzurlu rüyalar... 🌙💤',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'Cozy nightcap on, tail wrapped tight. One last sip before bed, sweet dreams! 🌙💤'
+                : 'Uyku takkemi taktım, kuyruğumu üstüme çektim. Yatmadan önce son bir yudum su al! 🌙💤',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'Take a sip of water so your roots stay hydrated through the night. Good night.'
+                : 'Gece boyunca köklerinin kurumaması için son bir yudum su iç, iyi geceler.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Just One Last Sip!' : 'Hadi son bir yudum!',
+            'message': isEn
+                ? 'One last sip before bed, sweet dreams... 🌙💤'
+                : 'Hadi son bir yudum! Gece susuz kalma, tatlı rüyalar... 🌙💤',
+          };
+        }
+
+      case MascotState.goalReached:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'You Champion!' : 'İşte bu, şampiyon!',
+            'message': isEn
+                ? "Trophy raised, confetti bursting! You are today's hydration champion! 🏆🎉"
+                : 'Kupayı kaldırdık, konfetiler patladı! Günün şampiyon kedisi sensin! 🏆🎉',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'You Champion!' : 'Kupayı kaptık, şampiyon köpek!',
+            'message': isEn
+                ? "Trophy won, confetti flying! You are today's hydration champion! 🏆🎉"
+                : 'Kupayı kaptık, konfetiler havada! Günün şampiyon köpüşü sensin! 🏆🎉',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'You Champion!' : 'Kutup kupası ellerde!',
+            'message': isEn
+                ? "Polar trophy raised, confetti on ice! You are today's hydration champion! 🏆❄️"
+                : 'Buz kupasını kaldırdık, konfetiler havada! Günün kutup şampiyonu sensin! 🏆❄️',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'You Champion!' : 'Altın kupa ellerde, bambu şöleni!',
+            'message': isEn
+                ? "Golden trophy raised, bamboo confetti bursting! You are today's hydration champion! 🏆🎋"
+                : 'Altın kupayı kaldırdık, konfetiler patladı! Günün şampiyon pandası sensin! 🏆🎋',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'You Champion!' : 'Altın palamut kupası havada!',
+            'message': isEn
+                ? "Golden acorn trophy raised high! Confetti fluttering, you are the forest hydration champion! 🏆🌰"
+                : 'Altın palamut kupasını kaldırdık! Ormanın su şampiyonu sensin, tebrikler! 🏆🐿️',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Mighty Plane Tree!' : 'Koca bir çınar açtı!',
+            'message': isEn
+                ? 'Magnificent! You completed your daily goal, vibrant and blooming like pure nature! 🌳🌸'
+                : 'Muhteşem! Günlük su hedefini tamamladın, doğa gibi capcanlı ve güçlüsün! 🌳🌸',
+          };
+        } else {
+          return {
+            'title': isEn ? 'You Champion!' : 'Zirveye ulaştın!',
+            'message': isEn
+                ? 'Congratulations! You reached your daily goal!'
+                : 'Tebrikler! Günlük su hedefini tamamladın!',
+          };
+        }
+
+      case MascotState.thirsty:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Heeey! Forgot About Me?' : 'Alooo! Beni unuttun mu?',
+            'message': isEn
+                ? 'Meow! So thirsty, could you spare a sip of water?'
+                : 'Miyav! Boğazım kurudu, bardağım bomboş kaldı. Lütfen hemen bir bardak su ver!',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Heeey! Forgot About Me?' : 'Hav hav! Su kabım bomboş!',
+            'message': isEn
+                ? 'Woof woof! So thirsty, my water bowl is empty! Please share some water!'
+                : 'Hav hav! Boğazım kurudu, su kabım bomboş kaldı! Lütfen hemen bir bardak su ver!',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Heeey! Forgot About Me?' : 'Buzlar eriyor, çöl gibi oldu!',
+            'message': isEn
+                ? 'Ice is melting! Refresh yourself with cool water.'
+                : 'Buzlar eriyor! Hemen taze suyla ferahla.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Heeey! Forgot About Me?' : 'Bambu bardağım bomboş kaldı!',
+            'message': isEn
+                ? 'Panting on the floor! Bamboo cup is empty, please share a glass of water!'
+                : 'Nefesim kesildi, bambu bardağım bomboş! Lütfen hemen bana bir bardak su ver!',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Heeey! Forgot About Me?' : 'Fındıklar kurudu, acil su!',
+            'message': isEn
+                ? 'Dropping all acorns! Need fresh water right now!'
+                : 'Fındıklar kurudu, boğazım çöl oldu! Hemen su molası ver!',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Soil Parched!' : 'Toprak çatladı, acil su!',
+            'message': isEn
+                ? 'Leaves turning yellow, soil is parched! Please give some revitalizing water.'
+                : 'Yapraklarım sararıyor, toprak kurudu! Lütfen hemen biraz can suyu ver.',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Heeey! Forgot About Me?' : 'Acil su molası!',
+            'message': isEn
+                ? 'Parched like a desert! Please share a glass of water!'
+                : 'Çok uzun süredir su içmedin! Vücudunu hemen taze bir bardak suyla canlandır.',
+          };
+        }
+
+      case MascotState.streakFire:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Streak on Fire!' : 'Serimiz alev alev! 🔥',
+            'message': isEn
+                ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
+                : '$streakDays günlük seriyi süper kahraman gibi koruyoruz! Alevler sönmesin! 🔥',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Streak on Fire!' : 'Kahraman pelerini dalgalanıyor!',
+            'message': isEn
+                ? '$streakDays days strong like a superhero! Keep the fire burning! 🔥'
+                : '$streakDays günlük seriyi süper kahraman peleriniyle koruyoruz! Alevler sönmesin! 🔥',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Streak on Fire!' : 'Kutup peleriniyle buz ve alev!',
+            'message': isEn
+                ? '$streakDays days strong! Polar superhero protecting the flames! 🔥❄️'
+                : '$streakDays günlük seriyi kutup peleriniyle koruyoruz! Alevler sönmesin! 🔥❄️',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Streak on Fire!' : 'Zen kahramanı su asasını kaldırdı!',
+            'message': isEn
+                ? '$streakDays days strong! Zen hero wielding the water staff, keep the flame burning! 🔥🎋'
+                : '$streakDays günlük seriyi su asasıyla koruyoruz! Bambu ateşi parlasın! 🔥🎋',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Streak on Fire!' : 'Süper sincap palamut asasıyla nöbette!',
+            'message': isEn
+                ? '$streakDays days strong! Superhero squirrel cape flying, protecting the hydration flame! 🔥🌰'
+                : '$streakDays günlük seriyi palamut ateşiyle koruyoruz! Bu efsane alışkanlık sönmesin! 🔥🌰',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Deep Roots Streak!' : 'Köklü ve sarsılmaz seri!',
+            'message': isEn
+                ? 'Watered faithfully for $streakDays days! Your roots are stronger than ever! 🌿🔥'
+                : '$streakDays gündür düzenli sulanıyorsun! Köklerin her zamankinden daha sağlam ve güçlü! 🌿🔥',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Streak on Fire!' : 'Alev alev hidrasyon serisi!',
+            'message': isEn
+                ? '$streakDays days strong! Keep this legendary habit blazing!'
+                : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın! 🔥',
+          };
+        }
+    }
+  }
+
+  /// Directly resolves a single routine state for preview dialogs without energy overrides
+  static MascotDialogue resolveDialogueForState({
+    required String mascotType,
+    required MascotState state,
+    String lang = 'tr',
+    int streakDays = 5,
+  }) {
+    final isEn = lang == 'en';
+    final mascot = MascotCatalog.getById(mascotType);
+    final data = getRoutineDialogue(
+      mascotId: mascot.id,
+      state: state,
+      isEn: isEn,
+      streakDays: streakDays,
+    );
+    final emoji = getStateEmoji(mascot.id, state);
+    final hexColor = getStateHexColor(state);
+    final isAnimal = mascot.id == 'cat' ||
+        mascot.id == 'dog' ||
+        mascot.id == 'penguin' ||
+        mascot.id == 'panda' ||
+        mascot.id == 'squirrel';
+    final imageAsset = isAnimal
+        ? 'assets/mascots/${mascot.id}_${state.assetSuffix}.png'
+        : mascot.defaultImageAsset;
+
+    return MascotDialogue(
+      title: data['title']!,
+      message: data['message']!,
+      emoji: emoji,
+      imageAsset: imageAsset,
+      state: state,
+      hexColor: hexColor,
+      energyImageAsset: imageAsset,
+      energyPercentage: 100,
+      energyTitle: data['title']!,
+      energyMessage: data['message']!,
+      routineImageAsset: imageAsset,
+      routineTitle: data['title']!,
+      routineMessage: data['message']!,
+    );
+  }
+
+  /// Directly resolves a single energy ladder tier for preview dialogs
+  static MascotDialogue resolveDialogueForEnergyTier({
+    required String mascotType,
+    required MascotEnergyTier tier,
+    String lang = 'tr',
+  }) {
+    final isEn = lang == 'en';
+    final mascot = MascotCatalog.getById(mascotType);
+    final energyData = MascotEnergyLadder.getDialogue(
+      mascotId: mascot.id,
+      tier: tier,
+      isEn: isEn,
+    );
+    final isAnimal = mascot.id == 'cat' ||
+        mascot.id == 'dog' ||
+        mascot.id == 'penguin' ||
+        mascot.id == 'panda' ||
+        mascot.id == 'squirrel';
+    final imageAsset = isAnimal
+        ? 'assets/mascots/${mascot.id}_${tier.fileSuffix}.png'
+        : mascot.defaultImageAsset;
+
+    final String hexColor;
+    switch (tier) {
+      case MascotEnergyTier.energy0:
+        hexColor = 'E11D48';
+        break;
+      case MascotEnergyTier.energy25:
+        hexColor = 'F59E0B';
+        break;
+      case MascotEnergyTier.energy50:
+        hexColor = '10B981';
+        break;
+      case MascotEnergyTier.energy75:
+        hexColor = '06B6D4';
+        break;
+      case MascotEnergyTier.energy100:
+        hexColor = '8B5CF6';
+        break;
+    }
+
+    return MascotDialogue(
+      title: energyData['title']!,
+      message: energyData['message']!,
+      emoji: tier.stepValue >= 100 ? '👑' : (tier.stepValue >= 50 ? '💧' : '🥱'),
+      imageAsset: imageAsset,
+      state: tier.stepValue >= 100 ? MascotState.goalReached : MascotState.morning,
+      hexColor: hexColor,
+      energyImageAsset: imageAsset,
+      energyPercentage: tier.stepValue,
+      energyTitle: energyData['title']!,
+      energyMessage: energyData['message']!,
+      routineImageAsset: imageAsset,
+      routineTitle: energyData['title']!,
+      routineMessage: energyData['message']!,
+    );
+  }
 }
+

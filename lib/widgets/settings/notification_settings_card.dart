@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/water_provider.dart';
@@ -259,91 +261,108 @@ class NotificationSettingsCard extends StatelessWidget {
           ),
         ),
         const Divider(height: 16, thickness: 0.5),
-        InkWell(
-          onTap: () async {
-            final targetVal = !provider.isOngoingNotificationEnabled;
-            final granted = await provider.updateOngoingNotificationSetting(targetVal);
-            onRequestPermission();
-            if (targetVal && !granted && context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
-                  ),
-                  backgroundColor: Colors.orange,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            }
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+        Builder(
+          builder: (context) {
+            final isIOS = !kIsWeb && Platform.isIOS;
+            return InkWell(
+              onTap: () async {
+                final targetVal = !provider.isOngoingNotificationEnabled;
+                final granted = await provider.updateOngoingNotificationSetting(targetVal);
+                onRequestPermission();
+                if (targetVal && !granted && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isIOS
+                            ? 'Canlı etkinliği (Live Activity) kullanabilmek için telefon ayarlarından izin vermeniz gerekmektedir.'
+                            : 'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                      ),
+                      backgroundColor: Colors.orange,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              'Canlı İlerleme Bildirimi',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  isIOS
+                                      ? 'Canlı Etkinlik & Kilit Ekranı'
+                                      : 'Canlı İlerleme Bildirimi',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  isIOS ? 'Live Activity' : 'Sabit Panel',
+                                  style: TextStyle(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              'Sabit Panel',
-                              style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
-                            ),
+                          const SizedBox(height: 2),
+                          Text(
+                            isIOS
+                                ? 'Kilit ekranında ve Dynamic Island\'da maskotunuzla canlı su doluluğunu, seri alevini ve ilerleme çubuğunu göster (iOS 16.1+).'
+                                : 'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.',
+                            style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.',
-                        style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 8),
+                    Switch(
+                      value: provider.isOngoingNotificationEnabled && (isIOS || hasNotificationPermission),
+                      activeThumbColor: theme.colorScheme.primary,
+                      onChanged: (val) async {
+                        final granted = await provider.updateOngoingNotificationSetting(val);
+                        onRequestPermission();
+                        if (val && !granted && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isIOS
+                                    ? 'Canlı etkinliği (Live Activity) kullanabilmek için telefon ayarlarından izin vermeniz gerekmektedir.'
+                                    : 'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                              ),
+                              backgroundColor: Colors.orange,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Switch(
-                  value: provider.isOngoingNotificationEnabled && hasNotificationPermission,
-                  activeThumbColor: theme.colorScheme.primary,
-                  onChanged: (val) async {
-                    final granted = await provider.updateOngoingNotificationSetting(val);
-                    onRequestPermission();
-                    if (val && !granted && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
-                          ),
-                          backgroundColor: Colors.orange,
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 10),
         InkWell(

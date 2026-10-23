@@ -308,6 +308,59 @@ class WidgetService {
     }
   }
 
+  // Sync iOS ActivityKit Live Activity (Lock Screen & Dynamic Island)
+  Future<void> syncLiveActivity({
+    required int todayConsumed,
+    required int dailyGoal,
+    required int dailyRemaining,
+    required int percentage,
+    int streakDays = 0,
+    String mascotType = 'cat',
+    String mascotEmoji = '🐱',
+    String mascotTitle = 'HydroSoft',
+    String mascotSubtitle = 'Su içmeyi unutma!',
+    String widgetTheme = 'ocean',
+  }) async {
+    if (kIsWeb || !Platform.isIOS) return;
+    try {
+      await _platformChannel.invokeMethod('syncLiveActivity', {
+        'todayConsumed': todayConsumed,
+        'dailyGoal': dailyGoal,
+        'dailyRemaining': dailyRemaining,
+        'percentage': percentage,
+        'streakDays': streakDays,
+        'mascotType': mascotType,
+        'mascotEmoji': mascotEmoji,
+        'mascotTitle': mascotTitle,
+        'mascotSubtitle': mascotSubtitle,
+        'widgetTheme': widgetTheme,
+      });
+    } catch (e) {
+      debugPrint('Error syncing Live Activity: $e');
+    }
+  }
+
+  // End iOS ActivityKit Live Activity
+  Future<void> endLiveActivity() async {
+    if (kIsWeb || !Platform.isIOS) return;
+    try {
+      await _platformChannel.invokeMethod('endLiveActivity');
+    } catch (e) {
+      debugPrint('Error ending Live Activity: $e');
+    }
+  }
+
+  // Check if iOS Live Activities are enabled in system settings
+  Future<bool> areLiveActivitiesEnabled() async {
+    if (kIsWeb || !Platform.isIOS) return false;
+    try {
+      final enabled = await _platformChannel.invokeMethod<bool>('areLiveActivitiesEnabled');
+      return enabled ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void dispose() {
     _widgetClickSubscription?.cancel();
   }

@@ -7,6 +7,9 @@ import Security
 #if canImport(WidgetKit)
 import WidgetKit
 #endif
+#if canImport(ActivityKit)
+import ActivityKit
+#endif
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -105,6 +108,37 @@ import WidgetKit
         try? data.write(to: fileURL)
     }
 
+    // 3.6. Keep any running Live Activity up to date with new progress
+    if #available(iOS 16.1, *) {
+      #if canImport(ActivityKit)
+      if !Activity<HydroLiveActivityAttributes>.activities.isEmpty {
+        let todayConsumed = args["todayConsumed"] as? Int ?? 0
+        let dailyGoal = args["dailyGoal"] as? Int ?? 2000
+        let dailyRemaining = args["dailyRemaining"] as? Int ?? max(0, dailyGoal - todayConsumed)
+        let percentage = args["percentage"] as? Int ?? 0
+        let streakDays = args["streakDays"] as? Int ?? 0
+        let mascotType = args["mascotType"] as? String ?? "cat"
+        let mascotEmoji = args["mascotEmoji"] as? String ?? "💧"
+        let mascotTitle = args["mascotTitle"] as? String ?? "HydroSoft"
+        let mascotSubtitle = args["mascotSubtitle"] as? String ?? "Su içmeyi unutma!"
+        let widgetTheme = args["widgetTheme"] as? String ?? "ocean"
+
+        HydroLiveActivityManager.shared.startOrUpdateLiveActivity(
+          todayConsumed: todayConsumed,
+          dailyGoal: dailyGoal,
+          dailyRemaining: dailyRemaining,
+          percentage: percentage,
+          streakDays: streakDays,
+          mascotType: mascotType,
+          mascotEmoji: mascotEmoji,
+          mascotTitle: mascotTitle,
+          mascotSubtitle: mascotSubtitle,
+          widgetTheme: widgetTheme
+        )
+      }
+      #endif
+    }
+
     // 4. Reload all WidgetKit timelines immediately
     reloadWidgetsNow()
   }
@@ -180,6 +214,46 @@ import WidgetKit
           AppDelegate.syncWidgetPayload(args)
         }
         result(true)
+      } else if call.method == "syncLiveActivity" {
+        if #available(iOS 16.1, *) {
+          if let args = call.arguments as? [String: Any] {
+            let todayConsumed = args["todayConsumed"] as? Int ?? 0
+            let dailyGoal = args["dailyGoal"] as? Int ?? 2000
+            let dailyRemaining = args["dailyRemaining"] as? Int ?? max(0, dailyGoal - todayConsumed)
+            let percentage = args["percentage"] as? Int ?? 0
+            let streakDays = args["streakDays"] as? Int ?? 0
+            let mascotType = args["mascotType"] as? String ?? "cat"
+            let mascotEmoji = args["mascotEmoji"] as? String ?? "💧"
+            let mascotTitle = args["mascotTitle"] as? String ?? "HydroSoft"
+            let mascotSubtitle = args["mascotSubtitle"] as? String ?? "Su içmeyi unutma!"
+            let widgetTheme = args["widgetTheme"] as? String ?? "ocean"
+
+            HydroLiveActivityManager.shared.startOrUpdateLiveActivity(
+              todayConsumed: todayConsumed,
+              dailyGoal: dailyGoal,
+              dailyRemaining: dailyRemaining,
+              percentage: percentage,
+              streakDays: streakDays,
+              mascotType: mascotType,
+              mascotEmoji: mascotEmoji,
+              mascotTitle: mascotTitle,
+              mascotSubtitle: mascotSubtitle,
+              widgetTheme: widgetTheme
+            )
+          }
+        }
+        result(true)
+      } else if call.method == "endLiveActivity" {
+        if #available(iOS 16.1, *) {
+          HydroLiveActivityManager.shared.endLiveActivity()
+        }
+        result(true)
+      } else if call.method == "areLiveActivitiesEnabled" {
+        if #available(iOS 16.1, *) {
+          result(HydroLiveActivityManager.shared.areActivitiesEnabled())
+        } else {
+          result(false)
+        }
       } else {
         result(FlutterMethodNotImplemented)
       }

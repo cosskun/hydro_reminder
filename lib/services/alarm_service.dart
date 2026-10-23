@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 
 import '../providers/water_provider.dart';
 import '../models/alarm_setting.dart';
+import 'widget_service.dart';
 
 class AlarmService with WidgetsBindingObserver {
   static final AlarmService _instance = AlarmService._internal();
@@ -923,7 +925,7 @@ class AlarmService with WidgetsBindingObserver {
     await syncNotifications(alarms);
   }
 
-  // Show or Update Ongoing Live Hydration Panel Notification
+  // Show or Update Ongoing Live Hydration Panel Notification / iOS Live Activity
   Future<void> updateOngoingProgressNotification({
     required bool isEnabled,
     required int todayConsumed,
@@ -932,13 +934,48 @@ class AlarmService with WidgetsBindingObserver {
     required int preset1,
     required int preset2,
     required int preset3,
+    int streakDays = 0,
+    String mascotType = 'cat',
+    String mascotEmoji = '💧',
+    String mascotTitle = 'HydroSoft',
+    String mascotSubtitle = 'Bugün düzenli su içmeyi unutma!',
+    String widgetTheme = 'ocean',
   }) async {
     if (kIsWeb) return;
     if (!isEnabled) {
       await cancelOngoingNotification();
+      if (Platform.isIOS) {
+        await WidgetService().endLiveActivity();
+      }
       return;
     }
 
+    // On iOS: Dismiss any stale dull standard banner and run ActivityKit Live Activity
+    if (Platform.isIOS) {
+      try {
+        await _notificationsPlugin.cancel(id: _ongoingNotificationId);
+      } catch (_) {}
+
+      final safeGoal = dailyGoal > 0 ? dailyGoal : 2500;
+      final percentClamped = percentage.clamp(0, 100);
+      final remaining = (safeGoal - todayConsumed).clamp(0, safeGoal);
+
+      await WidgetService().syncLiveActivity(
+        todayConsumed: todayConsumed,
+        dailyGoal: safeGoal,
+        dailyRemaining: remaining,
+        percentage: percentClamped,
+        streakDays: streakDays,
+        mascotType: mascotType,
+        mascotEmoji: mascotEmoji,
+        mascotTitle: mascotTitle,
+        mascotSubtitle: mascotSubtitle,
+        widgetTheme: widgetTheme,
+      );
+      return;
+    }
+
+    // On Android: Keep showing rich ongoing notification drawer card with action buttons
     try {
       final safeGoal = dailyGoal > 0 ? dailyGoal : 2500;
       final percentClamped = percentage.clamp(0, 100);
@@ -998,11 +1035,16 @@ class AlarmService with WidgetsBindingObserver {
     }
   }
 
-  // Cancel Ongoing Live Notification
+  // Cancel Ongoing Live Notification & Live Activity
   Future<void> cancelOngoingNotification() async {
     if (kIsWeb) return;
     try {
       await _notificationsPlugin.cancel(id: _ongoingNotificationId);
     } catch (_) {}
+    if (Platform.isIOS) {
+      try {
+        await WidgetService().endLiveActivity();
+      } catch (_) {}
+    }
   }
 }

@@ -970,104 +970,188 @@ struct WaterMiniWidget: Widget {
 import ActivityKit
 
 @available(iOS 16.1, *)
-public struct HydroLiveActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        public var todayConsumed: Int
-        public var dailyGoal: Int
-        public var percentage: Int
-        public var mascotEmoji: String
-        public var streakDays: Int
-    }
-    public var title: String
-}
-
-@available(iOS 16.1, *)
 struct HydroLiveActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: HydroLiveActivityAttributes.self) { context in
-            // Lock screen / Banner Presentation
-            HStack(spacing: 12) {
-                Text(context.state.mascotEmoji)
-                    .font(.system(size: 32))
+            // Lock screen / Banner Presentation (Vibrant Duolingo Gamified Card)
+            ZStack {
+                // 1. Mascot Theme Gradient
+                widgetCardGradient(for: context.state.percentage, theme: context.state.widgetTheme)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack {
-                        Text("🔥 \(context.state.streakDays) Günlük Seri")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(.white)
-                        Spacer()
-                        Text("%\(context.state.percentage)")
-                            .font(.system(size: 13, weight: .black))
-                            .foregroundColor(.cyan)
+                // 2. High-contrast glassy shadow tint for maximum outdoor legibility
+                Color.black.opacity(0.18)
+
+                // 3. Main Content Row
+                HStack(alignment: .center, spacing: 14) {
+                    // Left Column: Gamified Badges, Bold Progress & Motivational Dialogue
+                    VStack(alignment: .leading, spacing: 6) {
+                        // Top Badges: Streak Pill + Progress Percentage Pill
+                        HStack(spacing: 6) {
+                            HStack(spacing: 4) {
+                                Text("🔥")
+                                    .font(.system(size: 11))
+                                Text("\(context.state.streakDays) GÜN SERİ")
+                                    .font(.system(size: 10.5, weight: .black))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3.5)
+                            .background(Color.black.opacity(0.38))
+                            .clipShape(Capsule())
+
+                            HStack(spacing: 3) {
+                                Text("💧")
+                                    .font(.system(size: 10))
+                                Text("%\(context.state.percentage)")
+                                    .font(.system(size: 10.5, weight: .black))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3.5)
+                            .background(Color.white.opacity(0.24))
+                            .clipShape(Capsule())
+
+                            Spacer()
+                        }
+
+                        // Consumed / Goal Numbers
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text("\(context.state.todayConsumed)")
+                                .font(.system(size: 24, weight: .heavy, design: .rounded))
+                                .foregroundColor(.white)
+                            Text("/ \(context.state.dailyGoal) ml")
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                                .foregroundColor(Color.white.opacity(0.85))
+                        }
+
+                        // Glowing Water Progress Bar
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(Color.white.opacity(0.25))
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color.white, Color(red: 0.3, green: 0.85, blue: 1.0)],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: max(geo.size.width * CGFloat(min(context.state.percentage, 100)) / 100.0, 8))
+                                    .shadow(color: Color.cyan.opacity(0.8), radius: 3, x: 0, y: 0)
+                            }
+                        }
+                        .frame(height: 8)
+
+                        // Mascot Dialogue / Slogan
+                        Text(context.state.mascotSubtitle)
+                            .font(.system(size: 11.5, weight: .semibold))
+                            .foregroundColor(Color.white.opacity(0.92))
+                            .lineLimit(1)
                     }
 
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            Capsule().fill(Color.white.opacity(0.18))
-                            Capsule()
-                                .fill(LinearGradient(colors: [Color.cyan, Color.blue], startPoint: .leading, endPoint: .trailing))
-                                .frame(width: max(geo.size.width * CGFloat(min(context.state.percentage, 100)) / 100.0, 6))
+                    // Right Column: Mascot Illustration Hero Art (Duolingo Style)
+                    ZStack {
+                        if let uiImage = getSharedMascotImage() {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 78, height: 78)
+                                .shadow(color: Color.black.opacity(0.35), radius: 6, x: 0, y: 3)
+                        } else {
+                            Text(context.state.mascotEmoji)
+                                .font(.system(size: 54))
+                                .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)
                         }
                     }
-                    .frame(height: 8)
-
-                    Text("\(context.state.todayConsumed) / \(context.state.dailyGoal) ml")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(Color.white.opacity(0.8))
+                    .frame(width: 82, height: 82)
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
             }
-            .padding(14)
-            .background(Color(red: 0.05, green: 0.1, blue: 0.2))
+            .widgetURL(URL(string: "hydroreminder://log?amount=250"))
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    HStack {
-                        Text(context.state.mascotEmoji)
-                            .font(.system(size: 24))
-                        Text("🔥 \(context.state.streakDays)g")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(.orange)
+                    HStack(spacing: 8) {
+                        if let uiImage = getSharedMascotImage() {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 36, height: 36)
+                                .clipShape(Circle())
+                        } else {
+                            Text(context.state.mascotEmoji)
+                                .font(.system(size: 26))
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("🔥 \(context.state.streakDays)g Seri")
+                                .font(.system(size: 12, weight: .black))
+                                .foregroundColor(.orange)
+                            Text("\(context.state.todayConsumed) ml")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(.white)
+                        }
                     }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text("%\(context.state.percentage)")
-                        .font(.system(size: 16, weight: .black))
-                        .foregroundColor(.cyan)
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("%\(context.state.percentage)")
+                            .font(.system(size: 18, weight: .heavy, design: .rounded))
+                            .foregroundColor(.cyan)
+                        Text("Hedef: \(context.state.dailyGoal) ml")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(Color.white.opacity(0.7))
+                    }
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 6) {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
-                                Capsule().fill(Color.white.opacity(0.18))
+                                Capsule().fill(Color.white.opacity(0.2))
                                 Capsule()
-                                    .fill(LinearGradient(colors: [Color.cyan, Color.blue], startPoint: .leading, endPoint: .trailing))
-                                    .frame(width: max(geo.size.width * CGFloat(min(context.state.percentage, 100)) / 100.0, 6))
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color.cyan, Color.blue],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: max(geo.size.width * CGFloat(min(context.state.percentage, 100)) / 100.0, 8))
                             }
                         }
                         .frame(height: 7)
 
                         HStack {
-                            Text("\(context.state.todayConsumed) / \(context.state.dailyGoal) ml")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundColor(.white)
+                            Text(context.state.mascotSubtitle)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(Color.white.opacity(0.85))
+                                .lineLimit(1)
                             Spacer()
                             Text("💧 HydroSoft")
-                                .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(Color.white.opacity(0.6))
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.cyan)
                         }
                     }
+                    .padding(.top, 4)
                 }
             } compactLeading: {
-                Text(context.state.mascotEmoji)
-                    .font(.system(size: 13))
+                HStack(spacing: 3) {
+                    Text(context.state.mascotEmoji)
+                        .font(.system(size: 12))
+                    Text("🔥\(context.state.streakDays)")
+                        .font(.system(size: 11, weight: .black))
+                        .foregroundColor(.orange)
+                }
             } compactTrailing: {
                 Text("%\(context.state.percentage)")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .heavy))
                     .foregroundColor(.cyan)
             } minimal: {
-                Text("💧")
+                Text(context.state.mascotEmoji)
                     .font(.system(size: 12))
             }
+            .widgetURL(URL(string: "hydroreminder://log?amount=250"))
         }
     }
 }

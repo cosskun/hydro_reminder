@@ -195,18 +195,20 @@ def attach_widget_extension_to_xcodeproj(team_id, widget_bundle_id, widget_profi
 
   swift_file_1 = widget_group.new_file("HydroWidgets.swift")
   swift_file_2 = widget_group.new_file("AppIntents.swift")
+  swift_file_3 = widget_group.new_file("HydroLiveActivityAttributes.swift")
   widget_group.new_file("Info.plist")
   widget_group.new_file("HydroWidgets.entitlements")
 
   widget_target.source_build_phase.add_file_reference(swift_file_1, true)
   widget_target.source_build_phase.add_file_reference(swift_file_2, true)
+  widget_target.source_build_phase.add_file_reference(swift_file_3, true)
 
-  ["WidgetKit", "SwiftUI", "AppIntents", "Security"].each do |fw_name|
+  ["WidgetKit", "SwiftUI", "AppIntents", "Security", "ActivityKit"].each do |fw_name|
     fw_ref = project.frameworks_group.new_reference("System/Library/Frameworks/#{fw_name}.framework")
     fw_ref.name = "#{fw_name}.framework"
     fw_ref.source_tree = "SDKROOT"
     build_file = widget_target.frameworks_build_phase.add_file_reference(fw_ref, true)
-    if fw_name == "AppIntents"
+    if fw_name == "AppIntents" || fw_name == "ActivityKit"
       build_file.settings = { "ATTRIBUTES" => ["Weak"] }
     end
   end

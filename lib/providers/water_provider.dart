@@ -748,10 +748,26 @@ class WaterProvider with ChangeNotifier {
     return true;
   }
 
-  // Sync Live Ongoing Notification in Notification Drawer
+  // Sync Live Ongoing Notification in Notification Drawer / iOS Live Activity
   Future<void> _syncOngoingNotification() async {
     try {
       final percentInt = (todayPercentage * 100).toInt();
+      int displayStreak = currentStreak;
+      if (displayStreak == 0 && todayConsumed > 0) {
+        displayStreak = 1;
+      }
+
+      final status = WaterProvider.getHydrationStatus(
+        todayPercentage,
+        mascotType: _mascotType,
+        lang: _language,
+        streakDays: displayStreak,
+        lastLogTime: _logs.isNotEmpty ? _logs.first.timestamp : null,
+      );
+      final String mascotEmoji = status['emoji'] ?? '💧';
+      final String widgetTitle = status['routineTitle'] ?? status['title'] ?? 'HydroSoft';
+      final String widgetMessage = status['routineMessage'] ?? status['message'] ?? 'Bugün düzenli su içmeyi unutma!';
+
       await AlarmService().updateOngoingProgressNotification(
         isEnabled: _isOngoingNotificationEnabled && _isNotificationsEnabled,
         todayConsumed: todayConsumed,
@@ -760,6 +776,12 @@ class WaterProvider with ChangeNotifier {
         preset1: preset1,
         preset2: preset2,
         preset3: preset3,
+        streakDays: displayStreak,
+        mascotType: _mascotType,
+        mascotEmoji: mascotEmoji,
+        mascotTitle: widgetTitle,
+        mascotSubtitle: widgetMessage.isNotEmpty ? widgetMessage : widgetTitle,
+        widgetTheme: effectiveThemePreset,
       );
     } catch (_) {}
   }

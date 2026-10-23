@@ -18,13 +18,64 @@ class PresetSound {
 class SoundService {
   static final SoundService _instance = SoundService._internal();
   factory SoundService() => _instance;
-  SoundService._internal();
+  SoundService._internal() {
+    _initAudioContexts();
+  }
 
   static const MethodChannel _hapticsChannel =
       MethodChannel('com.antigravity.hydroReminder/alarm_haptics');
 
   final AudioPlayer _alarmPlayer = AudioPlayer();
   final AudioPlayer _effectPlayer = AudioPlayer();
+
+  /// AudioContext for UI sound effects (water drops, badges, goal celebrations).
+  /// - iOS: [AVAudioSessionCategory.ambient] seamlessly mixes with background music (Spotify, Apple Music, podcasts) without pausing or ducking it.
+  /// - Android: [AndroidAudioFocus.none] ensures no audio focus is seized, keeping background media playing uninterrupted.
+  static final AudioContext effectAudioContext = AudioContext(
+    iOS: AudioContextIOS(
+      category: AVAudioSessionCategory.ambient,
+      options: const {},
+    ),
+    android: const AudioContextAndroid(
+      isSpeakerphoneOn: false,
+      stayAwake: false,
+      contentType: AndroidContentType.sonification,
+      usageType: AndroidUsageType.assistanceSonification,
+      audioFocus: AndroidAudioFocus.none,
+    ),
+  );
+
+  /// AudioContext for alarms & alarm sound previews.
+  /// - iOS: [AVAudioSessionCategory.ambient] mixes with user audio and respects Silent Switch.
+  /// - Android: [AndroidAudioFocus.none] keeps user music playing while sounding the hydration chime.
+  static final AudioContext alarmAudioContext = AudioContext(
+    iOS: AudioContextIOS(
+      category: AVAudioSessionCategory.ambient,
+      options: const {},
+    ),
+    android: const AudioContextAndroid(
+      isSpeakerphoneOn: false,
+      stayAwake: false,
+      contentType: AndroidContentType.sonification,
+      usageType: AndroidUsageType.alarm,
+      audioFocus: AndroidAudioFocus.none,
+    ),
+  );
+
+  /// Initializes audio contexts globally and on individual players
+  Future<void> init() async {
+    await _initAudioContexts();
+  }
+
+  Future<void> _initAudioContexts() async {
+    try {
+      if (!kIsWeb) {
+        await AudioPlayer.global.setAudioContext(effectAudioContext);
+        await _effectPlayer.setAudioContext(effectAudioContext);
+        await _alarmPlayer.setAudioContext(alarmAudioContext);
+      }
+    } catch (_) {}
+  }
 
   static const List<PresetSound> presetSounds = [
     PresetSound(
@@ -106,14 +157,9 @@ class SoundService {
         } catch (_) {}
       }
 
-      // Respect silent switch on iOS so silent mode mutes audio and never blocks hardware vibration
+      // Apply non-interrupting alarm AudioContext (mixes with music, respects silent mode)
       try {
-        await _alarmPlayer.setAudioContext(
-          AudioContextConfig(
-            respectSilence: true,
-            stayAwake: false,
-          ).build(),
-        );
+        await _alarmPlayer.setAudioContext(alarmAudioContext);
       } catch (_) {}
 
       if (loop) {
@@ -136,19 +182,25 @@ class SoundService {
     }
   }
 
-  // Play water sip / pour sound effect
+  // Play water sip / pour sound effect (mixes seamlessly over user music without pausing it)
   Future<void> playWaterSipSound() async {
     try {
       await _effectPlayer.stop();
+      try {
+        await _effectPlayer.setAudioContext(effectAudioContext);
+      } catch (_) {}
       await _effectPlayer.setReleaseMode(ReleaseMode.release);
       await _effectPlayer.play(AssetSource('sounds/sound_water_drop.wav'));
     } catch (_) {}
   }
 
-  // Play badge celebration chime sound effect
+  // Play badge celebration chime sound effect (mixes seamlessly over user music)
   Future<void> playBadgeCelebrationSound() async {
     try {
       await _effectPlayer.stop();
+      try {
+        await _effectPlayer.setAudioContext(effectAudioContext);
+      } catch (_) {}
       await _effectPlayer.setReleaseMode(ReleaseMode.release);
       await _effectPlayer.play(AssetSource('sounds/sound_energy_chime.wav'));
     } catch (_) {}
@@ -161,6 +213,9 @@ class SoundService {
       Future.delayed(const Duration(milliseconds: 140), () => HapticFeedback.mediumImpact());
       Future.delayed(const Duration(milliseconds: 280), () => HapticFeedback.lightImpact());
       await _effectPlayer.stop();
+      try {
+        await _effectPlayer.setAudioContext(effectAudioContext);
+      } catch (_) {}
       await _effectPlayer.setReleaseMode(ReleaseMode.release);
       await _effectPlayer.play(AssetSource('sounds/sound_energy_chime.wav'));
     } catch (_) {}

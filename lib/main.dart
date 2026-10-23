@@ -9,12 +9,16 @@ import 'config/app_routes.dart';
 import 'providers/water_provider.dart';
 import 'services/alarm_service.dart';
 import 'services/widget_service.dart';
+import 'services/sound_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Configure non-interrupting ambient audio session (mixes with Spotify, Apple Music, etc.)
+  await SoundService().init();
 
   // Custom graceful error handling
   ErrorWidget.builder = (FlutterErrorDetails details) {

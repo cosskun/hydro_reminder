@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hydro_reminder/models/badge_item.dart';
 import 'package:hydro_reminder/models/beverage_type.dart';
@@ -204,6 +205,21 @@ void main() {
       expect(paths.contains('sounds/sound_gentle_rain.wav'), isTrue);
       expect(paths.contains('sounds/sound_river_stream.wav'), isTrue);
       expect(paths.contains('sounds/sound_tibetan_bowl.wav'), isTrue);
+    });
+
+    test('AudioContext configured for non-interrupting ambient playback (never stops background music)', () {
+      // Effect player context (water drop, badges, celebrations)
+      final effectCtx = SoundService.effectAudioContext;
+      expect(effectCtx.iOS.category, AVAudioSessionCategory.ambient);
+      expect(effectCtx.android.audioFocus, AndroidAudioFocus.none);
+      expect(effectCtx.android.contentType, AndroidContentType.sonification);
+      expect(effectCtx.android.usageType, AndroidUsageType.assistanceSonification);
+
+      // Alarm player context (hydration alarms and preview chimes)
+      final alarmCtx = SoundService.alarmAudioContext;
+      expect(alarmCtx.iOS.category, AVAudioSessionCategory.ambient);
+      expect(alarmCtx.android.audioFocus, AndroidAudioFocus.none);
+      expect(alarmCtx.android.usageType, AndroidUsageType.alarm);
     });
   });
 

@@ -92,9 +92,9 @@ extension MascotEnergyTierExtension on MascotEnergyTier {
 class MascotEnergyLadder {
   static MascotEnergyTier getTier(double percentage) {
     if (percentage <= 0.0) return MascotEnergyTier.energy0;
-    if (percentage < 0.30) return MascotEnergyTier.energy25;
-    if (percentage < 0.60) return MascotEnergyTier.energy50;
-    if (percentage < 0.90) return MascotEnergyTier.energy75;
+    if (percentage < 0.35) return MascotEnergyTier.energy25;
+    if (percentage < 0.70) return MascotEnergyTier.energy50;
+    if (percentage < 0.92) return MascotEnergyTier.energy75;
     return MascotEnergyTier.energy100;
   }
 
@@ -834,7 +834,7 @@ class MascotResolver {
       state: state,
       hexColor: hexColor,
       energyImageAsset: energyImageAsset,
-      energyPercentage: energyTier.stepValue,
+      energyPercentage: (percentage * 100).toInt(),
       energyTitle: energyData['title']!,
       energyMessage: energyData['message']!,
       routineImageAsset: routineImageAsset,

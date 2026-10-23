@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+33: Dinamik maskot tema uyumu (grafikler, butonlar, alarmlar), 2 sekmeli maskot önizleme diyaloğu, tek satır boost butonları ve kenarlıksız yüksek kaliteli maskot çizimleri entegre edildi."
+          releaseNotes: "Hydro Reminder v1.0.0+34: Maskot hedef sonrasi sampiyon rutinleri, iOS Canli Etkinlikler (Live Activity & Dynamic Island), Android maskot temali widgetlar, arka plan muziklerini kesmeyen ortam sesleri ve hizli onay koruma ekrani eklendi."

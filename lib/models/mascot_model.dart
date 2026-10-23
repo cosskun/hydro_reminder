@@ -483,9 +483,6 @@ class MascotResolver {
     DateTime? lastLogTime,
     DateTime? now,
   }) {
-    if (percentage >= 1.0) {
-      return MascotState.goalReached;
-    }
     if (percentage <= 0.0) {
       return MascotState.thirsty;
     }
@@ -493,9 +490,57 @@ class MascotResolver {
     final current = now ?? DateTime.now();
     final hour = current.hour;
 
-    // Bedtime: 21:30 - 05:59 ("Hadi son bir yudum")
+    // Bedtime window: 21:30 - 05:59 ("Hadi son bir yudum" or "Şampiyonlar da uyur")
+    // Natural bedtime takes priority even for champions to keep night hours peaceful and restful
     if (hour >= 22 || hour < 6 || (hour == 21 && current.minute >= 30)) {
       return MascotState.bedtime;
+    }
+
+    final bool isGoalCompleted = percentage >= 1.0;
+
+    // When goal is completed, determine if we are in the initial celebration window (< 45 mins since goal log)
+    // or transitioning into time-sensitive champion routines (slump, workout, evening, thirst nudge, streak)
+    if (isGoalCompleted) {
+      if (lastLogTime != null) {
+        final minutesPassed = current.difference(lastLogTime).inMinutes;
+        final hoursPassed = minutesPassed / 60.0;
+
+        // 1. Initial Celebration Window: first 45 minutes after completing/logging goal
+        if (minutesPassed < 45) {
+          return MascotState.goalReached;
+        }
+
+        // 2. Daytime Thirst Nudge: > 3.5 hrs without drink even as a champion
+        if (hour >= 9 && hour <= 21 && hoursPassed >= 3.5) {
+          return MascotState.thirsty;
+        }
+
+        // 3. Afternoon Slump Window: 14:00 - 16:30 ("Sen hazır uyanıkken... şampiyonluk turunda su iç")
+        if ((hour >= 14 && hour < 16) || (hour == 16 && current.minute <= 30)) {
+          return MascotState.afternoonSlump;
+        }
+
+        // 4. Workout / Active Evening Window: 17:00 - 19:30 ("Şampiyonluk maratonu")
+        if ((hour >= 17 && hour < 19) || (hour == 19 && current.minute < 30)) {
+          return MascotState.workout;
+        }
+
+        // 5. Evening Relaxation Window: 19:30 - 21:30 ("Koltukta şampiyonluk keyfi")
+        if ((hour == 19 && current.minute >= 30) || (hour >= 20 && hour < 21) || (hour == 21 && current.minute < 30)) {
+          return MascotState.evening;
+        }
+
+        // 6. Blazing Streak (3+ days)
+        if (streakDays >= 3) {
+          return MascotState.streakFire;
+        }
+
+        // 7. Otherwise, keep champion celebration
+        return MascotState.goalReached;
+      }
+
+      // If lastLogTime is null (e.g. test without log timestamps), default to goalReached
+      return MascotState.goalReached;
     }
 
     // Critical Daytime Thirst: > 3.5 hrs without drink
@@ -773,12 +818,15 @@ class MascotResolver {
       }
     }
 
+    final bool isGoalCompleted = percentage >= 1.0;
+
     // Contextual Dialogue & Title based on 10 States
     final routineData = getRoutineDialogue(
       mascotId: mascot.id,
       state: state,
       isEn: isEn,
       streakDays: streakDays,
+      isGoalCompleted: isGoalCompleted,
     );
     title = routineData['title']!;
     message = routineData['message']!;
@@ -792,6 +840,12 @@ class MascotResolver {
       tier: energyTier,
       isEn: isEn,
     );
+    String energyMessageText = energyData['message']!;
+    if (percentage >= 1.05 && energyTier == MascotEnergyTier.energy100) {
+      energyMessageText = isEn
+          ? 'You surpassed your goal, victory lap in progress! Every extra sip is bonus hydration! ⚡🏆'
+          : 'Hedefi aştın, şampiyonluk turundasın! Fazladan her yudum bir bonus puan! ⚡🏆';
+    }
 
     final routineTitle = title;
     final routineMessage = message;
@@ -815,7 +869,7 @@ class MascotResolver {
     if (hasEnergyLadder && preferEnergyAsset) {
       resolvedImageAsset = energyImageAsset;
       finalTitle = energyData['title']!;
-      finalMessage = energyData['message']!;
+      finalMessage = energyMessageText;
     } else if (isSpecialShowEvent) {
       resolvedImageAsset = routineImageAsset;
       finalTitle = routineTitle;
@@ -836,7 +890,7 @@ class MascotResolver {
       energyImageAsset: energyImageAsset,
       energyPercentage: (percentage * 100).toInt(),
       energyTitle: energyData['title']!,
-      energyMessage: energyData['message']!,
+      energyMessage: energyMessageText,
       routineImageAsset: routineImageAsset,
       routineTitle: routineTitle,
       routineMessage: routineMessage,
@@ -1027,7 +1081,20 @@ class MascotResolver {
     required MascotState state,
     required bool isEn,
     int streakDays = 0,
+    bool isGoalCompleted = false,
   }) {
+    if (isGoalCompleted) {
+      final championDialogue = _getChampionRoutineDialogue(
+        mascotId: mascotId,
+        state: state,
+        isEn: isEn,
+        streakDays: streakDays,
+      );
+      if (championDialogue != null) {
+        return championDialogue;
+      }
+    }
+
     switch (state) {
       case MascotState.morning:
         if (mascotId == 'cat') {
@@ -1548,6 +1615,284 @@ class MascotResolver {
                 : '$streakDays günlük seriyi bugün de koru, hidrasyon ateşi parlasın! 🔥',
           };
         }
+    }
+  }
+
+  /// Specialized champion dialogues tailored to keep hydration engaging and lively throughout the day even after reaching 100%
+  static Map<String, String>? _getChampionRoutineDialogue({
+    required String mascotId,
+    required MascotState state,
+    required bool isEn,
+    int streakDays = 0,
+  }) {
+    switch (state) {
+      case MascotState.bedtime:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Champions Sleep Too!' : 'Şampiyonlar da uyur!',
+            'message': isEn
+                ? 'Goal crushed, trophy won! Nightcap on; take one last sip before bed, sweet dreams... 🌙💤'
+                : 'Hedef tamam, kupa cepte! Pofuduk uyku beremi taktım; geceyi susuz kapatma, tatlı rüyalar... 🌙💤',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Champion Pup Bedtime!' : 'Şampiyon köpüşün tatlı uykusu!',
+            'message': isEn
+                ? 'You were amazing today! Nightcap on; take one last sip before sleep, rest well... 🌙💤'
+                : 'Bugün harikaydın! Uyku beremi taktım; yatmadan önce son bir yudum al, güzelce dinlenelim... 🌙💤',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Igloo Champion Sleep!' : 'İgloda şampiyon uykusu!',
+            'message': isEn
+                ? 'Trophy raised, time to sleep in the igloo! End the night with a cool sip of water... 🌙💤'
+                : 'Kupayı kaldırdık, igloda uyku vakti! Geceye bir yudum serin suyla veda edelim... 🌙💤',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Peaceful Champion Sleep!' : 'Huzurlu şampiyon uykusu!',
+            'message': isEn
+                ? 'Water cup finished, nightcap on. Rest like a champion, sweet dreams... 🌙💤'
+                : 'Bambu fincanında su bitti, uyku beresi takıldı. Şampiyon gibi dinlen, tatlı rüyalar... 🌙💤',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Cozy Champion Bedtime!' : 'Kuyruğuna sarılan şampiyon!',
+            'message': isEn
+                ? 'Goal achieved! Tail curled up tight; take one last sip before bed, good night... 🌙💤'
+                : 'Hedefi devirdik! Kuyruğumu üstüme çektim; yatmadan önce son bir yudum su al, iyi geceler... 🌙💤',
+          };
+        } else if (mascotId == 'plant') {
+          return {
+            'title': isEn ? 'Night Dew of Victory!' : 'Zaferin gece çiyi!',
+            'message': isEn
+                ? 'Goal reached! Take one last sip so your roots stay vibrant through the night... 🌙💤'
+                : 'Hedef tamamlandı! Gece boyunca köklerinin zinde kalması için son bir yudum su iç... 🌙💤',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Champions Rest Too!' : 'Şampiyonlar da dinlenir!',
+            'message': isEn
+                ? 'Daily goal achieved! Take one last sip to stay hydrated through the night... 🌙💤'
+                : 'Bugünkü hedefin fazlasıyla tamamlandı! Gece boyunca zinde kalmak için son bir yudum su al... 🌙💤',
+          };
+        }
+
+      case MascotState.afternoonSlump:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Sen hazır uyanıkken...',
+            'message': isEn
+                ? 'No slumping just because the goal is done! Lounging on the rug with eyes on you; grab a champion bonus glass! 😉'
+                : 'Hedefi geçtik diye rehavete kapılmak yok! Halıya yayıldım ama gözüm üstünde; şampiyonluk turunda bir bardak daha su al! 😉',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'While you are awake...' : 'Minderde gözüm üstünde!',
+            'message': isEn
+                ? 'Lounging sideways with tail alert! Let us refresh our record with a bonus champion cup. 😉'
+                : 'Minderde yan yatıyorum ama kuyruk tetikte! Şampiyonluk turunda bir bardak daha suyla rekor tazeleyelim. 😉',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Ice Champion Slump!' : 'Buzda şampiyon rehaveti!',
+            'message': isEn
+                ? 'While you are awake... Lounging on the ice; a cold bonus glass fits the champion victory lap!'
+                : 'Sen hazır uyanıkken... Buzun üstüne uzandım ama izliyorum; şampiyonluk turuna buz gibi bir bardak su yakışır!',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Sassy Side-eye Slump...' : 'Minderde sitemkar bakış...',
+            'message': isEn
+                ? 'While you are awake... Goal is done but I am too cozy to move; go grab a champion bonus cup of water!'
+                : 'Sen hazır uyanıkken... Hedefi tamamladık ama kalkmaya üşeniyorum, şampiyonluk bonusu için hemen bir fincan su kap!',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Branch Sassy Side-eye...' : 'Daldan sitem dolu yan bakış...',
+            'message': isEn
+                ? 'While you are awake... Watching from the tree branch; crown your victory lap with another crisp glass!'
+                : 'Sen hazır uyanıkken... Dala uzandım seni izliyorum; şampiyonluk turunu fındık tadında bir bardak suyla taçlandır!',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Keep Vitality High!' : 'Rehavete teslim olma!',
+            'message': isEn
+                ? 'You are today champion! Keep the freshness going with a bonus glass of water.'
+                : 'Günün şampiyonusun ama ferahlığı elden bırakma! Bir bardak can suyuyla rekorunu daha da yukarı taşı.',
+          };
+        }
+
+      case MascotState.workout:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Victory Marathon!' : 'Şampiyonluk maratonu!',
+            'message': isEn
+                ? 'Sweatband on, high tempo! Goal is secured but keep moving; every extra sip is bonus hydration! ⚡'
+                : 'Kırmızı kafa bandı takıldı, tempo yükseldi! Hedef cepte ama hareket bitmedi; ekstra her yudum bir bonus puan! ⚡',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Victory Marathon!' : 'Şampiyonluk maratonu!',
+            'message': isEn
+                ? 'Red headband on, running full speed! Goal reached, now running the bonus hydration lap! ⚡'
+                : 'Kırmızı kafa bandıyla tam gaz koşuyoruz! Hedef tamam, şimdi bonus hidrasyon turundayız! ⚡',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Ice Victory Skate!' : 'Buzda şampiyonluk kayışı!',
+            'message': isEn
+                ? 'Headband on, sliding fast across the ice! A bonus chill sip feels amazing after the trophy! ⚡'
+                : 'Alın bandını taktım, buzda tam tempo kayıyorum! Şampiyonluk kupasından sonra bonus serinlik harika! ⚡',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Panda Victory Lap!' : 'Panda şampiyonluk turu!',
+            'message': isEn
+                ? 'Red headband on! Goal crushed with high energy; keep your flask full and stay energized! ⚡'
+                : 'Kırmızı bandı taktım! Hedef devrildi ama enerjimiz tam; mataranı tazeleyip canlılığı koru! ⚡',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Branch to Branch Victory Run!' : 'Daldan dala şampiyonluk koşusu!',
+            'message': isEn
+                ? 'Sweatband on, celebrating branch to branch! Keep up your champion pace with a fresh sip! ⚡'
+                : 'Spor bandı takıldı, daldan dala kutlama yapıyoruz! Bir yudum suyla şampiyonluk hızını koru! ⚡',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Supercharged Stamina!' : 'Süper şarjlı tempo!',
+            'message': isEn
+                ? 'You surpassed your goal, great form! Keep your energy at the peak with every extra sip.'
+                : 'Hedefini aştın, harika bir formdasın! Fazladan her yudumla enerjini zirvede tut.',
+          };
+        }
+
+      case MascotState.evening:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? 'Armchair Champion Rest!' : 'Koltukta şampiyonluk keyfi!',
+            'message': isEn
+                ? 'Cozy purrs in the armchair... You are today champion; unwind with a fresh cup of water.'
+                : 'Koltukta mırıl mırıl huzur... Günün şampiyonusun; bir yudum taze suyla günün yorgunluğunu atalım.',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Armchair Champion Rest!' : 'Koltukta şampiyonluk keyfi!',
+            'message': isEn
+                ? 'Curled up resting in the armchair... Goal is done, let us enjoy with a fresh cup of water.'
+                : 'Koltukta kıvrılıp dinlenme vakti... Hedefi tamamladık, taze bir bardak suyla keyfimize bakalım.',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Warm Igloo Evening!' : 'Sıcak yuvada akşam keyfi!',
+            'message': isEn
+                ? 'Trophy won, wrapped in blanket! Celebrate today victory with a calm cup of water.'
+                : 'Kupayı kazandık, battaniyeye sarıldık! Günün şampiyonluğuna sakin bir fincan su eşlik etsin.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Zen Cup Victory Sip!' : 'Zen fincanda zafer suyu!',
+            'message': isEn
+                ? 'Lounging in the big chair, trophy beside us. Unwinding like a champion with a calm sip.'
+                : 'Geniş koltuğa yayıldık, kupa yanımızda. Günün şampiyonu olarak sakin bir yudum suyla dinleniyoruz.',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? 'Cozy Tail Victory Unwind!' : 'Kuyruğa sarılıp şampiyonluk keyfi!',
+            'message': isEn
+                ? 'Wrapped in my bushy tail, resting cozy. Savor the victory with a fresh cup of water!'
+                : 'Kuyruğuma sarıldım, koltukta dinleniyorum. Şampiyonluğun tadını taze bir fincan suyla çıkar!',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Evening Cool & Victory!' : 'Akşam serinliği & Zafer!',
+            'message': isEn
+                ? 'You crushed the daily goal! Reward your body with a fresh cup while unwinding.'
+                : 'Günün hedefini devirdin! Akşam dinlenirken bir bardak suyla bedenini ödüllendir.',
+          };
+        }
+
+      case MascotState.thirsty:
+        if (mascotId == 'cat') {
+          return {
+            'title': isEn ? "Don't Dry Up, Champion!" : 'Şampiyon kuruyup kalmasın!',
+            'message': isEn
+                ? 'Did you forget us just because you got the trophy? Grab a cup of water to refresh your record!'
+                : 'Kupayı aldık diye bizi unuttun mu? Şampiyonluk rekorunu tazelemek için hemen 1 bardak su kap!',
+          };
+        } else if (mascotId == 'dog') {
+          return {
+            'title': isEn ? 'Champion Pup is Thirsty!' : 'Şampiyon köpüş susadı!',
+            'message': isEn
+                ? 'We won the trophy but have not had water in a while! Time for a victory water bowl refill!'
+                : 'Kupayı kaldırdık ama uzun süre su içmedik! Şampiyonluk turunda bir kase su tazelemesi şart!',
+          };
+        } else if (mascotId == 'penguin') {
+          return {
+            'title': isEn ? 'Ice-cold Victory Sip!' : 'Buz gibi bir zafer yudumu!',
+            'message': isEn
+                ? 'Trophy won, but my beak is dry! Let us revitalize our champion lap with cold water.'
+                : 'Kupayı aldık ama gagam kurudu! Şampiyonluk turunu taze bir buzlu suyla canlandıralım.',
+          };
+        } else if (mascotId == 'panda') {
+          return {
+            'title': isEn ? 'Panda Wants a New Record!' : 'Panda rekor tazelemek istiyor!',
+            'message': isEn
+                ? 'The bamboo cup is empty! We did not forget our trophy, let us wet our whistle with water.'
+                : 'Bambu fincanı boş kaldı! Şampiyonluğumuzu unutmadık ama bir bardak suyla boğazımızı ıslatalım.',
+          };
+        } else if (mascotId == 'squirrel') {
+          return {
+            'title': isEn ? "Don't Let the Trophy Dry!" : 'Fındık kupası boş kalmasın!',
+            'message': isEn
+                ? 'Trophy secured, but tiny paws are thirsty! Grab a glass of water on your victory lap!'
+                : 'Kupayı kaptık ama minik patiler susadı! Şampiyonluk turunda hemen 1 bardak su kap!',
+          };
+        } else {
+          return {
+            'title': isEn ? 'Champion Revitalizer!' : 'Şampiyonun can suyu!',
+            'message': isEn
+                ? 'Goal secured, but time has passed without water. Grab a glass to maintain high vitality!'
+                : 'Hedef cepte ama uzun süre su içmedin. Canlılığını korumak için hemen bir bardak su al!',
+          };
+        }
+
+      case MascotState.streakFire:
+        return {
+          'title': isEn ? 'Fiery Champion!' : 'Alev alev şampiyon!',
+          'message': isEn
+              ? '$streakDays days strong and goal completed! You are a true hydration superhero. 🔥🏆'
+              : '$streakDays günlük seri korundu ve hedef tamamlandı! Gerçek bir hidrasyon süper kahramanısın. 🔥🏆',
+        };
+
+      case MascotState.workFocus:
+        return {
+          'title': isEn ? 'Champion at the Desk!' : 'Masa başında şampiyon odak!',
+          'message': isEn
+              ? 'Goal achieved! Keep a fresh glass close at the desk to maintain sharp focus.'
+              : 'Hedef tamamlandı! Zihnini keskin tutmak için masa başında suyunu yudumlamaya devam et.',
+        };
+
+      case MascotState.lunch:
+        return {
+          'title': isEn ? 'Champion Lunch Break!' : 'Şampiyonun yemek molası!',
+          'message': isEn
+              ? 'Goal achieved! Enjoy lunch with a refreshing glass of water. Bon appétit!'
+              : 'Hedef tamam! Yemeğin yanında taze bir bardak suyla kutlamaya devam. Afiyet olsun!',
+        };
+
+      case MascotState.morning:
+        return {
+          'title': isEn ? 'Morning Champion!' : 'Sabahın şampiyonu!',
+          'message': isEn
+              ? 'Starting with championship energy! Keep the momentum going with fresh water.'
+              : 'Güne şampiyonluk enerjisiyle başladın! Canlılığını korumak için suyunu ihmal etme.',
+        };
+
+      case MascotState.goalReached:
+      default:
+        return null;
     }
   }
 

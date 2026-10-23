@@ -447,6 +447,114 @@ void main() {
         MascotState.streakFire,
       );
     });
+
+    test('Post-Goal (100%+) Time-Sensitive Champion Routines dynamically cycle through day', () {
+      final goalCompletedDrinkTime = DateTime(2026, 5, 10, 14, 0);
+
+      // 1. Initial Celebration Window: First 45 mins -> goalReached
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.14,
+          lastLogTime: goalCompletedDrinkTime,
+          now: DateTime(2026, 5, 10, 14, 25),
+        ),
+        MascotState.goalReached,
+      );
+
+      // 2. Afternoon Slump Window (> 45 mins later, between 14:00 - 16:30) -> afternoonSlump
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.14,
+          lastLogTime: goalCompletedDrinkTime,
+          now: DateTime(2026, 5, 10, 15, 30),
+        ),
+        MascotState.afternoonSlump,
+      );
+      final slumpDialogue = MascotResolver.resolveDialogue(
+        mascotType: 'cat',
+        percentage: 1.14,
+        lastLogTime: goalCompletedDrinkTime,
+        now: DateTime(2026, 5, 10, 15, 30),
+      );
+      expect(slumpDialogue.routineTitle, 'Sen hazır uyanıkken...');
+      expect(slumpDialogue.routineMessage, contains('şampiyonluk'));
+      expect(slumpDialogue.routineImageAsset, 'assets/mascots/cat_afternoon_slump.png');
+
+      // 3. Workout / Active Evening Window (17:00 - 19:30) -> workout
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.14,
+          lastLogTime: DateTime(2026, 5, 10, 16, 45),
+          now: DateTime(2026, 5, 10, 18, 0),
+        ),
+        MascotState.workout,
+      );
+      final workoutDialogue = MascotResolver.resolveDialogue(
+        mascotType: 'cat',
+        percentage: 1.14,
+        lastLogTime: DateTime(2026, 5, 10, 16, 45),
+        now: DateTime(2026, 5, 10, 18, 0),
+      );
+      expect(workoutDialogue.routineTitle, contains('maraton'));
+      expect(workoutDialogue.routineImageAsset, 'assets/mascots/cat_workout.png');
+
+      // 4. Evening Relaxation Window (19:30 - 21:30) -> evening
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.14,
+          lastLogTime: DateTime(2026, 5, 10, 18, 30),
+          now: DateTime(2026, 5, 10, 20, 30),
+        ),
+        MascotState.evening,
+      );
+      final eveningDialogue = MascotResolver.resolveDialogue(
+        mascotType: 'cat',
+        percentage: 1.14,
+        lastLogTime: DateTime(2026, 5, 10, 18, 30),
+        now: DateTime(2026, 5, 10, 20, 30),
+      );
+      expect(eveningDialogue.routineTitle, contains('şampiyonluk'));
+      expect(eveningDialogue.routineImageAsset, 'assets/mascots/cat_evening.png');
+
+      // 5. Bedtime Window (21:30 - 05:59) -> bedtime
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.14,
+          lastLogTime: DateTime(2026, 5, 10, 20, 30),
+          now: DateTime(2026, 5, 10, 22, 30),
+        ),
+        MascotState.bedtime,
+      );
+      final bedtimeDialogue = MascotResolver.resolveDialogue(
+        mascotType: 'cat',
+        percentage: 1.14,
+        lastLogTime: DateTime(2026, 5, 10, 20, 30),
+        now: DateTime(2026, 5, 10, 22, 30),
+      );
+      expect(bedtimeDialogue.routineTitle, contains('uyur'));
+      expect(bedtimeDialogue.routineImageAsset, 'assets/mascots/cat_bedtime.png');
+
+      // 6. Thirst Nudge (> 3.5 hrs without water) -> thirsty
+      expect(
+        MascotResolver.resolveCurrentState(
+          percentage: 1.14,
+          lastLogTime: DateTime(2026, 5, 10, 11, 0),
+          now: DateTime(2026, 5, 10, 15, 0),
+        ),
+        MascotState.thirsty,
+      );
+      final thirstyDialogue = MascotResolver.resolveDialogue(
+        mascotType: 'cat',
+        percentage: 1.14,
+        lastLogTime: DateTime(2026, 5, 10, 11, 0),
+        now: DateTime(2026, 5, 10, 15, 0),
+      );
+      expect(thirstyDialogue.routineTitle, contains('Şampiyon'));
+      expect(thirstyDialogue.routineImageAsset, 'assets/mascots/cat_thirsty.png');
+
+      // 7. Bonus Percentage (> 1.05) energy message indicates victory lap
+      expect(slumpDialogue.energyMessage, contains('şampiyonluk'));
+    });
   });
 
   group('Buddy (Brown Poodle Dog) 10 States & Asset Tests', () {

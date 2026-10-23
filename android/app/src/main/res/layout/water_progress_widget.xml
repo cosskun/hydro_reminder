@@ -6,16 +6,17 @@
     android:background="@drawable/widget_card_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="14dp"
+    android:paddingLeft="12dp"
     android:paddingRight="12dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
-    <!-- Left Column: Streak, Callout, 5-Day Checkmarks & Quick Buttons -->
+    <!-- Left Column: Streak, Callout, Progress Bar, 5-Day Checkmarks & Quick Buttons -->
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
         <!-- Header Row: Streak Flame + Percentage Pill -->
@@ -33,15 +34,16 @@
                 android:includeFontPadding="false"
                 android:text="🔥 1 gün"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/tv_progress_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
-                android:background="@drawable/widget_mascot_stage_bg"
+                android:background="@drawable/widget_floating_pill_bg"
                 android:fontFamily="sans-serif-black"
+                android:includeFontPadding="false"
                 android:paddingLeft="7dp"
                 android:paddingRight="7dp"
                 android:paddingTop="2dp"
@@ -59,7 +61,8 @@
             android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
-            android:maxLines="1"
+            android:lineSpacingExtra="1dp"
+            android:maxLines="2"
             android:text="Çok susuz kaldın! Hemen bir bardak su al."
             android:textColor="#F1F5F9"
             android:textSize="11sp" />
@@ -69,9 +72,9 @@
             android:id="@+id/pb_water_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="7dp"
+            android:layout_height="6dp"
             android:layout_marginTop="4dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="6dp"
             android:max="100"
             android:progress="0"
             android:progressDrawable="@drawable/widget_progress_bar" />
@@ -101,8 +104,8 @@
                     android:textSize="9sp" />
                 <TextView
                     android:id="@+id/tv_day_check_1"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
                     android:layout_marginTop="2dp"
                     android:background="@drawable/widget_day_circle_empty"
                     android:fontFamily="sans-serif-black"
@@ -129,8 +132,8 @@
                     android:textSize="9sp" />
                 <TextView
                     android:id="@+id/tv_day_check_2"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
                     android:layout_marginTop="2dp"
                     android:background="@drawable/widget_day_circle_empty"
                     android:fontFamily="sans-serif-black"
@@ -157,8 +160,8 @@
                     android:textSize="9sp" />
                 <TextView
                     android:id="@+id/tv_day_check_3"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
                     android:layout_marginTop="2dp"
                     android:background="@drawable/widget_day_circle_done"
                     android:fontFamily="sans-serif-black"
@@ -185,8 +188,8 @@
                     android:textSize="9sp" />
                 <TextView
                     android:id="@+id/tv_day_check_4"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
                     android:layout_marginTop="2dp"
                     android:background="@drawable/widget_day_circle_done"
                     android:fontFamily="sans-serif-black"
@@ -212,8 +215,8 @@
                     android:textSize="9sp" />
                 <TextView
                     android:id="@+id/tv_day_check_5"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
                     android:layout_marginTop="2dp"
                     android:background="@drawable/widget_day_circle_empty"
                     android:fontFamily="sans-serif-black"
@@ -240,10 +243,10 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
+                android:paddingLeft="9dp"
+                android:paddingRight="9dp"
+                android:paddingTop="3.5dp"
+                android:paddingBottom="3.5dp"
                 android:text="🥛 +200 ml"
                 android:textColor="#0369A1"
                 android:textSize="10sp" />
@@ -253,71 +256,70 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="6dp"
-                android:background="@drawable/widget_mascot_stage_bg"
+                android:background="@drawable/widget_floating_pill_bg"
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
+                android:paddingLeft="9dp"
+                android:paddingRight="9dp"
+                android:paddingTop="3.5dp"
+                android:paddingBottom="3.5dp"
                 android:text="🥤 +330 ml"
                 android:textColor="#FFFFFF"
                 android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Right Column: Mascot Character Stage -->
-    <LinearLayout
+    <!-- Right Column: Full-Height Square Mascot Card (Duolingo / iOS Style) -->
+    <FrameLayout
+        android:id="@+id/fl_mascot_card_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_vertical|end">
 
-        <LinearLayout
-            android:layout_width="76dp"
-            android:layout_height="76dp"
-            android:background="@drawable/widget_mascot_stage_bg"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="4dp">
+        <!-- Full-Scale Square Mascot Image with adjustViewBounds -->
+        <ImageView
+            android:id="@+id/iv_mascot_image"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/iv_mascot_image"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:scaleType="fitCenter"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_mascot_emoji"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="🥱"
-                android:textSize="34sp" />
-
-            <TextView
-                android:id="@+id/tv_progress_consumed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:includeFontPadding="false"
-                android:text="0 ml"
-                android:textColor="#FFFFFF"
-                android:textSize="10.5sp" />
-        </LinearLayout>
-
+        <!-- Fallback Mascot Emoji if image is not loaded -->
         <TextView
-            android:id="@+id/tv_progress_goal"
+            android:id="@+id/tv_mascot_emoji"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:fontFamily="sans-serif-bold"
-            android:text="Hedef: 2500 ml"
-            android:textColor="#E2E8F0"
+            android:layout_gravity="center"
+            android:includeFontPadding="false"
+            android:text="🥱"
+            android:textSize="44sp"
+            android:visibility="gone" />
+
+        <!-- Floating Bottom Info Pill (Current / Daily Goal) -->
+        <TextView
+            android:id="@+id/tv_progress_consumed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/widget_floating_pill_bg"
+            android:fontFamily="sans-serif-black"
+            android:includeFontPadding="false"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:paddingTop="2.5dp"
+            android:paddingBottom="2.5dp"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="0 / 2500 ml"
+            android:textColor="#FFFFFF"
             android:textSize="9.5sp" />
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

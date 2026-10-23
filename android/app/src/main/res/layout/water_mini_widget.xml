@@ -1,94 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_mini_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_card_bg"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:background="@drawable/widget_card_bg">
 
-    <!-- Top Streak & Percent Row -->
+    <!-- 1. Full-Bleed Mascot Illustration (Duolingo Hero Style) -->
+    <ImageView
+        android:id="@+id/iv_mini_hero_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="visible" />
+
+    <!-- Fallback Layout with Mascot Emoji when bitmap is not available -->
+    <LinearLayout
+        android:id="@+id/ll_mini_fallback"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_mini_mascot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="🥱"
+            android:textSize="44sp" />
+    </LinearLayout>
+
+    <!-- 2. Floating Top Pills: Streak (Left) & Hydration Percent (Right) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="top"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="7dp"
+        android:paddingRight="7dp"
+        android:paddingTop="7dp">
 
         <TextView
             android:id="@+id/tv_mini_streak"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:background="@drawable/widget_floating_pill_bg"
             android:fontFamily="sans-serif-black"
-            android:text="🔥 1"
+            android:includeFontPadding="false"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="🔥 1 gün"
             android:textColor="#FFFFFF"
-            android:textSize="11sp" />
+            android:textSize="10.5sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/tv_mini_percent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/widget_floating_pill_bg"
             android:fontFamily="sans-serif-black"
             android:includeFontPadding="false"
-            android:text="%0"
-            android:textColor="#F1F5F9"
-            android:textSize="11sp" />
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="💧 %0"
+            android:textColor="#FFFFFF"
+            android:textSize="10.5sp" />
     </LinearLayout>
 
-    <!-- Big Mascot Character -->
-    <ImageView
-        android:id="@+id/iv_mini_mascot"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:scaleType="fitCenter"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/tv_mini_mascot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:includeFontPadding="false"
-        android:text="🥱"
-        android:textSize="28sp" />
-
-    <TextView
-        android:id="@+id/tv_mini_subtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-black"
-        android:includeFontPadding="false"
-        android:text="0 ml"
-        android:textColor="#FFFFFF"
-        android:textSize="11.5sp" />
-
-    <ProgressBar
-        android:id="@+id/pb_mini_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_marginTop="3dp"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/widget_progress_bar" />
-
-    <TextView
-        android:id="@+id/btn_mini_quick_add"
+    <!-- 3. Floating Bottom Info Card: Mascot Title/Dialogue + Consumed/Goal ml -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/widget_button_bg"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
-        android:text="🥛 +200 ml"
-        android:textColor="#0369A1"
-        android:textSize="9.5sp" />
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginBottom="7dp"
+        android:background="@drawable/widget_floating_pill_bg"
+        android:orientation="vertical"
+        android:paddingLeft="7dp"
+        android:paddingRight="7dp"
+        android:paddingTop="3.5dp"
+        android:paddingBottom="3.5dp">
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_mini_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-bold"
+            android:maxLines="1"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="Miyav! Boğazım kurudu..."
+            android:textColor="#FFFFFF"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_mini_subtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:fontFamily="sans-serif-black"
+            android:includeFontPadding="false"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="0 / 2500 ml"
+            android:textColor="#F1F5F9"
+            android:textSize="9.5sp" />
+    </LinearLayout>
+
+</FrameLayout>

@@ -40,6 +40,10 @@ class WaterProvider with ChangeNotifier {
   Map<String, String> _unlockedBadges = {}; // badgeId -> ISO string
   BadgeItem? _newlyUnlockedBadge;
 
+  // Widget Sync Lock & Re-entrancy Guard
+  bool _isSyncingWidgets = false;
+  bool _pendingWidgetSync = false;
+
   // Active Alarm State
   bool _isAlarmActive = false;
   AlarmSetting? _activeAlarm;
@@ -899,8 +903,24 @@ class WaterProvider with ChangeNotifier {
   // Public helper to force widget synchronization after platform channels are ready
   Future<void> syncWidgetsNow() => _syncWidgets();
 
-  // Sync data with home screen and lock screen widgets
+  // Sync data with home screen and lock screen widgets (guarded against concurrent flood)
   Future<void> _syncWidgets() async {
+    if (_isSyncingWidgets) {
+      _pendingWidgetSync = true;
+      return;
+    }
+    _isSyncingWidgets = true;
+    try {
+      do {
+        _pendingWidgetSync = false;
+        await _performSyncWidgets();
+      } while (_pendingWidgetSync);
+    } finally {
+      _isSyncingWidgets = false;
+    }
+  }
+
+  Future<void> _performSyncWidgets() async {
     try {
       final percentInt = (todayPercentage * 100).toInt();
       final now = DateTime.now();

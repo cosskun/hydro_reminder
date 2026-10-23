@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import '../../models/badge_item.dart';
 import '../../providers/water_provider.dart';
 
-void showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCallback? onDismiss}) {
+Future<void> showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCallback? onDismiss}) async {
   final isDark = Theme.of(context).brightness == Brightness.dark;
 
-  showDialog(
+  await showDialog(
     context: context,
     barrierDismissible: false,
     builder: (dialogContext) {
@@ -68,9 +68,7 @@ void showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCall
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Provider.of<WaterProvider>(context, listen: false).clearNewlyUnlockedBadge();
                 Navigator.pop(dialogContext);
-                if (onDismiss != null) onDismiss();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -88,4 +86,8 @@ void showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCall
       );
     },
   );
+
+  if (onDismiss != null) {
+    onDismiss();
+  }
 }

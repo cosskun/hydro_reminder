@@ -72,6 +72,8 @@ class WidgetService {
   Function(int tabIndex)? _onNavigate;
   String? _lastHandledUri;
   DateTime? _lastHandledTime;
+  String? _cachedImageAsset;
+  String? _cachedMascotBase64;
 
   // Initialize widget service, app groups, and deep link listeners
   Future<void> initialize({
@@ -174,9 +176,18 @@ class WidgetService {
       targetWidth: targetSize,
       targetHeight: targetSize,
     );
-    final frameInfo = await codec.getNextFrame();
-    final byteData = await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
+    try {
+      final frameInfo = await codec.getNextFrame();
+      final image = frameInfo.image;
+      try {
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        return byteData!.buffer.asUint8List();
+      } finally {
+        image.dispose();
+      }
+    } finally {
+      codec.dispose();
+    }
   }
 
   // Sync latest hydration data across all widgets (including streak & 5-day tracker)
@@ -210,13 +221,19 @@ class WidgetService {
 
       String? mascotBase64;
       if (imageAsset != null && imageAsset.isNotEmpty) {
-        try {
-          final ByteData byteData = await rootBundle.load(imageAsset);
-          final rawBytes = byteData.buffer.asUint8List();
-          final resizedBytes = await _resizeAssetBytes(rawBytes, targetSize: 512);
-          mascotBase64 = base64Encode(resizedBytes);
-        } catch (e) {
-          debugPrint('Error preparing widget mascot image: $e');
+        if (imageAsset == _cachedImageAsset && _cachedMascotBase64 != null) {
+          mascotBase64 = _cachedMascotBase64;
+        } else {
+          try {
+            final ByteData byteData = await rootBundle.load(imageAsset);
+            final rawBytes = byteData.buffer.asUint8List();
+            final resizedBytes = await _resizeAssetBytes(rawBytes, targetSize: 512);
+            mascotBase64 = base64Encode(resizedBytes);
+            _cachedImageAsset = imageAsset;
+            _cachedMascotBase64 = mascotBase64;
+          } catch (e) {
+            debugPrint('Error preparing widget mascot image: $e');
+          }
         }
       }
 

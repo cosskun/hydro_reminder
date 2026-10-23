@@ -17,6 +17,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late ConfettiController _confettiController;
+  bool _isShowingBadgeDialog = false;
 
   @override
   void initState() {
@@ -74,11 +75,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     }
 
-    // Check if a badge was just unlocked and celebrate
-    if (provider.newlyUnlockedBadge != null) {
+    // Check if a badge was just unlocked and celebrate (guarded against duplicate dialog stacking)
+    if (provider.newlyUnlockedBadge != null && !_isShowingBadgeDialog) {
+      final badge = provider.newlyUnlockedBadge!;
+      _isShowingBadgeDialog = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && provider.newlyUnlockedBadge != null) {
-          showBadgeCelebrationDialog(context, provider.newlyUnlockedBadge!, onDismiss: () {});
+        if (mounted) {
+          provider.clearNewlyUnlockedBadge();
+          showBadgeCelebrationDialog(
+            context,
+            badge,
+            onDismiss: () {
+              if (mounted) {
+                setState(() {
+                  _isShowingBadgeDialog = false;
+                });
+              } else {
+                _isShowingBadgeDialog = false;
+              }
+            },
+          );
+        } else {
+          _isShowingBadgeDialog = false;
         }
       });
     }

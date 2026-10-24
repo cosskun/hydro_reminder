@@ -353,8 +353,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             ),
           ),
           const SizedBox(height: 20),
+
+          // 1. Görünüm & Efektler (Maskot, Tema, Dil)
+          const AppearanceSettingsCard(),
+          const SizedBox(height: 24),
           
-          // 1. Profil bilgilerini güncelle
+          // 2. Profil bilgilerini güncelle
           ProfileSettingsCard(
             selectedGender: _selectedGender,
             onGenderChanged: (val) => setState(() => _selectedGender = val),
@@ -364,7 +368,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           ),
           const SizedBox(height: 24),
           
-          // 2. Günlük su hedefi
+          // 3. Günlük su hedefi
           DailyGoalSettingsCard(
             dailyGoalController: _dailyGoalController,
             onAutoCalculate: _autoCalculateGoal,
@@ -372,7 +376,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           ),
           const SizedBox(height: 14),
 
-          // 3. Hedef ve hesaplama bilgilendirme uyarısı
+          // 4. Hedef ve hesaplama bilgilendirme uyarısı
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -403,7 +407,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           ),
           const SizedBox(height: 24),
 
-          // 4. Hızlı su ekleme paneli
+          // 5. Hızlı su ekleme paneli
           QuickPresetsCard(
             preset1Controller: _preset1Controller,
             preset2Controller: _preset2Controller,
@@ -412,12 +416,8 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           ),
           const SizedBox(height: 24),
 
-          // 5. Gün sonu özet
+          // 6. Gün sonu özet
           const EndOfDaySettingsCard(),
-          const SizedBox(height: 24),
-
-          // 6. Görünüm efekt
-          const AppearanceSettingsCard(),
           const SizedBox(height: 24),
 
           // 7. Bildirim alarm

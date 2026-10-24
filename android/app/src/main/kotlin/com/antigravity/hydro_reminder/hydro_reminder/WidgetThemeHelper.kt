@@ -60,8 +60,24 @@ object WidgetThemeHelper {
         strokeWidthRatio: Float = 0.012f,
         strokeColor: Int = Color.argb(68, 255, 255, 255)
     ): Bitmap {
-        val width = source.width
-        val height = source.height
+        if (source.width <= 0 || source.height <= 0 || source.isRecycled) {
+            return source
+        }
+
+        // Clamp max dimension to 384px to prevent RemoteViews Binder TransactionTooLargeException
+        val maxDim = 384
+        val needsScale = source.width > maxDim || source.height > maxDim
+        val scaledSource = if (needsScale) {
+            val ratio = Math.min(maxDim.toFloat() / source.width, maxDim.toFloat() / source.height)
+            val newW = (source.width * ratio).toInt().coerceAtLeast(1)
+            val newH = (source.height * ratio).toInt().coerceAtLeast(1)
+            Bitmap.createScaledBitmap(source, newW, newH, true)
+        } else {
+            source
+        }
+
+        val width = scaledSource.width
+        val height = scaledSource.height
         val output = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(output)
 
@@ -74,7 +90,7 @@ object WidgetThemeHelper {
 
         // Composite source image inside the rounded mask
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
-        canvas.drawBitmap(source, 0f, 0f, paint)
+        canvas.drawBitmap(scaledSource, 0f, 0f, paint)
 
         // Draw subtle glass border
         if (strokeWidthRatio > 0f && strokeColor != 0) {
@@ -92,6 +108,10 @@ object WidgetThemeHelper {
                 height.toFloat() - halfStroke
             )
             canvas.drawRoundRect(strokeRect, cornerRadius, cornerRadius, paint)
+        }
+
+        if (needsScale && scaledSource != source && !scaledSource.isRecycled) {
+            scaledSource.recycle()
         }
 
         return output

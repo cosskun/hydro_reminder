@@ -40,7 +40,8 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
         appWidgetId: Int,
         widgetData: SharedPreferences
     ) {
-        val views = RemoteViews(context.packageName, R.layout.water_progress_widget)
+        try {
+            val views = RemoteViews(context.packageName, R.layout.water_progress_widget)
 
         val consumed = widgetData.getInt("todayConsumed", 0)
         val goal = widgetData.getInt("dailyGoal", 2500)
@@ -181,5 +182,8 @@ class WaterProgressWidgetProvider : HomeWidgetProvider() {
         views.setOnClickPendingIntent(R.id.widget_progress_root, pendingIntent)
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
+        } catch (e: Exception) {
+            android.util.Log.e("WaterProgressWidget", "Error updating progress widget", e)
+        }
     }
 }

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <!-- Fallback Layout with Mascot Emoji when bitmap is not available -->
     <LinearLayout
@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/tv_mini_mascot"
@@ -32,12 +32,10 @@
     </LinearLayout>
 
     <!-- 2. Floating Top Pills: Streak (Left) & Hydration Percent (Right) -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:paddingLeft="7dp"
         android:paddingRight="7dp"
         android:paddingTop="7dp">
@@ -46,6 +44,9 @@
             android:id="@+id/tv_mini_streak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/widget_floating_pill_bg"
             android:fontFamily="sans-serif-black"
             android:includeFontPadding="false"
@@ -61,15 +62,13 @@
             android:textColor="#FFFFFF"
             android:textSize="10.5sp" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
         <TextView
             android:id="@+id/tv_mini_percent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/widget_floating_pill_bg"
             android:fontFamily="sans-serif-black"
             android:includeFontPadding="false"
@@ -84,7 +83,7 @@
             android:text="💧 %0"
             android:textColor="#FFFFFF"
             android:textSize="10.5sp" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <!-- 3. Floating Bottom Info Card: Mascot Title/Dialogue + Consumed/Goal ml -->
     <LinearLayout

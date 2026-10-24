@@ -39,7 +39,8 @@ class WaterQuickLogWidgetProvider : HomeWidgetProvider() {
         appWidgetId: Int,
         widgetData: SharedPreferences
     ) {
-        val views = RemoteViews(context.packageName, R.layout.water_quick_log_widget)
+        try {
+            val views = RemoteViews(context.packageName, R.layout.water_quick_log_widget)
 
         val consumed = widgetData.getInt("todayConsumed", 0)
         val goal = widgetData.getInt("dailyGoal", 2500)
@@ -108,5 +109,8 @@ class WaterQuickLogWidgetProvider : HomeWidgetProvider() {
         views.setOnClickPendingIntent(R.id.btn_quick_preset3, intent3)
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
+        } catch (e: Exception) {
+            android.util.Log.e("WaterQuickLogWidget", "Error updating quick log widget", e)
+        }
     }
 }

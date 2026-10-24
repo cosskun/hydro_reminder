@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../providers/water_provider.dart';
 
 class WeeklyBarChart extends StatelessWidget {
   final List<Map<String, dynamic>> last7Days;
@@ -16,6 +18,7 @@ class WeeklyBarChart extends StatelessWidget {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final secondary = theme.colorScheme.secondary;
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -38,7 +41,7 @@ class WeeklyBarChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Son 7 Günlük Tüketim',
+            isEn ? 'Past 7 Days Intake' : 'Son 7 Günlük Tüketim',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -54,7 +57,7 @@ class WeeklyBarChart extends StatelessWidget {
               children: last7Days.map((dayData) {
                 final percentage = dayData['percentage'] as double;
                 final barHeight = 90 * percentage;
-                final isToday = dayData['dayLabel'] == DateFormat('E', 'tr_TR').format(DateTime.now());
+                final isToday = dayData['dayLabel'] == DateFormat('E', isEn ? 'en_US' : 'tr_TR').format(DateTime.now());
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.end,

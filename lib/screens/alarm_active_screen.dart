@@ -75,7 +75,8 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<WaterProvider>(context);
-    final alarmLabel = provider.activeAlarm?.label ?? 'Su Zamanı';
+    final isEn = provider.language == 'en';
+    final alarmLabel = provider.activeAlarm?.label ?? (isEn ? 'Water Time' : 'Su Zamanı');
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final secondary = theme.colorScheme.secondary;
@@ -87,7 +88,11 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
           provider.dismissAlarm(_selectedAmount);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Harika! $_selectedAmount ml su başarıyla kaydedildi. 💧😎'),
+              content: Text(
+                isEn
+                    ? 'Awesome! $_selectedAmount ml water logged successfully. 💧😎'
+                    : 'Harika! $_selectedAmount ml su başarıyla kaydedildi. 💧😎',
+              ),
               behavior: SnackBarBehavior.floating,
               backgroundColor: primary,
             ),
@@ -102,7 +107,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
     }
 
     final timeStr = DateFormat('HH:mm').format(_currentTime);
-    final dateStr = DateFormat('d MMMM EEEE', 'tr_TR').format(_currentTime);
+    final dateStr = DateFormat('d MMMM EEEE', isEn ? 'en_US' : 'tr_TR').format(_currentTime);
     final presets = provider.quickPresets.isNotEmpty
         ? provider.quickPresets.take(3).toList()
         : [200, 250, 330];
@@ -309,8 +314,8 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
 
                                       const SizedBox(height: 20),
 
-                                      const Text(
-                                        'Su Zamanı Geldi!',
+                                      Text(
+                                        isEn ? 'Time to Drink Water!' : 'Su Zamanı Geldi!',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 22,
@@ -323,7 +328,9 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                       const SizedBox(height: 8),
 
                                       Text(
-                                        'Vücudunun nem dengesini tazelemek için bir bardak su içelim.',
+                                        isEn
+                                            ? 'Let us drink a glass of water to refresh your body hydration.'
+                                            : 'Vücudunun nem dengesini tazelemek için bir bardak su içelim.',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 13.5,
@@ -351,7 +358,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Text(
-                                                'Bugün: ${provider.todayConsumed} / ${provider.dailyGoal} ml',
+                                                '${isEn ? 'Today' : 'Bugün'}: ${provider.todayConsumed} / ${provider.dailyGoal} ml',
                                                 style: TextStyle(
                                                   fontSize: 12.5,
                                                   fontWeight: FontWeight.bold,
@@ -360,7 +367,7 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                               ),
                                               const SizedBox(width: 8),
                                               Text(
-                                                '(Kalan: ${provider.dailyRemainingMl} ml)',
+                                                '(${isEn ? 'Remaining' : 'Kalan'}: ${provider.dailyRemainingMl} ml)',
                                                 style: TextStyle(
                                                   fontSize: 11.5,
                                                   color: Colors.white.withValues(alpha: 0.7),
@@ -454,7 +461,11 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
 
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('Harika! $_selectedAmount ml su başarıyla kaydedildi. 💧😎'),
+                                          content: Text(
+                                            isEn
+                                                ? 'Awesome! $_selectedAmount ml water logged successfully. 💧😎'
+                                                : 'Harika! $_selectedAmount ml su başarıyla kaydedildi. 💧😎',
+                                          ),
                                           behavior: SnackBarBehavior.floating,
                                           backgroundColor: primary,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -484,9 +495,9 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
                                             mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              const Text(
-                                                'Su İçtim',
-                                                style: TextStyle(
+                                              Text(
+                                                isEn ? 'I Drank Water' : 'Su İçtim',
+                                                style: const TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w900,
                                                   color: Colors.white,
@@ -512,7 +523,9 @@ class _AlarmActiveScreenState extends State<AlarmActiveScreen>
 
                                 const SizedBox(height: 8),
                                 Text(
-                                  '🛡️ 5 saniyelik içim doğrulaması aktiftir',
+                                  isEn
+                                      ? '🛡️ 5-second drink verification active'
+                                      : '🛡️ 5 saniyelik içim doğrulaması aktiftir',
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: Colors.white.withValues(alpha: 0.55),

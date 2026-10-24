@@ -84,6 +84,62 @@ class BadgeItem {
   @override
   int get hashCode => Object.hash(id, title, isUnlocked, unlockedAt, currentProgress);
 
+  String localizedTitle(String lang) {
+    if (lang == 'en') {
+      switch (id) {
+        case 'first_drop':
+          return 'First Drop';
+        case 'streak_3':
+          return 'Spark Starter';
+        case 'streak_7':
+          return 'Streak Master (1 Wk)';
+        case 'streak_30':
+          return 'Hydration Champion';
+        case 'early_bird':
+          return 'Early Bird';
+        case 'night_shield':
+          return 'Night Shield';
+        case 'ocean_50l':
+          return 'Ocean Explorer (50 L)';
+        case 'ocean_100l':
+          return 'Hydration Giant (100 L)';
+        case 'beverage_guru':
+          return 'Beverage Gourmet';
+        default:
+          return title;
+      }
+    }
+    return title;
+  }
+
+  String localizedDescription(String lang) {
+    if (lang == 'en') {
+      switch (id) {
+        case 'first_drop':
+          return 'Log your first water intake in the app.';
+        case 'streak_3':
+          return 'Reach your daily goal 3 days in a row.';
+        case 'streak_7':
+          return 'Reach your daily goal for 7 consecutive days.';
+        case 'streak_30':
+          return 'Build a consistent hydration habit for 30 days.';
+        case 'early_bird':
+          return 'Log your first glass before 08:00 AM.';
+        case 'night_shield':
+          return 'Complete your hydration target before going to bed.';
+        case 'ocean_50l':
+          return 'Surpass 50 liters in total cumulative water intake.';
+        case 'ocean_100l':
+          return 'Reach 100 liters in total cumulative water intake.';
+        case 'beverage_guru':
+          return 'Log at least 3 different beverage types.';
+        default:
+          return description;
+      }
+    }
+    return description;
+  }
+
   static const List<BadgeItem> definitions = [
     BadgeItem(
       id: 'first_drop',

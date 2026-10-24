@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../providers/water_provider.dart';
 import 'settings_card_wrapper.dart';
 
@@ -20,6 +21,7 @@ class QuickPresetsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
 
     Widget buildPresetColumn(int defaultAmount, TextEditingController controller) {
       return Expanded(
@@ -27,9 +29,12 @@ class QuickPresetsCard extends StatelessWidget {
           valueListenable: controller,
           builder: (context, value, _) {
             final parsedAmount = int.tryParse(value.text.trim()) ?? defaultAmount;
-            final meta = WaterProvider.getPresetMeta(parsedAmount > 0 ? parsedAmount : defaultAmount);
+            final meta = WaterProvider.getPresetMeta(
+              parsedAmount > 0 ? parsedAmount : defaultAmount,
+              lang: isEn ? 'en' : 'tr',
+            );
             final icon = meta['emoji'] ?? '🥛';
-            final label = meta['name'] ?? 'Bardak';
+            final label = meta['name'] ?? (isEn ? 'Glass' : 'Bardak');
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,11 +82,13 @@ class QuickPresetsCard extends StatelessWidget {
     }
 
     return SettingsCardWrapper(
-      title: 'Hızlı Su Ekleme Paneli',
+      title: isEn ? 'Quick Add Presets' : 'Hızlı Su Ekleme Paneli',
       titleTrailing: Icon(Icons.local_drink_outlined, color: Theme.of(context).colorScheme.primary),
       children: [
         Text(
-          'Ana ekrandaki ve araç takımlarındaki hızlı su ekleme butonlarının (ml) değerlerini özelleştirin.',
+          isEn
+              ? 'Customize the quick water add button amounts (ml) on your dashboard and widgets.'
+              : 'Ana ekrandaki ve araç takımlarındaki hızlı su ekleme butonlarının (ml) değerlerini özelleştirin.',
           style: TextStyle(
             fontSize: 11,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -109,9 +116,9 @@ class QuickPresetsCard extends StatelessWidget {
             ),
             elevation: 0,
           ),
-          child: const Text(
-            'Miktarları Güncelle',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          child: Text(
+            isEn ? 'Update Amounts' : 'Miktarları Güncelle',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),
         ),
       ],

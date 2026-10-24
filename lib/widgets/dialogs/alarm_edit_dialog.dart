@@ -5,14 +5,16 @@ import '../../providers/water_provider.dart';
 import '../../services/sound_service.dart';
 
 void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
+  final provider = Provider.of<WaterProvider>(context, listen: false);
+  final isEn = provider.language == 'en';
   TimeOfDay selectedTime = existingAlarm != null
       ? TimeOfDay(hour: existingAlarm.hour, minute: existingAlarm.minute)
       : TimeOfDay.now();
   final labelController = TextEditingController(
-    text: existingAlarm?.label ?? 'Su Zamanı 💧',
+    text: existingAlarm?.label ?? (isEn ? 'Water Time 💧' : 'Su Zamanı 💧'),
   );
 
-  String selectedSoundName = existingAlarm?.soundName ?? 'Su Damlası 💧';
+  String selectedSoundName = existingAlarm?.soundName ?? (isEn ? 'Water Drop 💧' : 'Su Damlası 💧');
   String selectedSoundPath = existingAlarm?.soundPath ?? 'assets/sounds/sound_water_drop.wav';
   bool isCustomSound = existingAlarm?.isCustomSound ?? false;
   String? currentlyPlayingPath;
@@ -29,7 +31,9 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
             title: Text(
-              existingAlarm != null ? 'Alarmı Düzenle ⏰' : 'Yeni Alarm Ekle ⏰',
+              existingAlarm != null
+                  ? (isEn ? 'Edit Alarm ⏰' : 'Alarmı Düzenle ⏰')
+                  : (isEn ? 'Add New Alarm ⏰' : 'Yeni Alarm Ekle ⏰'),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
@@ -74,7 +78,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                         children: [
                           Flexible(
                             child: Text(
-                              'Saat Seçin:',
+                              isEn ? 'Select Time:' : 'Saat Seçin:',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: isDark ? const Color(0xFF94A3B8) : Colors.black87,
@@ -99,7 +103,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                   TextField(
                     controller: labelController,
                     decoration: InputDecoration(
-                      labelText: 'Alarm Başlığı',
+                      labelText: isEn ? 'Alarm Label' : 'Alarm Başlığı',
                       filled: true,
                       fillColor: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
@@ -114,7 +118,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
 
                   // Sound Selection Header
                   Text(
-                    'Alarm Sesi Seçin 🎵',
+                    isEn ? 'Select Alarm Sound 🎵' : 'Alarm Sesi Seçin 🎵',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -150,7 +154,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                           leading: Text(preset.icon, style: const TextStyle(fontSize: 20)),
                           title: Text(
-                            preset.name,
+                            preset.localizedName(provider.language),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -264,7 +268,9 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  isCustomSound ? selectedSoundName : 'Telefonumdan Ses Seç 📁',
+                                  isCustomSound
+                                      ? selectedSoundName
+                                      : (isEn ? 'Choose Sound From Device 📁' : 'Telefonumdan Ses Seç 📁'),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
@@ -276,7 +282,11 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  isCustomSound ? 'Özel seçilmiş ses' : 'Cihazınızdaki MP3/WAV seslerini kullanın',
+                                  isCustomSound
+                                      ? (isEn ? 'Custom selected sound' : 'Özel seçilmiş ses')
+                                      : (isEn
+                                          ? 'Use MP3/WAV audio files on your device'
+                                          : 'Cihazınızdaki MP3/WAV seslerini kullanın'),
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -329,20 +339,23 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                         SoundService().stopSound();
                         Navigator.pop(context);
                       },
-                      child: Text('Vazgeç', style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
+                      child: Text(
+                        isEn ? 'Cancel' : 'Vazgeç',
+                        style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+                      ),
                     ),
                   ),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
                         SoundService().stopSound();
-                        final provider = Provider.of<WaterProvider>(context, listen: false);
+                        final p = Provider.of<WaterProvider>(context, listen: false);
                         final label = labelController.text.trim().isEmpty
-                            ? 'Su Zamanı'
+                            ? (isEn ? 'Water Time' : 'Su Zamanı')
                             : labelController.text.trim();
 
                         if (existingAlarm != null) {
-                          provider.editAlarm(
+                          p.editAlarm(
                             id: existingAlarm.id,
                             hour: selectedTime.hour,
                             minute: selectedTime.minute,
@@ -352,7 +365,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                             isCustomSound: isCustomSound,
                           );
                         } else {
-                          provider.addAlarm(
+                          p.addAlarm(
                             hour: selectedTime.hour,
                             minute: selectedTime.minute,
                             label: label,
@@ -370,7 +383,7 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Kaydet'),
+                      child: Text(isEn ? 'Save' : 'Kaydet'),
                     ),
                   ),
                 ],

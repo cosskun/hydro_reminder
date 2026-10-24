@@ -279,7 +279,7 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                 children: [
                                   const Text('⚠️ ', style: TextStyle(fontSize: 14)),
                                   Text(
-                                    'HIZLI ONAY KORUMASI',
+                                    isEn ? 'QUICK CONFIRMATION GUARD' : 'HIZLI ONAY KORUMASI',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w900,
@@ -393,7 +393,9 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                             style: const TextStyle(fontSize: 11),
                                           ),
                                           Text(
-                                            isCountdownFinished ? 'Hazır!' : '$_remainingSeconds sn',
+                                            isCountdownFinished
+                                                ? (isEn ? 'Ready!' : 'Hazır!')
+                                                : (isEn ? '$_remainingSeconds s' : '$_remainingSeconds sn'),
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -499,7 +501,7 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
 
                             // 4. Main Title
                             Text(
-                              AlarmConstants.cheatWarningTitle,
+                              isEn ? 'Did You Really Drink Water?' : AlarmConstants.cheatWarningTitle,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 22,
@@ -540,7 +542,9 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                               child: Column(
                                 children: [
                                   Text(
-                                    AlarmConstants.cheatWarningMessage,
+                                    isEn
+                                        ? 'You clicked without drinking water to dismiss the alarm!'
+                                        : AlarmConstants.cheatWarningMessage,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 13.5,
@@ -563,10 +567,10 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                           : const Color(0xFFFFF7ED),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Text(
-                                      AlarmConstants.cheatWarningAction,
+                                    child: Text(
+                                      isEn ? 'Please drink your water.' : AlarmConstants.cheatWarningAction,
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w900,
                                         color: Color(0xFFEA580C),
@@ -575,7 +579,9 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    AlarmConstants.cheatWarningExplanation,
+                                    isEn
+                                        ? 'To maintain an honest hydration habit, there is a mandatory pause before confirming your water intake.'
+                                        : AlarmConstants.cheatWarningExplanation,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 11.5,
@@ -618,8 +624,8 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                       Expanded(
                                         child: Text(
                                           isCountdownFinished
-                                              ? 'Su içme süresi tamamlandı ✅'
-                                              : 'Lütfen suyunuzu yudumlayın... 🥤',
+                                              ? (isEn ? 'Water drinking duration completed ✅' : 'Su içme süresi tamamlandı ✅')
+                                              : (isEn ? 'Please sip your water... 🥤' : 'Lütfen suyunuzu yudumlayın... 🥤'),
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w800,
@@ -645,7 +651,7 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Text(
-                                            '$_remainingSeconds sn',
+                                            isEn ? '$_remainingSeconds s' : '$_remainingSeconds sn',
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -717,8 +723,8 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                         Flexible(
                                           child: Text(
                                             isCountdownFinished
-                                                ? 'Şimdi Suyumu İçtim (+250 ml)'
-                                                : 'Suyunuzu Yudumlayın ($_remainingSeconds sn)',
+                                                ? (isEn ? 'I Drank My Water Now (+250 ml)' : 'Şimdi Suyumu İçtim (+250 ml)')
+                                                : (isEn ? 'Sip Your Water ($_remainingSeconds s)' : 'Suyunuzu Yudumlayın ($_remainingSeconds sn)'),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
@@ -735,9 +741,9 @@ class _AlarmCheatWarningViewState extends State<AlarmCheatWarningView>
                                 TextButton.icon(
                                   onPressed: widget.onReturn,
                                   icon: const Icon(Icons.arrow_back_rounded, size: 16),
-                                  label: const Text(
-                                    'Alarm Ekranına Dön',
-                                    style: TextStyle(
+                                  label: Text(
+                                    isEn ? 'Return to Alarm Screen' : 'Alarm Ekranına Dön',
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
                                     ),

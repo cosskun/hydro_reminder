@@ -25,9 +25,10 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = provider.language == 'en';
 
     return SettingsCardWrapper(
-      title: 'Günlük Su Hedefi 🎯',
+      title: isEn ? 'Daily Water Goal 🎯' : 'Günlük Su Hedefi 🎯',
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
@@ -48,7 +49,9 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
       ),
       children: [
         Text(
-          'İstediğiniz günlük hedef miktarını serbestçe belirleyin veya otomatik hesaplama seçeneğini kullanın.',
+          isEn
+              ? 'Freely set your preferred daily goal or use automatic calculation based on your profile.'
+              : 'İstediğiniz günlük hedef miktarını serbestçe belirleyin veya otomatik hesaplama seçeneğini kullanın.',
           style: TextStyle(
             fontSize: 12,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -60,7 +63,7 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
           controller: widget.dailyGoalController,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            labelText: 'Günlük Hedef Miktarı',
+            labelText: isEn ? 'Daily Goal Target' : 'Günlük Hedef Miktarı',
             suffixText: 'ml',
             filled: true,
             fillColor: isDark ? const Color(0xFF0B132B) : theme.colorScheme.primary.withValues(alpha: 0.05),
@@ -113,12 +116,12 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
         OutlinedButton.icon(
           onPressed: widget.onAutoCalculate,
           icon: const Icon(Icons.auto_awesome, size: 16),
-          label: const FittedBox(
+          label: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              'Hedefi Otomatik Hesapla',
+              isEn ? 'Auto Calculate Goal' : 'Hedefi Otomatik Hesapla',
               maxLines: 1,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
           style: OutlinedButton.styleFrom(
@@ -144,9 +147,9 @@ class _DailyGoalSettingsCardState extends State<DailyGoalSettingsCard> {
             ),
             elevation: 0,
           ),
-          child: const Text(
-            'Günlük Hedefi Kaydet',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          child: Text(
+            isEn ? 'Save Daily Goal' : 'Günlük Hedefi Kaydet',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),
         ),
       ],

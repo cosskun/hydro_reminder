@@ -80,7 +80,7 @@ class AppearanceSettingsCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                '5 Maskot • 10 Durum',
+                lang == 'en' ? '5 Mascots • 10 States' : '5 Maskot • 10 Durum',
                 style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.bold,

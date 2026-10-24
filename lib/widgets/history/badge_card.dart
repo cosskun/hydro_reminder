@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/badge_item.dart';
+import '../../providers/water_provider.dart';
 
 class BadgeCard extends StatelessWidget {
   final BadgeItem badge;
@@ -13,6 +15,10 @@ class BadgeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
+    final badgeTitle = badge.localizedTitle(isEn ? 'en' : 'tr');
+    final statusText = badge.isUnlocked ? (isEn ? 'Unlocked' : 'Kazanıldı') : badge.progressLabel;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: BoxDecoration(
@@ -39,7 +45,7 @@ class BadgeCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            badge.title,
+            badgeTitle,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -53,7 +59,7 @@ class BadgeCard extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            badge.isUnlocked ? 'Kazanıldı' : badge.progressLabel,
+            statusText,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

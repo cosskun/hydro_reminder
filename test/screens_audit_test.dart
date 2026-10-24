@@ -435,5 +435,58 @@ void main() {
 
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('8. Full English Language (L10n) audit test across all 4 screens and navigation',
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.75;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final provider = WaterProvider();
+      await provider.updateLanguage('en');
+
+      await tester.pumpWidget(
+        createTestApp(
+          provider: provider,
+          child: const MainNavigationLayout(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // Navigation bar is in English
+      expect(find.text('Dashboard'), findsOneWidget);
+      expect(find.text('History'), findsOneWidget);
+      expect(find.text('Alarms'), findsOneWidget);
+      expect(find.text('Settings'), findsOneWidget);
+
+      // Dashboard screen greeting and questions in English
+      expect(find.text('Hello 👋'), findsOneWidget);
+      expect(find.text('How are you today?'), findsOneWidget);
+
+      // Switch to History tab
+      await tester.tap(find.text('History'));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Summary & Stats 📊'), findsOneWidget);
+      expect(find.text('Achievements & Badges'), findsOneWidget);
+
+      // Switch to Alarms tab
+      await tester.tap(find.text('Alarms'));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Reminder Alarms ⏰'), findsOneWidget);
+
+      // Switch to Settings tab
+      await tester.tap(find.text('Settings'));
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Settings ⚙️'), findsOneWidget);
+      expect(find.text('Daily Water Goal 🎯'), findsOneWidget);
+      expect(find.text('Appearance & Effects 🎨'), findsOneWidget);
+
+      // Check presets bilingual meta
+      expect(WaterProvider.getPresetMeta(200, lang: 'en')['name'], 'Glass');
+      expect(WaterProvider.getPresetMeta(500, lang: 'en')['name'], 'Bottle');
+
+      expect(tester.takeException(), isNull);
+    });
   });
 }

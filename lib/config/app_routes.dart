@@ -78,8 +78,10 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = provider.language == 'en';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -116,8 +118,10 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
                 applicationVersion: '1.0.0',
                 applicationIcon: const Text('💧', style: TextStyle(fontSize: 32)),
                 children: [
-                  const Text(
-                    'HydroSoft, vücut kitle indeksiniz, yaşınız ve cinsiyetinize özel su içme hedefleri belirleyen ve sizi düzenli aralıklarla uyararak hidrasyon dengenizi korumanızı sağlayan akıllı bir hatırlatıcıdır.',
+                  Text(
+                    isEn
+                        ? 'HydroSoft is an intelligent hydration assistant that calculates personalized daily water goals based on your BMI, age, and gender, keeping you hydrated with timely notifications.'
+                        : 'HydroSoft, vücut kitle indeksiniz, yaşınız ve cinsiyetinize özel su içme hedefleri belirleyen ve sizi düzenli aralıklarla uyararak hidrasyon dengenizi korumanızı sağlayan akıllı bir hatırlatıcıdır.',
                   ),
                 ],
               );
@@ -159,26 +163,26 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
             selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
             unselectedLabelStyle: const TextStyle(fontSize: 10),
             elevation: 0,
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.water_drop_outlined),
-                activeIcon: Icon(Icons.water_drop),
-                label: 'Panel',
+                icon: const Icon(Icons.water_drop_outlined),
+                activeIcon: const Icon(Icons.water_drop),
+                label: isEn ? 'Dashboard' : 'Panel',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.history_toggle_off_rounded),
-                activeIcon: Icon(Icons.history_rounded),
-                label: 'Günlük',
+                icon: const Icon(Icons.history_toggle_off_rounded),
+                activeIcon: const Icon(Icons.history_rounded),
+                label: isEn ? 'History' : 'Günlük',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.notifications_active_outlined),
-                activeIcon: Icon(Icons.notifications_active_rounded),
-                label: 'Alarmlar',
+                icon: const Icon(Icons.notifications_active_outlined),
+                activeIcon: const Icon(Icons.notifications_active_rounded),
+                label: isEn ? 'Alarms' : 'Alarmlar',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined),
-                activeIcon: Icon(Icons.settings_rounded),
-                label: 'Ayarlar',
+                icon: const Icon(Icons.settings_outlined),
+                activeIcon: const Icon(Icons.settings_rounded),
+                label: isEn ? 'Settings' : 'Ayarlar',
               ),
             ],
           ),

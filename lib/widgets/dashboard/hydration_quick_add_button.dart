@@ -36,16 +36,17 @@ class HydrationQuickAddButton extends StatelessWidget {
           final newTotal = provider.todayTotal;
           final goal = provider.dailyGoal;
           final pct = (goal > 0) ? (newTotal / goal) : 0.0;
+          final isEn = provider.language == 'en';
 
           String motivationalMsg;
           if (pct >= 1.0) {
-            motivationalMsg = '🏆 Harikasın! Günlük hedefine ulaştın!';
+            motivationalMsg = isEn ? '🏆 Awesome! You reached your daily goal!' : '🏆 Harikasın! Günlük hedefine ulaştın!';
           } else if (pct >= 0.75) {
-            motivationalMsg = '🚀 Harika ilerliyorsun, hedefe çok az kaldı!';
+            motivationalMsg = isEn ? '🚀 Great progress, almost at your goal!' : '🚀 Harika ilerliyorsun, hedefe çok az kaldı!';
           } else if (pct >= 0.50) {
-            motivationalMsg = '👏 Harika gidiyorsun, yarıyı geçtin!';
+            motivationalMsg = isEn ? '👏 Well done, you\'re halfway there!' : '👏 Harika gidiyorsun, yarıyı geçtin!';
           } else {
-            motivationalMsg = '✨ Harika bir adım! İyi ilerliyorsun!';
+            motivationalMsg = isEn ? '✨ Great step! Keep it up!' : '✨ Harika bir adım! İyi ilerliyorsun!';
           }
 
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -143,6 +144,7 @@ class HydrationCustomAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext _) {
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: isExpanded ? 3.0 : 4.0),
       child: InkWell(
@@ -178,7 +180,7 @@ class HydrationCustomAddButton extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  'Özel',
+                  isEn ? 'Custom' : 'Özel',
                   maxLines: 1,
                   style: TextStyle(
                     fontSize: 12,
@@ -191,7 +193,7 @@ class HydrationCustomAddButton extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  '+ Ekle',
+                  isEn ? '+ Add' : '+ Ekle',
                   maxLines: 1,
                   style: TextStyle(
                     fontSize: 10,

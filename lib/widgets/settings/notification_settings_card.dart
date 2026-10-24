@@ -20,9 +20,10 @@ class NotificationSettingsCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = provider.language == 'en';
 
     return SettingsCardWrapper(
-      title: 'Bildirim ve Alarm Ayarları',
+      title: isEn ? 'Notification & Alarm Settings' : 'Bildirim ve Alarm Ayarları',
       titleTrailing: Icon(Icons.notifications_active_outlined, color: Theme.of(context).colorScheme.primary),
       children: [
         Container(
@@ -49,8 +50,8 @@ class NotificationSettingsCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   hasNotificationPermission
-                      ? 'Telefon bildirim izinleri aktif.'
-                      : 'Telefon bildirim izinleri kapalı! Alarmlar çalmayabilir.',
+                      ? (isEn ? 'Device notification permissions are active.' : 'Telefon bildirim izinleri aktif.')
+                      : (isEn ? 'Device notifications are disabled! Alarms may not ring.' : 'Telefon bildirim izinleri kapalı! Alarmlar çalmayabilir.'),
                   style: TextStyle(
                     fontSize: 12,
                     color: hasNotificationPermission
@@ -69,9 +70,9 @@ class NotificationSettingsCard extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     foregroundColor: Theme.of(context).colorScheme.primary,
                   ),
-                  child: const Text(
-                    'İzin İste',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  child: Text(
+                    isEn ? 'Grant Permission' : 'İzin İste',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
             ],
@@ -89,9 +90,11 @@ class NotificationSettingsCard extends StatelessWidget {
             onRequestPermission();
             if (targetVal && !granted && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'Bildirimleri açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                    isEn
+                        ? 'Notification permission is required in phone settings to enable notifications.'
+                        : 'Bildirimleri açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
                   ),
                   backgroundColor: Colors.orange,
                   behavior: SnackBarBehavior.floating,
@@ -109,7 +112,7 @@ class NotificationSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Su Hatırlatıcı Bildirimleri',
+                        isEn ? 'Hydration Reminder Notifications' : 'Su Hatırlatıcı Bildirimleri',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -118,7 +121,9 @@ class NotificationSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Gün içindeki tüm hatırlatıcıları açar/kapatır.',
+                        isEn
+                            ? 'Toggles all scheduled reminders throughout the day.'
+                            : 'Gün içindeki tüm hatırlatıcıları açar/kapatır.',
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],
@@ -137,9 +142,11 @@ class NotificationSettingsCard extends StatelessWidget {
                     onRequestPermission();
                     if (val && !granted && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            'Bildirimleri açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                            isEn
+                                ? 'Notification permission is required in phone settings to enable notifications.'
+                                : 'Bildirimleri açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
                           ),
                           backgroundColor: Colors.orange,
                           behavior: SnackBarBehavior.floating,
@@ -173,7 +180,7 @@ class NotificationSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sesli Uyarı',
+                        isEn ? 'Sound Alert' : 'Sesli Uyarı',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -182,7 +189,9 @@ class NotificationSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Alarm çaldığında zil sesi çalar.',
+                        isEn
+                            ? 'Plays a ringtone when an alarm triggers.'
+                            : 'Alarm çaldığında zil sesi çalar.',
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],
@@ -227,7 +236,7 @@ class NotificationSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Titreşim',
+                        isEn ? 'Vibration' : 'Titreşim',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -236,7 +245,9 @@ class NotificationSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Telefon sessiz moddayken bile güçlü ritmik titreşimle uyarır.',
+                        isEn
+                            ? 'Alerts with strong rhythmic vibration even in silent mode.'
+                            : 'Telefon sessiz moddayken bile güçlü ritmik titreşimle uyarır.',
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],
@@ -273,9 +284,13 @@ class NotificationSettingsCard extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        isIOS
-                            ? 'Canlı etkinliği (Live Activity) kullanabilmek için telefon ayarlarından izin vermeniz gerekmektedir.'
-                            : 'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                        isEn
+                            ? (isIOS
+                                ? 'Live Activity requires permission in your device settings.'
+                                : 'Ongoing progress notification requires notification permission in your device settings.')
+                            : (isIOS
+                                ? 'Canlı etkinliği (Live Activity) kullanabilmek için telefon ayarlarından izin vermeniz gerekmektedir.'
+                                : 'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.'),
                       ),
                       backgroundColor: Colors.orange,
                       behavior: SnackBarBehavior.floating,
@@ -296,9 +311,9 @@ class NotificationSettingsCard extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Text(
-                                  isIOS
-                                      ? 'Canlı Etkinlik & Kilit Ekranı'
-                                      : 'Canlı İlerleme Bildirimi',
+                                  isEn
+                                      ? (isIOS ? 'Live Activity & Lock Screen' : 'Live Progress Notification')
+                                      : (isIOS ? 'Canlı Etkinlik & Kilit Ekranı' : 'Canlı İlerleme Bildirimi'),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -316,7 +331,7 @@ class NotificationSettingsCard extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  isIOS ? 'Live Activity' : 'Sabit Panel',
+                                  isIOS ? 'Live Activity' : (isEn ? 'Pinned Panel' : 'Sabit Panel'),
                                   style: TextStyle(
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.bold,
@@ -329,8 +344,12 @@ class NotificationSettingsCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             isIOS
-                                ? 'Kilit ekranında ve Dynamic Island\'da maskotunuzla canlı su doluluğunu, seri alevini ve ilerleme çubuğunu göster (iOS 16.1+).'
-                                : 'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.',
+                                ? (isEn
+                                    ? 'Shows live water progress, streak flame, and mascot on Lock Screen and Dynamic Island (iOS 16.1+).'
+                                    : 'Kilit ekranında ve Dynamic Island\'da maskotunuzla canlı su doluluğunu, seri alevini ve ilerleme çubuğunu göster (iOS 16.1+).')
+                                : (isEn
+                                    ? 'Shows water intake progress bar and quick add buttons (+200, +330, +500) in the notification drawer all day.'
+                                    : 'Bildirim çekmecesinde gün boyu su doluluk çubuğunu ve hızlı ekleme butonlarını (+200, +330, +500) göster.'),
                             style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                           ),
                         ],
@@ -347,9 +366,13 @@ class NotificationSettingsCard extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                isIOS
-                                    ? 'Canlı etkinliği (Live Activity) kullanabilmek için telefon ayarlarından izin vermeniz gerekmektedir.'
-                                    : 'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                                isEn
+                                    ? (isIOS
+                                        ? 'Live Activity requires permission in your device settings.'
+                                        : 'Ongoing progress notification requires notification permission in your device settings.')
+                                    : (isIOS
+                                        ? 'Canlı etkinliği (Live Activity) kullanabilmek için telefon ayarlarından izin vermeniz gerekmektedir.'
+                                        : 'Canlı ilerleme bildirimini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.'),
                               ),
                               backgroundColor: Colors.orange,
                               behavior: SnackBarBehavior.floating,
@@ -391,7 +414,7 @@ class NotificationSettingsCard extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              'Akıllı Tempo Hatırlatıcıları',
+                              isEn ? 'Smart Pacing Reminders' : 'Akıllı Tempo Hatırlatıcıları',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 13.5,
@@ -407,16 +430,18 @@ class NotificationSettingsCard extends StatelessWidget {
                               color: const Color(0xFF10B981).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
-                              'Adaptif',
-                              style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
+                            child: Text(
+                              isEn ? 'Adaptive' : 'Adaptif',
+                              style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Gün ortası (14:00) ve akşamüstü (18:30) tüketim hızınızı analiz eder; geride kalırsanız motive edici akıllı uyarı gönderir.',
+                        isEn
+                            ? 'Analyzes intake speed at midday (14:00) and evening (18:30); sends a smart boost if falling behind.'
+                            : 'Gün ortası (14:00) ve akşamüstü (18:30) tüketim hızınızı analiz eder; geride kalırsanız motive edici akıllı uyarı gönderir.',
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],

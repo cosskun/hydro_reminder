@@ -9,6 +9,8 @@ void showCustomAddBeverageDialog(BuildContext context) {
   bool saveAsQuickButton = false;
   BeverageType selectedBeverage = BeverageType.all.first;
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final provider = Provider.of<WaterProvider>(context, listen: false);
+  final isEn = provider.language == 'en';
 
   showDialog(
     context: context,
@@ -25,7 +27,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
             backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
             title: Center(
               child: Text(
-                'İçecek & Miktar Ekle 💧',
+                isEn ? 'Add Beverage & Amount 💧' : 'İçecek & Miktar Ekle 💧',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -40,7 +42,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'İçecek Türü:',
+                      isEn ? 'Beverage Type:' : 'İçecek Türü:',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -57,7 +59,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                       return ChoiceChip(
                         avatar: Text(bev.icon, style: const TextStyle(fontSize: 14)),
                         label: Text(
-                          bev.name,
+                          bev.localizedName(provider.language),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -115,7 +117,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Net Hidrasyon: $effectiveMl ml',
+                                isEn ? 'Net Hydration: $effectiveMl ml' : 'Net Hidrasyon: $effectiveMl ml',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -123,7 +125,9 @@ void showCustomAddBeverageDialog(BuildContext context) {
                                 ),
                               ),
                               Text(
-                                'Emilim katsayısı: %${(selectedBeverage.hydrationFactor * 100).toInt()}',
+                                isEn
+                                    ? 'Hydration factor: %${(selectedBeverage.hydrationFactor * 100).toInt()}'
+                                    : 'Emilim katsayısı: %${(selectedBeverage.hydrationFactor * 100).toInt()}',
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
@@ -267,7 +271,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                     contentPadding: EdgeInsets.zero,
                     controlAffinity: ListTileControlAffinity.leading,
                     title: Text(
-                      'Anasayfaya hızlı ekle butonu olarak ekle',
+                      isEn ? 'Add as quick preset on home screen' : 'Anasayfaya hızlı ekle butonu olarak ekle',
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w500,
@@ -288,7 +292,7 @@ void showCustomAddBeverageDialog(BuildContext context) {
                       style: TextButton.styleFrom(
                         foregroundColor: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                       ),
-                      child: const Text('İptal'),
+                      child: Text(isEn ? 'Cancel' : 'İptal'),
                     ),
                   ),
                   Expanded(
@@ -296,12 +300,12 @@ void showCustomAddBeverageDialog(BuildContext context) {
                     child: ElevatedButton(
                       onPressed: () {
                         if (currentAmount <= 0) return;
-                        final provider = Provider.of<WaterProvider>(context, listen: false);
+                        final p = Provider.of<WaterProvider>(context, listen: false);
 
-                        provider.addWater(currentAmount, beverageId: selectedBeverage.id);
+                        p.addWater(currentAmount, beverageId: selectedBeverage.id);
 
                         if (saveAsQuickButton) {
-                          provider.addQuickPreset(currentAmount);
+                          p.addQuickPreset(currentAmount);
                         }
 
                         Navigator.pop(dialogContext);
@@ -313,7 +317,9 @@ void showCustomAddBeverageDialog(BuildContext context) {
                                 Text('${selectedBeverage.icon} ', style: const TextStyle(fontSize: 18)),
                                 Expanded(
                                   child: Text(
-                                    '+$effectiveMl ml hidrasyon kaydedildi! Harika ilerliyorsun! ✨',
+                                    isEn
+                                        ? '+$effectiveMl ml hydration logged! Keep going! ✨'
+                                        : '+$effectiveMl ml hidrasyon kaydedildi! Harika ilerliyorsun! ✨',
                                     style: const TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -333,7 +339,11 @@ void showCustomAddBeverageDialog(BuildContext context) {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text('${selectedBeverage.icon} Ekle ($currentAmount ml)'),
+                      child: Text(
+                        isEn
+                            ? '${selectedBeverage.icon} Add ($currentAmount ml)'
+                            : '${selectedBeverage.icon} Ekle ($currentAmount ml)',
+                      ),
                     ),
                   ),
                 ],

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/water_provider.dart';
 
 class EmptyAlarmsView extends StatelessWidget {
   const EmptyAlarmsView({super.key});
@@ -8,6 +10,7 @@ class EmptyAlarmsView extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
 
     return Container(
       width: double.infinity,
@@ -24,7 +27,7 @@ class EmptyAlarmsView extends StatelessWidget {
           const Text('🔔', style: TextStyle(fontSize: 40)),
           const SizedBox(height: 12),
           Text(
-            'Kayıtlı alarm bulunmuyor.',
+            isEn ? 'No scheduled alarms yet.' : 'Kayıtlı alarm bulunmuyor.',
             style: TextStyle(
               fontSize: 14,
               color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF64748B),
@@ -33,7 +36,7 @@ class EmptyAlarmsView extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Sağ üstteki "+" butonuna basarak ekleyin.',
+            isEn ? 'Tap the "+" button above to add an alarm.' : 'Sağ üstteki "+" butonuna basarak ekleyin.',
             style: TextStyle(
               fontSize: 12,
               color: isDark ? const Color(0xFF94A3B8) : Colors.grey,

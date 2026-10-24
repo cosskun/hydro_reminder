@@ -11,13 +11,16 @@ class EndOfDaySettingsCard extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = provider.language == 'en';
 
     return SettingsCardWrapper(
-      title: 'Gün Sonu Özet Bildirimi',
+      title: isEn ? 'End of Day Summary Notification' : 'Gün Sonu Özet Bildirimi',
       titleTrailing: const Text('🌙', style: TextStyle(fontSize: 20)),
       children: [
         Text(
-          'Günün belirlediğiniz saatinde o gün içtiğiniz ve hedefinize ulaşmak için kalan su miktarını bildirim olarak iletir.',
+          isEn
+              ? 'Sends a notification at your chosen time with your total water intake for the day and the remaining amount to reach your goal.'
+              : 'Günün belirlediğiniz saatinde o gün içtiğiniz ve hedefinize ulaşmak için kalan su miktarını bildirim olarak iletir.',
           style: TextStyle(
             fontSize: 12,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -35,9 +38,11 @@ class EndOfDaySettingsCard extends StatelessWidget {
             );
             if (targetVal && !granted && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'Gün sonu özetini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                    isEn
+                        ? 'Notification permission is required in phone settings to enable end of day summary.'
+                        : 'Gün sonu özetini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
                   ),
                   backgroundColor: Colors.orange,
                   behavior: SnackBarBehavior.floating,
@@ -55,7 +60,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Gün Sonu Özeti',
+                        isEn ? 'End of Day Summary' : 'Gün Sonu Özeti',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -65,8 +70,8 @@ class EndOfDaySettingsCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         provider.isEndOfDayEnabled && provider.isNotificationsEnabled
-                            ? 'Her gün belirlenen saatte iletilecek'
-                            : 'Kapalı',
+                            ? (isEn ? 'Sent every day at scheduled time' : 'Her gün belirlenen saatte iletilecek')
+                            : (isEn ? 'Off' : 'Kapalı'),
                         style: TextStyle(fontSize: 11, color: isDark ? const Color(0xFF94A3B8) : Colors.grey),
                       ),
                     ],
@@ -84,9 +89,11 @@ class EndOfDaySettingsCard extends StatelessWidget {
                     );
                     if (val && !granted && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            'Gün sonu özetini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
+                            isEn
+                                ? 'Notification permission is required in phone settings to enable end of day summary.'
+                                : 'Gün sonu özetini açmak için telefon ayarlarından bildirim iznini onaylamanız gerekmektedir.',
                           ),
                           backgroundColor: Colors.orange,
                           behavior: SnackBarBehavior.floating,
@@ -141,7 +148,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Bildirim Saati',
+                            isEn ? 'Notification Time' : 'Bildirim Saati',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -195,20 +202,26 @@ class EndOfDaySettingsCard extends StatelessWidget {
             if (!context.mounted) return;
             if (sent) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Uyku & Su bildirimi bildirim çubuğunuza gönderildi! 🌙'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(
+                    isEn
+                        ? 'Sleep & Hydration tip sent to your notification bar! 🌙'
+                        : 'Uyku & Su bildirimi bildirim çubuğunuza gönderildi! 🌙',
+                  ),
+                  duration: const Duration(seconds: 2),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'Bildirim gönderilemedi! Lütfen telefon ayarlarından bildirim iznini açın.',
+                    isEn
+                        ? 'Notification could not be sent! Please allow notifications in device settings.'
+                        : 'Bildirim gönderilemedi! Lütfen telefon ayarlarından bildirim iznini açın.',
                   ),
                   backgroundColor: Colors.orange,
-                  duration: Duration(seconds: 3),
+                  duration: const Duration(seconds: 3),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -233,7 +246,7 @@ class EndOfDaySettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Kaliteli Uyku İpucu Bildirimi',
+                        isEn ? 'Quality Sleep Tip Notification' : 'Kaliteli Uyku İpucu Bildirimi',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -242,7 +255,9 @@ class EndOfDaySettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '"Uyumadan 2 saat önce su alımını tamamla!" uyarısı',
+                        isEn
+                            ? '"Finish water intake 2 hours before bed!" reminder'
+                            : '"Uyumadan 2 saat önce su alımını tamamla!" uyarısı',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey,

@@ -786,14 +786,25 @@ class AlarmService with WidgetsBindingObserver {
     final consumed = consumedMl ?? _provider?.todayConsumed ?? 0;
     final remaining = remainingMl ?? _provider?.dailyRemainingMl ?? 0;
     final goal = dailyGoalMl ?? _provider?.dailyGoal ?? 2200;
+    final isEn = (_provider?.language ?? 'tr') == 'en';
 
     final String body;
-    if (consumed == 0) {
-      body = 'Bugün henüz hiç su kaydetmediniz! Hedefiniz: $goal ml. Kaliteli bir uyku için yatmadan önce su almayı unutmayın. 🌙💤';
-    } else if (remaining <= 0) {
-      body = 'Tebrikler! 🏆 Bugün $goal ml hedefinizi tamamladınız! Gece rahat uyumak için yatmadan hemen önce aşırı sıvı tüketmeyin. 🌙💤';
+    if (isEn) {
+      if (consumed == 0) {
+        body = 'You haven\'t logged any water today! Your target is $goal ml. Remember to hydrate before bed for quality sleep. 🌙💤';
+      } else if (remaining <= 0) {
+        body = 'Congratulations! 🏆 You reached your $goal ml goal today! Avoid excess fluids right before sleep for restful rest. 🌙💤';
+      } else {
+        body = 'You drank $consumed ml water today ($remaining ml remaining). Remember to get enough hydration before bedtime! 🌙💧';
+      }
     } else {
-      body = 'Bugün $consumed ml su içtiniz ($remaining ml kaldı). Kaliteli bir uyku için yatmadan önce ihtiyacınız kadar su almayı unutmayın! 🌙💧';
+      if (consumed == 0) {
+        body = 'Bugün henüz hiç su kaydetmediniz! Hedefiniz: $goal ml. Kaliteli bir uyku için yatmadan önce su almayı unutmayın. 🌙💤';
+      } else if (remaining <= 0) {
+        body = 'Tebrikler! 🏆 Bugün $goal ml hedefinizi tamamladınız! Gece rahat uyumak için yatmadan hemen önce aşırı sıvı tüketmeyin. 🌙💤';
+      } else {
+        body = 'Bugün $consumed ml su içtiniz ($remaining ml kaldı). Kaliteli bir uyku için yatmadan önce ihtiyacınız kadar su almayı unutmayın! 🌙💧';
+      }
     }
 
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -827,7 +838,7 @@ class AlarmService with WidgetsBindingObserver {
     try {
       await _notificationsPlugin.show(
         id: _sleepTipNotificationId,
-        title: 'Sağlıklı Uyku ve Su İpucu 🌙💤',
+        title: isEn ? 'Healthy Sleep & Water Tip 🌙💤' : 'Sağlıklı Uyku ve Su İpucu 🌙💤',
         body: body,
         notificationDetails: details,
         payload: 'sleep_tip_notification',
@@ -1023,10 +1034,18 @@ class AlarmService with WidgetsBindingObserver {
 
       final notificationDetails = NotificationDetails(android: androidDetails);
 
+      final isEn = (_provider?.language ?? 'tr') == 'en';
+      final panelTitle = isEn
+          ? '$statusEmoji HydroSoft • Goal: $safeGoal ml ($percentClamped%)'
+          : '$statusEmoji HydroSoft • Hedef: $safeGoal ml (%$percentClamped)';
+      final panelBody = isEn
+          ? 'Today: $todayConsumed ml  |  Remaining: $remaining ml'
+          : 'Bugün: $todayConsumed ml  |  Kalan: $remaining ml';
+
       await _notificationsPlugin.show(
         id: _ongoingNotificationId,
-        title: '$statusEmoji HydroSoft • Hedef: $safeGoal ml (%$percentClamped)',
-        body: 'Bugün: $todayConsumed ml  |  Kalan: $remaining ml',
+        title: panelTitle,
+        body: panelBody,
         notificationDetails: notificationDetails,
         payload: 'ongoing_panel',
       );

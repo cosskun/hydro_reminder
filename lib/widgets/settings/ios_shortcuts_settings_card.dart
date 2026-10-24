@@ -9,6 +9,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
 
   void _showSiriCommandsModal(BuildContext context, bool isDark) {
     final primary = Theme.of(context).colorScheme.primary;
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -36,7 +37,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     const Text('🎙️', style: TextStyle(fontSize: 24)),
                     const SizedBox(width: 8),
                     Text(
-                      'Siri Sesli Komutları',
+                      isEn ? 'Siri Voice Commands' : 'Siri Sesli Komutları',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -47,7 +48,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'iPhone\'unuzda Siri\'yi etkinleştirip aşağıdaki örnek cümleleri söyleyerek uygulamayı açmadan su kaydedebilirsiniz:',
+                  isEn
+                      ? 'Enable Siri on your iPhone and say the phrases below to log water without opening the app:'
+                      : 'iPhone\'unuzda Siri\'yi etkinleştirip aşağıdaki örnek cümleleri söyleyerek uygulamayı açmadan su kaydedebilirsiniz:',
                   style: TextStyle(
                     fontSize: 12.5,
                     color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -57,24 +60,24 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildCommandTile(
                   '💧',
-                  '"Hey Siri, HydroSoft ile 250 ml su içtim"',
-                  'Belirttiğiniz miktarı gününüze ekler ve kalan hedefi seslendirir.',
+                  isEn ? '"Hey Siri, I drank 250 ml water with HydroSoft"' : '"Hey Siri, HydroSoft ile 250 ml su içtim"',
+                  isEn ? 'Adds specified amount to your day and speaks remaining goal.' : 'Belirttiğiniz miktarı gününüze ekler ve kalan hedefi seslendirir.',
                   isDark,
                   primary,
                 ),
                 const SizedBox(height: 10),
                 _buildCommandTile(
                   '🥛',
-                  '"Hey Siri, HydroSoft ile bir bardak su ekle"',
-                  'Varsayılan bardak miktarını (+200 ml) kaydeder.',
+                  isEn ? '"Hey Siri, add a glass of water with HydroSoft"' : '"Hey Siri, HydroSoft ile bir bardak su ekle"',
+                  isEn ? 'Logs default glass amount (+200 ml).' : 'Varsayılan bardak miktarını (+200 ml) kaydeder.',
                   isDark,
                   primary,
                 ),
                 const SizedBox(height: 10),
                 _buildCommandTile(
                   '📊',
-                  '"Hey Siri, HydroSoft bugün ne kadar su içtim?"',
-                  'Bugünkü toplam tüketiminizi ve kalan ihtiyacınızı sesli yanıtlar.',
+                  isEn ? '"Hey Siri, how much water did I drink today with HydroSoft?"' : '"Hey Siri, HydroSoft bugün ne kadar su içtim?"',
+                  isEn ? 'Answers with your total intake today and remaining hydration need.' : 'Bugünkü toplam tüketiminizi ve kalan ihtiyacınızı sesli yanıtlar.',
                   isDark,
                   primary,
                 ),
@@ -91,7 +94,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Anladım', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(isEn ? 'Understood' : 'Anladım', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -104,6 +107,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
 
   void _showBackTapGuideModal(BuildContext context, bool isDark) {
     final primary = Theme.of(context).colorScheme.primary;
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -131,7 +135,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     const Text('📲', style: TextStyle(fontSize: 24)),
                     const SizedBox(width: 8),
                     Text(
-                      'Arkaya Dokunma & Eylem Düğmesi',
+                      isEn ? 'Back Tap & Action Button' : 'Arkaya Dokunma & Eylem Düğmesi',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -142,7 +146,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'iPhone\'unuzun arkasına 2 kez dokunduğunuzda ekranın üstünden şeffaf bir bildirim menüsü açılır (🥛 Bardak, 🥤 Küçük Şişe, 🫙 Şişe/Matara). Buradan tek tıkla içtiğiniz suyu seçip kaydedebilirsiniz.\n\nKurulum için:',
+                  isEn
+                      ? 'When you double-tap the back of your iPhone, a transparent menu pops up from top (🥛 Glass, 🥤 Small Bottle, 🫙 Bottle/Flask). Select and log water with one tap.\n\nTo set up:'
+                      : 'iPhone\'unuzun arkasına 2 kez dokunduğunuzda ekranın üstünden şeffaf bir bildirim menüsü açılır (🥛 Bardak, 🥤 Küçük Şişe, 🫙 Şişe/Matara). Buradan tek tıkla içtiğiniz suyu seçip kaydedebilirsiniz.\n\nKurulum için:',
                   style: TextStyle(
                     fontSize: 12.5,
                     color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -150,11 +156,26 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildStepTile('1', 'iPhone Ayarları > Erişilebilirlik > Dokunma menüsüne gidin.', isDark, primary),
+                _buildStepTile(
+                  '1',
+                  isEn ? 'Go to iPhone Settings > Accessibility > Touch.' : 'iPhone Ayarları > Erişilebilirlik > Dokunma menüsüne gidin.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 10),
-                _buildStepTile('2', 'En alttaki "Arkaya Dokun" seçeneğine girip "Çift Dokunma"yı seçin.', isDark, primary),
+                _buildStepTile(
+                  '2',
+                  isEn ? 'Scroll down to "Back Tap" and select "Double Tap".' : 'En alttaki "Arkaya Dokun" seçeneğine girip "Çift Dokunma"yı seçin.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 10),
-                _buildStepTile('3', 'Kestirmeler bölümünden "Hızlı Su Seçimi" (HydroSoft) eylemini atayın.', isDark, primary),
+                _buildStepTile(
+                  '3',
+                  isEn ? 'Under Shortcuts, assign "Quick Water Selector" (HydroSoft).' : 'Kestirmeler bölümünden "Hızlı Su Seçimi" (HydroSoft) eylemini atayın.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -168,7 +189,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Tamam', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(isEn ? 'Done' : 'Tamam', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -257,6 +278,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
   }
 
   void _showHealthKitInfoModal(BuildContext context, bool isDark) {
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -279,7 +301,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     const Text('❤️', style: TextStyle(fontSize: 24)),
                     const SizedBox(width: 8),
                     Text(
-                      'Apple Sağlık (HealthKit)',
+                      isEn ? 'Apple Health (HealthKit)' : 'Apple Sağlık (HealthKit)',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -290,7 +312,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'HydroSoft, Apple Sağlık uygulaması ile çift yönlü tam entegrasyon sunar:',
+                  isEn
+                      ? 'HydroSoft offers seamless two-way integration with Apple Health:'
+                      : 'HydroSoft, Apple Sağlık uygulaması ile çift yönlü tam entegrasyon sunar:',
                   style: TextStyle(
                     fontSize: 12.5,
                     color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -300,22 +324,28 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildCommandTile(
                   '💧',
-                  'Otomatik Su Yazma',
-                  'HydroSoft veya Siri üzerinden eklediğiniz tüm su kayıtları Apple Sağlık "Beslenme > Su" kategorisine anında yazılır.',
+                  isEn ? 'Automatic Water Logging' : 'Otomatik Su Yazma',
+                  isEn
+                      ? 'All water entries logged via HydroSoft or Siri are immediately written to Apple Health "Nutrition > Water".'
+                      : 'HydroSoft veya Siri üzerinden eklediğiniz tüm su kayıtları Apple Sağlık "Beslenme > Su" kategorisine anında yazılır.',
                   isDark,
                 ),
                 const SizedBox(height: 10),
                 _buildCommandTile(
                   '⌚',
-                  'Apple Watch & Aktivite Uyumu',
-                  'Apple Watch veya iPhone\'unuzun kaydettiği adım ve aktif kalori verileri ile günlük su dengeniz kusursuz hesaplanır.',
+                  isEn ? 'Apple Watch & Activity Sync' : 'Apple Watch & Aktivite Uyumu',
+                  isEn
+                      ? 'Steps and active calories recorded by Apple Watch or iPhone are factored into your daily hydration balance.'
+                      : 'Apple Watch veya iPhone\'unuzun kaydettiği adım ve aktif kalori verileri ile günlük su dengeniz kusursuz hesaplanır.',
                   isDark,
                 ),
                 const SizedBox(height: 10),
                 _buildCommandTile(
                   '🔒',
-                  'Gizlilik & Güvenlik',
-                  'Sağlık verileriniz sadece cihazınızda kalır ve asla üçüncü şahıslarla paylaşılmaz.',
+                  isEn ? 'Privacy & Security' : 'Gizlilik & Güvenlik',
+                  isEn
+                      ? 'Your health data stays strictly on your device and is never shared with third parties.'
+                      : 'Sağlık verileriniz sadece cihazınızda kalır ve asla üçüncü şahıslarla paylaşılmaz.',
                   isDark,
                 ),
                 const SizedBox(height: 20),
@@ -331,7 +361,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Anladım', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(isEn ? 'Understood' : 'Anladım', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -348,9 +378,10 @@ class IosShortcutsSettingsCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
+    final isEn = provider.language == 'en';
 
     return SettingsCardWrapper(
-      title: 'iOS & Apple Özellikleri 🍏',
+      title: isEn ? 'iOS & Apple Features 🍏' : 'iOS & Apple Özellikleri 🍏',
       titleTrailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
@@ -358,7 +389,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          'iPhone Özel',
+          isEn ? 'iPhone Only' : 'iPhone Özel',
           style: TextStyle(
             fontSize: 10.5,
             fontWeight: FontWeight.bold,
@@ -368,7 +399,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
       ),
       children: [
         Text(
-          'iPhone\'unuzun gelişmiş donanım, sesli asistan ve Apple Sağlık özellikleriyle ellerinizi kullanmadan hızlı ve akıllı su takibi yapın.',
+          isEn
+              ? 'Effortlessly track water hands-free using your iPhone\'s advanced hardware, voice assistant, and Apple Health features.'
+              : 'iPhone\'unuzun gelişmiş donanım, sesli asistan ve Apple Sağlık özellikleriyle ellerinizi kullanmadan hızlı ve akıllı su takibi yapın.',
           style: TextStyle(
             fontSize: 11.5,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
@@ -392,7 +425,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Siri ile Sesli Komut',
+                        isEn ? 'Siri Voice Commands' : 'Siri ile Sesli Komut',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -401,7 +434,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '"Hey Siri, 250 ml su içtim" diyerek eller serbest su ekleyin.',
+                        isEn
+                            ? 'Add water hands-free by saying "Hey Siri, I drank 250 ml water".'
+                            : '"Hey Siri, 250 ml su içtim" diyerek eller serbest su ekleyin.',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -430,7 +465,10 @@ class IosShortcutsSettingsCard extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () => _showSiriCommandsModal(context, isDark),
                 icon: const Icon(Icons.mic_none_rounded, size: 16),
-                label: const Text('Sesli Komutları & Cümleleri Gör', style: TextStyle(fontSize: 11.5)),
+                label: Text(
+                  isEn ? 'View Voice Commands & Phrases' : 'Sesli Komutları & Cümleleri Gör',
+                  style: const TextStyle(fontSize: 11.5),
+                ),
                 style: TextButton.styleFrom(
                   foregroundColor: primary,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -456,7 +494,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Arkaya Dokunma & Eylem Düğmesi',
+                        isEn ? 'Back Tap & Action Button' : 'Arkaya Dokunma & Eylem Düğmesi',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -465,7 +503,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Telefonun arkasına çift vurarak veya Eylem Düğmesine basarak hızlı su menüsünü açın.',
+                        isEn
+                            ? 'Open quick water menu by double-tapping the back of your phone or pressing the Action Button.'
+                            : 'Telefonun arkasına çift vurarak veya Eylem Düğmesine basarak hızlı su menüsünü açın.',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -494,7 +534,10 @@ class IosShortcutsSettingsCard extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () => _showBackTapGuideModal(context, isDark),
                 icon: const Icon(Icons.touch_app_outlined, size: 16),
-                label: const Text('Arkaya Dokunma Kurulum Kılavuzu', style: TextStyle(fontSize: 11.5)),
+                label: Text(
+                  isEn ? 'Back Tap Setup Guide' : 'Arkaya Dokunma Kurulum Kılavuzu',
+                  style: const TextStyle(fontSize: 11.5),
+                ),
                 style: TextButton.styleFrom(
                   foregroundColor: primary,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -512,8 +555,12 @@ class IosShortcutsSettingsCard extends StatelessWidget {
             final success = await provider.updateAppleHealthSettings(isEnabled: newVal);
             if (!success && newVal && context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Apple Sağlık erişim izni verilmedi veya iptal edildi.'),
+                SnackBar(
+                  content: Text(
+                    isEn
+                        ? 'Apple Health access permission was not granted or was cancelled.'
+                        : 'Apple Sağlık erişim izni verilmedi veya iptal edildi.',
+                  ),
                   backgroundColor: Colors.redAccent,
                 ),
               );
@@ -548,7 +595,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'İçtiğiniz suları Apple Sağlık uygulamasına (Dietary Water) otomatik senkronize edin.',
+                        isEn
+                            ? 'Automatically sync your water intake to Apple Health app (Dietary Water).'
+                            : 'İçtiğiniz suları Apple Sağlık uygulamasına (Dietary Water) otomatik senkronize edin.',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
@@ -565,8 +614,12 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     final success = await provider.updateAppleHealthSettings(isEnabled: val);
                     if (!success && val && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Apple Sağlık erişim izni verilmedi veya iptal edildi.'),
+                        SnackBar(
+                          content: Text(
+                            isEn
+                                ? 'Apple Health access permission was not granted or was cancelled.'
+                                : 'Apple Sağlık erişim izni verilmedi veya iptal edildi.',
+                          ),
                           backgroundColor: Colors.redAccent,
                         ),
                       );
@@ -586,7 +639,10 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   child: TextButton.icon(
                     onPressed: () => _showHealthKitInfoModal(context, isDark),
                     icon: const Icon(Icons.info_outline_rounded, size: 16),
-                    label: const Text('Sağlık Bilgisi', style: TextStyle(fontSize: 11.5)),
+                    label: Text(
+                      isEn ? 'Health Info' : 'Sağlık Bilgisi',
+                      style: const TextStyle(fontSize: 11.5),
+                    ),
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFFE11D48),
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -599,14 +655,21 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('$synced adet su kaydı Apple Sağlık ile senkronize edildi.'),
+                          content: Text(
+                            isEn
+                                ? '$synced water entries synced with Apple Health.'
+                                : '$synced adet su kaydı Apple Sağlık ile senkronize edildi.',
+                          ),
                           backgroundColor: const Color(0xFF10B981),
                         ),
                       );
                     }
                   },
                   icon: const Icon(Icons.sync_rounded, size: 14),
-                  label: const Text('Bugünü Senkronize Et', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                  label: Text(
+                    isEn ? 'Sync Today' : 'Bugünü Senkronize Et',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isDark ? const Color(0xFF881337) : const Color(0xFFFFE4E6),
                     foregroundColor: isDark ? Colors.white : const Color(0xFFBE123C),
@@ -631,7 +694,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   const Text('👟', style: TextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
                   Text(
-                    'Bugünkü Adım: ${provider.todayHealthSteps} adım',
+                    isEn
+                        ? 'Today\'s Steps: ${provider.todayHealthSteps} steps'
+                        : 'Bugünkü Adım: ${provider.todayHealthSteps} adım',
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
@@ -665,7 +730,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Ana Ekran & Kilit Ekranı Widget\'ları (3 Tasarım)',
+                      isEn
+                          ? 'Home & Lock Screen Widgets (3 Designs)'
+                          : 'Ana Ekran & Kilit Ekranı Widget\'ları (3 Tasarım)',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
@@ -677,7 +744,9 @@ class IosShortcutsSettingsCard extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'iOS 17+ Etkileşimli Widget (AppIntents) teknolojisiyle uygulamayı açmadan iPhone Ana Ekranından veya Kilit Ekranından tek dokunuşla su ekleyebilirsiniz:',
+                isEn
+                    ? 'With iOS 17+ Interactive Widgets (AppIntents), log water directly from iPhone Home Screen or Lock Screen with one tap:'
+                    : 'iOS 17+ Etkileşimli Widget (AppIntents) teknolojisiyle uygulamayı açmadan iPhone Ana Ekranından veya Kilit Ekranından tek dokunuşla su ekleyebilirsiniz:',
                 style: TextStyle(
                   fontSize: 11,
                   color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -687,22 +756,34 @@ class IosShortcutsSettingsCard extends StatelessWidget {
               const SizedBox(height: 10),
               _buildCommandTile(
                 '💧',
-                '1. Geniş İlerleme & Hızlı Ekle (Orta - 4x2 / Küçük - 2x2)',
-                'Günlük ml ilerlemesi, yüzde halkası ve uygulamayı açmadan su ekleyen 3 adet etkileşimli (+200/+330/+500 ml) buton.',
+                isEn
+                    ? '1. Large Progress & Quick Add (Medium - 4x2 / Small - 2x2)'
+                    : '1. Geniş İlerleme & Hızlı Ekle (Orta - 4x2 / Küçük - 2x2)',
+                isEn
+                    ? 'Daily ml progress, percentage ring, and 3 interactive buttons (+200/+330/+500 ml) without opening app.'
+                    : 'Günlük ml ilerlemesi, yüzde halkası ve uygulamayı açmadan su ekleyen 3 adet etkileşimli (+200/+330/+500 ml) buton.',
                 isDark,
               ),
               const SizedBox(height: 8),
               _buildCommandTile(
                 '⚡',
-                '2. Hızlı Su Ekleme Barı (Ana Ekran Kompakt)',
-                'Minimalist tasarım ile bardak, şişe ve matara kısayollarına anında erişim.',
+                isEn
+                    ? '2. Quick Water Bar (Home Screen Compact)'
+                    : '2. Hızlı Su Ekleme Barı (Ana Ekran Kompakt)',
+                isEn
+                    ? 'Minimalist design for instant access to glass, bottle, and flask shortcuts.'
+                    : 'Minimalist tasarım ile bardak, şişe ve matara kısayollarına anında erişim.',
                 isDark,
               ),
               const SizedBox(height: 8),
               _buildCommandTile(
                 '🔒',
-                '3. iPhone Kilit Ekranı & StandBy Widget\'ları',
-                'Kilit ekranında saatin hemen altında dairesel su halkası (Circular), detaylı su çubuğu (Rectangular) ve üst satır özeti (Inline).',
+                isEn
+                    ? '3. iPhone Lock Screen & StandBy Widgets'
+                    : '3. iPhone Kilit Ekranı & StandBy Widget\'ları',
+                isEn
+                    ? 'Circular water ring below clock, detailed rectangular progress bar, and inline top summary on lock screen.'
+                    : 'Kilit ekranında saatin hemen altında dairesel su halkası (Circular), detaylı su çubuğu (Rectangular) ve üst satır özeti (Inline).',
                 isDark,
               ),
               const SizedBox(height: 10),
@@ -711,9 +792,11 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: () => _showIosWidgetGuideModal(context, isDark),
                   icon: const Icon(Icons.help_outline_rounded, size: 15),
-                  label: const Text(
-                    'iPhone Ana Ekran & Kilit Ekranına Nasıl Eklenir?',
-                    style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
+                  label: Text(
+                    isEn
+                        ? 'How to Add to iPhone Home & Lock Screen?'
+                        : 'iPhone Ana Ekran & Kilit Ekranına Nasıl Eklenir?',
+                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
                   ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: primary,
@@ -732,6 +815,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
 
   void _showIosWidgetGuideModal(BuildContext context, bool isDark) {
     final primary = Theme.of(context).colorScheme.primary;
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -755,7 +839,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'iPhone Widget Kurulum Kılavuzu',
+                        isEn ? 'iPhone Widget Setup Guide' : 'iPhone Widget Kurulum Kılavuzu',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
@@ -767,7 +851,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  'Ana Ekrana Ekleme:',
+                  isEn ? 'Adding to Home Screen:' : 'Ana Ekrana Ekleme:',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -775,14 +859,35 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildStepTile('1', 'iPhone Ana Ekranında boş bir alana simgeler titreyene kadar basılı tutun.', isDark, primary),
+                _buildStepTile(
+                  '1',
+                  isEn
+                      ? 'Touch and hold an empty area on your iPhone Home Screen until icons jiggle.'
+                      : 'iPhone Ana Ekranında boş bir alana simgeler titreyene kadar basılı tutun.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 8),
-                _buildStepTile('2', 'Sol üst köşedeki "+" (Düzenle > Araç Takımı Ekle) butonuna dokunun.', isDark, primary),
+                _buildStepTile(
+                  '2',
+                  isEn
+                      ? 'Tap the "+" button in top left (Edit > Add Widget).'
+                      : 'Sol üst köşedeki "+" (Düzenle > Araç Takımı Ekle) butonuna dokunun.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 8),
-                _buildStepTile('3', 'Listeden "HydroSoft"u seçip Küçük veya Orta boy etkileşimli widget\'ı ekleyin.', isDark, primary),
+                _buildStepTile(
+                  '3',
+                  isEn
+                      ? 'Select "HydroSoft" from the list and add Small or Medium interactive widget.'
+                      : 'Listeden "HydroSoft"u seçip Küçük veya Orta boy etkileşimli widget\'ı ekleyin.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 14),
                 Text(
-                  'Kilit Ekranına Ekleme:',
+                  isEn ? 'Adding to Lock Screen:' : 'Kilit Ekranına Ekleme:',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -790,9 +895,23 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildStepTile('1', 'Kilit Ekranına basılı tutup alttaki "Özelleştir > Kilit Ekranı" seçeneğine dokunun.', isDark, primary),
+                _buildStepTile(
+                  '1',
+                  isEn
+                      ? 'Touch and hold Lock Screen, then tap "Customize > Lock Screen" below.'
+                      : 'Kilit Ekranına basılı tutup alttaki "Özelleştir > Kilit Ekranı" seçeneğine dokunun.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 8),
-                _buildStepTile('2', 'Saatin altındaki "Araç Takımı Ekle" kutusuna dokunup "HydroSoft" su halkasını seçin.', isDark, primary),
+                _buildStepTile(
+                  '2',
+                  isEn
+                      ? 'Tap "Add Widgets" box under the clock and select HydroSoft water ring.'
+                      : 'Saatin altındaki "Araç Takımı Ekle" kutusuna dokunup "HydroSoft" su halkasını seçin.',
+                  isDark,
+                  primary,
+                ),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -806,7 +925,7 @@ class IosShortcutsSettingsCard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Tamam', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(isEn ? 'Done' : 'Tamam', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

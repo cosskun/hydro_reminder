@@ -18,6 +18,7 @@ class DailyLogGroup extends StatelessWidget {
   });
 
   void _confirmDeleteLog(BuildContext context, String logId) {
+    final isEn = provider.language == 'en';
     showDialog(
       context: context,
       builder: (context) {
@@ -25,14 +26,16 @@ class DailyLogGroup extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
           title: Text(
-            'Kaydı Sil?',
+            isEn ? 'Delete Log?' : 'Kaydı Sil?',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
             ),
           ),
           content: Text(
-            'Bu su tüketim kaydını silmek istediğinizden emin misiniz?',
+            isEn
+                ? 'Are you sure you want to delete this water intake entry?'
+                : 'Bu su tüketim kaydını silmek istediğinizden emin misiniz?',
             style: TextStyle(
               color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
             ),
@@ -40,7 +43,10 @@ class DailyLogGroup extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Vazgeç', style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
+              child: Text(
+                isEn ? 'Cancel' : 'Vazgeç',
+                style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -52,7 +58,7 @@ class DailyLogGroup extends StatelessWidget {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Sil'),
+              child: Text(isEn ? 'Delete' : 'Sil'),
             ),
           ],
         );
@@ -62,8 +68,9 @@ class DailyLogGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isEn = provider.language == 'en';
     final parsedDate = DateTime.parse(dateKey);
-    final formattedHeaderDate = DateFormat('dd MMMM yyyy, EEEE', 'tr_TR').format(parsedDate);
+    final formattedHeaderDate = DateFormat('dd MMMM yyyy, EEEE', isEn ? 'en_US' : 'tr_TR').format(parsedDate);
     final isDateToday = dateKey == DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     final totalForDay = dayLogs.fold(0, (sum, log) => sum + log.amountMl);
@@ -80,7 +87,7 @@ class DailyLogGroup extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isDateToday ? 'Bugün' : formattedHeaderDate,
+                isDateToday ? (isEn ? 'Today' : 'Bugün') : formattedHeaderDate,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -90,7 +97,7 @@ class DailyLogGroup extends StatelessWidget {
                 ),
               ),
               Text(
-                'Toplam: $totalForDay ml',
+                isEn ? 'Total: $totalForDay ml' : 'Toplam: $totalForDay ml',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -129,7 +136,7 @@ class DailyLogGroup extends StatelessWidget {
                         ),
                       ),
                       title: Text(
-                        '${log.amountMl} ml ${log.beverage.name}',
+                        '${log.amountMl} ml ${log.beverage.localizedName(provider.language)}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
@@ -138,7 +145,9 @@ class DailyLogGroup extends StatelessWidget {
                       ),
                       subtitle: Text(
                         isBeverageDifferent
-                            ? '$timeString  •  (${log.rawAmountMl} ml içildi, net hidrasyon)'
+                            ? (isEn
+                                ? '$timeString  •  (${log.rawAmountMl} ml consumed, net hydration)'
+                                : '$timeString  •  (${log.rawAmountMl} ml içildi, net hidrasyon)')
                             : timeString,
                         style: TextStyle(
                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,

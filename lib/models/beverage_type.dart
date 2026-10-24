@@ -15,6 +15,50 @@ class BeverageType {
 
   String get icon => emoji;
 
+  String localizedName(String lang) {
+    if (lang == 'en') {
+      switch (id) {
+        case 'water':
+          return 'Water';
+        case 'mineral_water':
+          return 'Sparkling Water';
+        case 'tea':
+          return 'Tea & Herbal Tea';
+        case 'coffee':
+          return 'Coffee';
+        case 'juice':
+          return 'Fruit Juice';
+        case 'milk':
+          return 'Milk & Ayran';
+        default:
+          return name;
+      }
+    }
+    return name;
+  }
+
+  String localizedDescription(String lang) {
+    if (lang == 'en') {
+      switch (id) {
+        case 'water':
+          return '100% Pure Hydration';
+        case 'mineral_water':
+          return '100% Mineral Water';
+        case 'tea':
+          return '85% Hydration';
+        case 'coffee':
+          return '70% Hydration';
+        case 'juice':
+          return '80% Hydration';
+        case 'milk':
+          return '90% Hydration';
+        default:
+          return description;
+      }
+    }
+    return description;
+  }
+
   static const List<BeverageType> all = [
     BeverageType(
       id: 'water',

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/water_provider.dart';
 import 'settings_card_wrapper.dart';
 
 class ProfileSettingsCard extends StatelessWidget {
@@ -21,12 +23,27 @@ class ProfileSettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
+
+    String getGenderLabel(String g) {
+      if (!isEn) return g;
+      switch (g) {
+        case 'Erkek':
+          return 'Male';
+        case 'Kadın':
+          return 'Female';
+        case 'Diğer':
+          return 'Other';
+        default:
+          return g;
+      }
+    }
 
     return SettingsCardWrapper(
-      title: 'Profil Bilgilerini Güncelle',
+      title: isEn ? 'Update Profile' : 'Profil Bilgilerini Güncelle',
       children: [
         Text(
-          'Cinsiyet',
+          isEn ? 'Gender' : 'Cinsiyet',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -57,7 +74,7 @@ class ProfileSettingsCard extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        g,
+                        getGenderLabel(g),
                         style: TextStyle(
                           color: isSelected
                               ? Colors.white
@@ -81,7 +98,7 @@ class ProfileSettingsCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Yaş',
+                    isEn ? 'Age' : 'Yaş',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -93,7 +110,7 @@ class ProfileSettingsCard extends StatelessWidget {
                     controller: ageController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      suffixText: 'yıl',
+                      suffixText: isEn ? 'yrs' : 'yıl',
                       filled: true,
                       fillColor: isDark ? const Color(0xFF0B132B) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
@@ -113,7 +130,7 @@ class ProfileSettingsCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Kilo',
+                    isEn ? 'Weight' : 'Kilo',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -153,9 +170,9 @@ class ProfileSettingsCard extends StatelessWidget {
             ),
             elevation: 0,
           ),
-          child: const Text(
-            'Değişiklikleri Kaydet',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          child: Text(
+            isEn ? 'Save Changes' : 'Değişiklikleri Kaydet',
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ],

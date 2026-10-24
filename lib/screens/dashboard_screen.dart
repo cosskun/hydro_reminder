@@ -1,6 +1,7 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_translations.dart';
 import '../providers/water_provider.dart';
 import '../widgets/liquid_progress_indicator.dart';
 import '../widgets/dialogs/badge_celebration_dialog.dart';
@@ -53,14 +54,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           provider.clearGoalCelebration();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Row(
+              content: Row(
                 children: [
-                  Text('🎉', style: TextStyle(fontSize: 22)),
-                  SizedBox(width: 10),
+                  const Text('🎉', style: TextStyle(fontSize: 22)),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Harikasın! Bugünkü su hedefini başarıyla tamamladın! 🥳💧',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      AppTranslations.get('goal_celebration_snack', lang: provider.language),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -132,7 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Merhaba 👋',
+                                AppTranslations.get('greeting', lang: provider.language),
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -141,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Bugün nasılsın?',
+                                AppTranslations.get('how_are_you', lang: provider.language),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -170,7 +171,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Icon(Icons.track_changes_rounded, color: theme.colorScheme.primary, size: 16),
                               const SizedBox(width: 5),
                               Text(
-                                'Hedef: ${provider.dailyGoal} ml',
+                                '${provider.language == 'en' ? 'Goal' : 'Hedef'}: ${provider.dailyGoal} ml',
                                 style: TextStyle(
                                   color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                                   fontWeight: FontWeight.bold,
@@ -226,7 +227,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Seri Kurtarma Kalkanı!',
+                                      provider.language == 'en' ? 'Streak Recovery Shield!' : 'Seri Kurtarma Kalkanı!',
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.bold,
@@ -234,7 +235,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                     ),
                                     Text(
-                                      'Dün hedefini kaçırdın. 1 kalkan kullanarak serini koru!',
+                                      provider.language == 'en'
+                                          ? 'You missed your goal yesterday. Use 1 shield to protect your streak!'
+                                          : 'Dün hedefini kaçırdın. 1 kalkan kullanarak serini koru!',
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -250,7 +253,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: const Text('🛡️ Harika! Seri kalkanı kullanıldı ve seriniz korundu!'),
+                                        content: Text(
+                                          provider.language == 'en'
+                                              ? '🛡️ Awesome! Streak shield used and your streak is preserved!'
+                                              : '🛡️ Harika! Seri kalkanı kullanıldı ve seriniz korundu!',
+                                        ),
                                         backgroundColor: theme.colorScheme.primary,
                                         behavior: SnackBarBehavior.floating,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -264,7 +271,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
-                                child: const Text('Kurtar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                child: Text(
+                                  provider.language == 'en' ? 'Recover' : 'Kurtar',
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                ),
                               ),
                             ],
                           ),
@@ -299,7 +309,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Hızlı Ekle 💧',
+                          AppTranslations.get('quick_add', lang: provider.language),
                           style: TextStyle(
                             fontSize: 14.5,
                             fontWeight: FontWeight.bold,
@@ -309,7 +319,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const SizedBox(width: 8),
                         Flexible(
                           child: Text(
-                            'Basılı tutarak kaldırabilirsiniz',
+                            AppTranslations.get('long_press_delete', lang: provider.language),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -326,7 +336,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ? Row(
                             children: [
                               ...provider.quickPresets.map((amount) {
-                                final meta = WaterProvider.getPresetMeta(amount);
+                                final meta = WaterProvider.getPresetMeta(amount, lang: provider.language);
                                 return Expanded(
                                   child: HydrationQuickAddButton(
                                     context: context,
@@ -350,7 +360,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             child: Row(
                               children: [
                                 ...provider.quickPresets.map((amount) {
-                                  final meta = WaterProvider.getPresetMeta(amount);
+                                  final meta = WaterProvider.getPresetMeta(amount, lang: provider.language);
                                   return HydrationQuickAddButton(
                                     context: context,
                                     emoji: meta['emoji']!,

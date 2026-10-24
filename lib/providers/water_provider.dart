@@ -96,21 +96,22 @@ class WaterProvider with ChangeNotifier {
   List<int> _quickPresets = [200, 330, 500];
 
   // Helper to get matching smart symbol & label for any ml value
-  static Map<String, String> getPresetMeta(int amountMl) {
+  static Map<String, String> getPresetMeta(int amountMl, {String lang = 'tr'}) {
+    final isEn = lang == 'en';
     if (amountMl <= 120) {
-      return {'emoji': '💧', 'name': 'Yudum'};
+      return {'emoji': '💧', 'name': isEn ? 'Sip' : 'Yudum'};
     } else if (amountMl <= 180) {
-      return {'emoji': '☕', 'name': 'Fincan'};
+      return {'emoji': '☕', 'name': isEn ? 'Cup' : 'Fincan'};
     } else if (amountMl <= 260) {
-      return {'emoji': '🥛', 'name': 'Bardak'};
+      return {'emoji': '🥛', 'name': isEn ? 'Glass' : 'Bardak'};
     } else if (amountMl <= 380) {
-      return {'emoji': '🥤', 'name': 'Küçük Şişe'};
+      return {'emoji': '🥤', 'name': isEn ? 'Small Bottle' : 'Küçük Şişe'};
     } else if (amountMl <= 550) {
-      return {'emoji': '🫙', 'name': 'Şişe'};
+      return {'emoji': '🫙', 'name': isEn ? 'Bottle' : 'Şişe'};
     } else if (amountMl <= 800) {
-      return {'emoji': '🫗', 'name': 'Büyük Matara'};
+      return {'emoji': '🫗', 'name': isEn ? 'Large Flask' : 'Büyük Matara'};
     } else {
-      return {'emoji': '🚰', 'name': 'Sürahi'};
+      return {'emoji': '🚰', 'name': isEn ? 'Pitcher' : 'Sürahi'};
     }
   }
 

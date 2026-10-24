@@ -14,6 +14,7 @@ class AlarmsScreen extends StatelessWidget {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = provider.language == 'en';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20.0),
@@ -25,7 +26,7 @@ class AlarmsScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Hatırlatıcı Alarmlar ⏰',
+                  isEn ? 'Reminder Alarms ⏰' : 'Hatırlatıcı Alarmlar ⏰',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -50,7 +51,9 @@ class AlarmsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Belirlediğiniz saatlerde tam ekran kapatılamayan akıllı alarmlar çalar.',
+            isEn
+                ? 'Persistent fullscreen smart alarms ring at your designated times.'
+                : 'Belirlediğiniz saatlerde tam ekran kapatılamayan akıllı alarmlar çalar.',
             style: TextStyle(
               color: isDark ? const Color(0xFF94A3B8) : Colors.grey,
               fontSize: 13,

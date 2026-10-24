@@ -88,10 +88,15 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
 
   void _saveDailyGoal() {
     final goal = int.tryParse(_dailyGoalController.text) ?? 2500;
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     if (goal < 500 || goal > 10000) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lütfen 500 ml ile 10.000 ml arasında geçerli bir hedef girin.'),
+        SnackBar(
+          content: Text(
+            isEn
+                ? 'Please enter a valid goal between 500 ml and 10,000 ml.'
+                : 'Lütfen 500 ml ile 10.000 ml arasında geçerli bir hedef girin.',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -101,7 +106,11 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     Provider.of<WaterProvider>(context, listen: false).updateDailyGoal(goal);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Günlük su hedefiniz $goal ml olarak güncellendi! 💧'),
+        content: Text(
+          isEn
+              ? 'Your daily water goal has been updated to $goal ml! 💧'
+              : 'Günlük su hedefiniz $goal ml olarak güncellendi! 💧',
+        ),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -116,12 +125,17 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
       age: age,
       weight: weight,
     );
+    final isEn = provider.language == 'en';
     setState(() {
       _dailyGoalController.text = calculated.toString();
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Profilinize göre önerilen hedef: $calculated ml. Kaydetmek için "Hedefi Güncelle"ye basın.'),
+        content: Text(
+          isEn
+              ? 'Recommended goal based on your profile: $calculated ml. Press "Save Daily Goal" to apply.'
+              : 'Profilinize göre önerilen hedef: $calculated ml. Kaydetmek için "Hedefi Güncelle"ye basın.',
+        ),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -143,9 +157,14 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
       _dailyGoalController.text = provider.baseDailyGoal.toString();
     });
 
+    final isEn = provider.language == 'en';
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profil bilgileri güncellendi ve yeni hedef hesaplandı! 💧'),
+      SnackBar(
+        content: Text(
+          isEn
+              ? 'Profile updated and new daily goal calculated! 💧'
+              : 'Profil bilgileri güncellendi ve yeni hedef hesaplandı! 💧',
+        ),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -156,17 +175,24 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
     final p2 = int.tryParse(_preset2Controller.text) ?? 330;
     final p3 = int.tryParse(_preset3Controller.text) ?? 500;
 
-    Provider.of<WaterProvider>(context, listen: false).updatePresets(p1, p2, p3);
+    final provider = Provider.of<WaterProvider>(context, listen: false);
+    provider.updatePresets(p1, p2, p3);
+    final isEn = provider.language == 'en';
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Hızlı ekleme miktarları başarıyla güncellendi. 💧'),
+      SnackBar(
+        content: Text(
+          isEn
+              ? 'Quick add presets successfully updated. 💧'
+              : 'Hızlı ekleme miktarları başarıyla güncellendi. 💧',
+        ),
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
   void _confirmReset(BuildContext context, bool isDark) {
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -178,7 +204,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             children: [
               const Text('⚠️ ', style: TextStyle(fontSize: 22)),
               Text(
-                'Verileri Sıfırla?',
+                isEn ? 'Reset All Data?' : 'Verileri Sıfırla?',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
@@ -187,7 +213,9 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             ],
           ),
           content: Text(
-            'Tüm profil bilgilerinizi, hatırlatıcı alarmlarınızı ve geçmiş su tüketim kayıtlarınızı silmek üzeresiniz.\n\nSıfırlama işlemine devam etmek istiyor musunuz?',
+            isEn
+                ? 'You are about to delete all your profile information, reminder alarms, and water intake history.\n\nDo you want to proceed with the reset?'
+                : 'Tüm profil bilgilerinizi, hatırlatıcı alarmlarınızı ve geçmiş su tüketim kayıtlarınızı silmek üzeresiniz.\n\nSıfırlama işlemine devam etmek istiyor musunuz?',
             style: TextStyle(
               height: 1.4,
               color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -196,7 +224,10 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(firstDialogContext),
-              child: Text('Vazgeç', style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600)),
+              child: Text(
+                isEn ? 'Cancel' : 'Vazgeç',
+                style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -208,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Devam Et ➡️'),
+              child: Text(isEn ? 'Continue ➡️' : 'Devam Et ➡️'),
             ),
           ],
         );
@@ -217,6 +248,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
   }
 
   void _showFinalResetConfirmationDialog(BuildContext context, bool isDark) {
+    final isEn = Provider.of<WaterProvider>(context, listen: false).language == 'en';
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -224,12 +256,12 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: isDark ? const Color(0xFF1C2541) : Colors.white,
-          title: const Row(
+          title: Row(
             children: [
-              Text('🚨 ', style: TextStyle(fontSize: 22)),
+              const Text('🚨 ', style: TextStyle(fontSize: 22)),
               Text(
-                'Son Doğrulama',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+                isEn ? 'Final Confirmation' : 'Son Doğrulama',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
               ),
             ],
           ),
@@ -237,13 +269,17 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'DİKKAT: Bu işlem kesinlikle geri alınamaz!',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+              Text(
+                isEn
+                    ? 'ATTENTION: This action cannot be undone!'
+                    : 'DİKKAT: Bu işlem kesinlikle geri alınamaz!',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
               ),
               const SizedBox(height: 8),
               Text(
-                'Uygulama ilk kurulum haline dönecek ve bugüne kadarki tüm su tüketim geçmişiniz ve rozetleriniz kalıcı olarak silinecektir.\n\nGerçekten silmek istediğinizi onaylıyor musunuz?',
+                isEn
+                    ? 'The app will return to its initial state, and all your hydration history and badges will be permanently deleted.\n\nAre you sure you want to delete everything?'
+                    : 'Uygulama ilk kurulum haline dönecek ve bugüne kadarki tüm su tüketim geçmişiniz ve rozetleriniz kalıcı olarak silinecektir.\n\nGerçekten silmek istediğinizi onaylıyor musunuz?',
                 style: TextStyle(
                   height: 1.4,
                   color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
@@ -254,20 +290,27 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(secondDialogContext),
-              child: Text('İptal Et', style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700, fontWeight: FontWeight.bold)),
+              child: Text(
+                isEn ? 'Cancel' : 'İptal Et',
+                style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey.shade700, fontWeight: FontWeight.bold),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(secondDialogContext);
                 Provider.of<WaterProvider>(context, listen: false).resetAllData();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Row(
                       children: [
-                        Icon(Icons.check_circle_outline, color: Colors.white),
-                        SizedBox(width: 8),
+                        const Icon(Icons.check_circle_outline, color: Colors.white),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: Text('Tüm veriler başarıyla sıfırlandı.'),
+                          child: Text(
+                            isEn
+                                ? 'All data has been successfully reset.'
+                                : 'Tüm veriler başarıyla sıfırlandı.',
+                          ),
                         ),
                       ],
                     ),
@@ -281,7 +324,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Evet, Kalıcı Olarak Sil'),
+              child: Text(isEn ? 'Yes, Permanently Delete' : 'Evet, Kalıcı Olarak Sil'),
             ),
           ],
         );
@@ -292,6 +335,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<WaterProvider>(context);
+    final isEn = provider.language == 'en';
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -301,7 +345,7 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ayarlar ⚙️',
+            isEn ? 'Settings ⚙️' : 'Ayarlar ⚙️',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -344,7 +388,9 @@ class _SettingsScreenState extends State<SettingsScreen> with WidgetsBindingObse
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Mevcut günlük su hedefiniz: ${provider.dailyGoal} ml. Dilediğiniz zaman bu hedefi yukarıdaki alandan manuel olarak güncelleyebilir veya kilo & yaşınıza göre yeniden hesaplatabilirsiniz.',
+                    isEn
+                        ? 'Your current daily water goal: ${provider.dailyGoal} ml. You can update this goal manually from above or recalculate it based on your weight & age anytime.'
+                        : 'Mevcut günlük su hedefiniz: ${provider.dailyGoal} ml. Dilediğiniz zaman bu hedefi yukarıdaki alandan manuel olarak güncelleyebilir veya kilo & yaşınıza göre yeniden hesaplatabilirsiniz.',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF1E293B),

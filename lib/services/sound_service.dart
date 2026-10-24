@@ -13,6 +13,30 @@ class PresetSound {
     required this.icon,
     required this.path,
   });
+
+  String localizedName(String lang) {
+    if (lang == 'en') {
+      switch (name) {
+        case 'Su Damlası':
+          return 'Water Drop';
+        case 'Okyanus Dalgası':
+          return 'Ocean Waves';
+        case 'Kristal Çan':
+          return 'Crystal Bell';
+        case 'Doğa & Kuşlar':
+          return 'Nature & Birds';
+        case 'Enerjik Melodi':
+          return 'Energetic Melody';
+        case 'Huzurlu Yağmur':
+          return 'Gentle Rain';
+        case 'Nehir Akıntısı':
+          return 'River Stream';
+        default:
+          return name;
+      }
+    }
+    return name;
+  }
 }
 
 class SoundService {

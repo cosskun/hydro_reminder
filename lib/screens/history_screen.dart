@@ -34,11 +34,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   // Calculate past 7 days statistics for custom chart
-  List<Map<String, dynamic>> _getLast7DaysStats(List<WaterLog> logs, int dailyGoal) {
+  List<Map<String, dynamic>> _getLast7DaysStats(List<WaterLog> logs, int dailyGoal, {bool isEn = false}) {
     final List<Map<String, dynamic>> stats = [];
     final now = DateTime.now();
-    final dayFormat = DateFormat('E', 'tr_TR'); // E.g., Pzt, Sal, Çar...
-    final fullDateFormat = DateFormat('dd MMM', 'tr_TR');
+    final dayFormat = DateFormat('E', isEn ? 'en_US' : 'tr_TR'); // E.g., Pzt, Sal, Çar...
+    final fullDateFormat = DateFormat('dd MMM', isEn ? 'en_US' : 'tr_TR');
 
     for (int i = 6; i >= 0; i--) {
       final targetDate = now.subtract(Duration(days: i));
@@ -67,12 +67,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final provider = Provider.of<WaterProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isEn = provider.language == 'en';
 
     final sortedLogs = List<WaterLog>.from(provider.logs)
       ..sort((a, b) => b.timestamp.compareTo(a.timestamp)); // Newest first
 
     final groupedLogs = _groupLogsByDay(sortedLogs);
-    final last7Days = _getLast7DaysStats(provider.logs, provider.dailyGoal);
+    final last7Days = _getLast7DaysStats(provider.logs, provider.dailyGoal, isEn: isEn);
     final badges = provider.badges;
     final unlockedCount = badges.where((b) => b.isUnlocked).length;
 
@@ -89,7 +90,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Özet & Analiz 📊',
+            isEn ? 'Summary & Stats 📊' : 'Özet & Analiz 📊',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -110,9 +111,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
             children: [
               Expanded(
                 child: StatCard(
-                  title: 'Günlük Ortalama',
+                  title: isEn ? 'Daily Average' : 'Günlük Ortalama',
                   value: '$averageIntake ml',
-                  subtitle: 'aktif günlerde',
+                  subtitle: isEn ? 'on active days' : 'aktif günlerde',
                   icon: Icons.analytics_rounded,
                   color: Theme.of(context).colorScheme.primary,
                   isDark: isDark,
@@ -121,9 +122,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: StatCard(
-                  title: 'Mevcut Seri',
-                  value: '$streak Gün',
-                  subtitle: 'hedefe ulaşma',
+                  title: isEn ? 'Current Streak' : 'Mevcut Seri',
+                  value: isEn ? '$streak Days' : '$streak Gün',
+                  subtitle: isEn ? 'goal achieved' : 'hedefe ulaşma',
                   icon: Icons.local_fire_department_rounded,
                   color: Colors.orangeAccent,
                   isDark: isDark,
@@ -166,7 +167,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Seri Kalkanı',
+                              isEn ? 'Streak Shield' : 'Seri Kalkanı',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -176,7 +177,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '${provider.streakShields} Adet Aktif',
+                            isEn ? '${provider.streakShields} Active' : '${provider.streakShields} Adet Aktif',
                             style: const TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w800,
@@ -187,7 +188,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Her hafta 1 ücretsiz kalkan yenilenir. Hedefinizi kaçırdığınız günlerde serinizi korur.',
+                        isEn
+                            ? '1 free shield refilled every week. Protects your streak on days you miss your goal.'
+                            : 'Her hafta 1 ücretsiz kalkan yenilenir. Hedefinizi kaçırdığınız günlerde serinizi korur.',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF047857),
@@ -238,7 +241,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Başarılar & Rozetler',
+                                isEn ? 'Achievements & Badges' : 'Başarılar & Rozetler',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -285,7 +288,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 if (_isBadgesExpanded) ...[
                   const SizedBox(height: 6),
                   Text(
-                    'Su içtikçe ve serilerini korudukça yeni rozetler kazanırsın.',
+                    isEn
+                        ? 'Earn new badges as you hydrate and maintain your streak.'
+                        : 'Su içtikçe ve serilerini korudukça yeni rozetler kazanırsın.',
                     style: TextStyle(
                       fontSize: 11,
                       color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
@@ -315,7 +320,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
           // Hydration Logs History Title
           Text(
-            'Tüketim Günlüğü 📅',
+            isEn ? 'Hydration History 📅' : 'Tüketim Günlüğü 📅',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -341,7 +346,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   const Text('📭', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 12),
                   Text(
-                    'Henüz su içme kaydı bulunmuyor.',
+                    isEn ? 'No hydration records found yet.' : 'Henüz su içme kaydı bulunmuyor.',
                     style: TextStyle(
                       fontSize: 14,
                       color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,

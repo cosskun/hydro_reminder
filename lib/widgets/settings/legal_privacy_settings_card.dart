@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/water_provider.dart';
 import 'settings_card_wrapper.dart';
 
 class LegalPrivacySettingsCard extends StatelessWidget {
@@ -11,6 +13,7 @@ class LegalPrivacySettingsCard extends StatelessWidget {
     required String emoji,
     required String title,
     required List<Map<String, String>> sections,
+    String buttonText = 'Okudum, Anladım',
   }) {
     final primary = Theme.of(context).colorScheme.primary;
     showModalBottomSheet(
@@ -123,9 +126,9 @@ class LegalPrivacySettingsCard extends StatelessWidget {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text(
-                          'Okudum, Anladım',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        child: Text(
+                          buttonText,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -142,13 +145,16 @@ class LegalPrivacySettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.primary;
+    final isEn = Provider.of<WaterProvider>(context).language == 'en';
 
     return SettingsCardWrapper(
-      title: 'Yasal Bilgiler, KVKK ve Gizlilik 🔒',
+      title: isEn ? 'Legal Information, Privacy & KVKK 🔒' : 'Yasal Bilgiler, KVKK ve Gizlilik 🔒',
       titleTrailing: Icon(Icons.verified_user_outlined, color: primary),
       children: [
         Text(
-          'HydroSoft verilerinizi hiçbir dış sunucuya aktarmaz; tüm bilgileriniz %100 cihazınızda saklanır.',
+          isEn
+              ? 'HydroSoft never transfers your data to external servers; 100% of your information is stored on your device.'
+              : 'HydroSoft verilerinizi hiçbir dış sunucuya aktarmaz; tüm bilgileriniz %100 cihazınızda saklanır.',
           style: TextStyle(
             fontSize: 11.5,
             color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
@@ -160,35 +166,61 @@ class LegalPrivacySettingsCard extends StatelessWidget {
           context,
           isDark: isDark,
           icon: Icons.privacy_tip_outlined,
-          title: 'Gizlilik Politikası & KVKK Aydınlatma Metni',
-          subtitle: 'Veri işleme, yerel depolama, sağlık izinleri ve silme haklarınız.',
+          title: isEn ? 'Privacy Policy & Clarification Text' : 'Gizlilik Politikası & KVKK Aydınlatma Metni',
+          subtitle: isEn
+              ? 'Data processing, local storage, health permissions, and deletion rights.'
+              : 'Veri işleme, yerel depolama, sağlık izinleri ve silme haklarınız.',
           onTap: () => _showLegalModal(
             context,
             isDark: isDark,
             emoji: '🔒',
-            title: 'Gizlilik Politikası & KVKK',
-            sections: const [
-              {
-                'heading': '1. %100 Cihaz İçi Veri Saklama (Sunucusuz Mimari)',
-                'body':
-                    'HydroSoft uygulamasında girdiğiniz yaş, kilo, cinsiyet, günlük su hedefleri ve içecek kayıtları yalnızca kendi telefonunuzun güvenli yerel hafızasında saklanır. Hiçbir kişisel veriniz uzak sunuculara gönderilmez, satılmaz veya üçüncü taraflarla paylaşılmaz.',
-              },
-              {
-                'heading': '2. Bildirim ve Alarm İzinleri',
-                'body':
-                    'Bildirim izni yalnızca belirlediğiniz saatlerde su içme hatırlatıcısı, canlı ilerleme çubuğu ve gün sonu özeti göstermek için kullanılır. Bildirim iznini reddetmeniz veya kapatmanız halinde uygulama içi bildirim anahtarları otomatik olarak kapanır ve hiçbir bildirim gönderilmez.',
-              },
-              {
-                'heading': '3. Apple Sağlık (HealthKit) & Google Health Connect',
-                'body':
-                    'Sağlık senkronizasyonu varsayılan olarak kapalıdır. Yalnızca siz Ayarlar ekranından açıkça izin verdiğinizde içtiğiniz su miktarı (Dietary Water / Hydration) sağlık uygulamasına yazılır ve günlük adım sayınız okunur. Bu veriler reklam veya veri madenciliği amacıyla asla kullanılmaz.',
-              },
-              {
-                'heading': '4. KVKK Kapsamında Unutulma ve Veri Silme Hakkı',
-                'body':
-                    'Ayarlar > Tehlikeli Bölge altındaki "Tüm Verileri Sıfırla" butonunu kullanarak veya uygulamayı cihazınızdan kaldırarak tüm geçmiş kayıtlarınızı kalıcı ve geri döndürülemez biçimde silebilirsiniz.',
-              },
-            ],
+            title: isEn ? 'Privacy Policy & KVKK' : 'Gizlilik Politikası & KVKK',
+            buttonText: isEn ? 'I Have Read and Understood' : 'Okudum, Anladım',
+            sections: isEn
+                ? const [
+                    {
+                      'heading': '1. 100% On-Device Data Storage (Serverless Architecture)',
+                      'body':
+                          'Your age, weight, gender, daily water goals, and beverage logs entered in HydroSoft are stored strictly on your phone’s secure local storage. None of your personal data is sent to remote servers, sold, or shared with third parties.',
+                    },
+                    {
+                      'heading': '2. Notification & Alarm Permissions',
+                      'body':
+                          'Notification permissions are only used to send water reminders at your designated hours, show the live progress bar, and display end-of-day summaries. If denied or disabled, in-app notification toggles turn off automatically and no notifications are sent.',
+                    },
+                    {
+                      'heading': '3. Apple Health (HealthKit) & Google Health Connect',
+                      'body':
+                          'Health synchronization is disabled by default. Only when you explicitly grant permission in Settings will logged water intake (Dietary Water / Hydration) be written to your health app, and daily steps read. This data is never used for advertising or data mining.',
+                    },
+                    {
+                      'heading': '4. Right to Erasure & Data Deletion',
+                      'body':
+                          'You can permanently and irreversibly erase all your historical logs by tapping "Reset All Data" under Settings > Danger Zone, or simply by uninstalling the application from your device.',
+                    },
+                  ]
+                : const [
+                    {
+                      'heading': '1. %100 Cihaz İçi Veri Saklama (Sunucusuz Mimari)',
+                      'body':
+                          'HydroSoft uygulamasında girdiğiniz yaş, kilo, cinsiyet, günlük su hedefleri ve içecek kayıtları yalnızca kendi telefonunuzun güvenli yerel hafızasında saklanır. Hiçbir kişisel veriniz uzak sunuculara gönderilmez, satılmaz veya üçüncü taraflarla paylaşılmaz.',
+                    },
+                    {
+                      'heading': '2. Bildirim ve Alarm İzinleri',
+                      'body':
+                          'Bildirim izni yalnızca belirlediğiniz saatlerde su içme hatırlatıcısı, canlı ilerleme çubuğu ve gün sonu özeti göstermek için kullanılır. Bildirim iznini reddetmeniz veya kapatmanız halinde uygulama içi bildirim anahtarları otomatik olarak kapanır ve hiçbir bildirim gönderilmez.',
+                    },
+                    {
+                      'heading': '3. Apple Sağlık (HealthKit) & Google Health Connect',
+                      'body':
+                          'Sağlık senkronizasyonu varsayılan olarak kapalıdır. Yalnızca siz Ayarlar ekranından açıkça izin verdiğinizde içtiğiniz su miktarı (Dietary Water / Hydration) sağlık uygulamasına yazılır ve günlük adım sayınız okunur. Bu veriler reklam veya veri madenciliği amacıyla asla kullanılmaz.',
+                    },
+                    {
+                      'heading': '4. KVKK Kapsamında Unutulma ve Veri Silme Hakkı',
+                      'body':
+                          'Ayarlar > Tehlikeli Bölge altındaki "Tüm Verileri Sıfırla" butonunu kullanarak veya uygulamayı cihazınızdan kaldırarak tüm geçmiş kayıtlarınızı kalıcı ve geri döndürülemez biçimde silebilirsiniz.',
+                    },
+                  ],
           ),
         ),
         const Divider(height: 16, thickness: 0.5),
@@ -196,30 +228,51 @@ class LegalPrivacySettingsCard extends StatelessWidget {
           context,
           isDark: isDark,
           icon: Icons.medical_information_outlined,
-          title: 'Tıbbi Sorumluluk Reddi & Bilimsel Kaynaklar',
-          subtitle: 'Hidrasyon hesaplama formülü ve sağlık uyarısı (Medical Disclaimer).',
+          title: isEn ? 'Medical Disclaimer & Scientific Sources' : 'Tıbbi Sorumluluk Reddi & Bilimsel Kaynaklar',
+          subtitle: isEn
+              ? 'Hydration formula and health disclaimer (Medical Disclaimer).'
+              : 'Hidrasyon hesaplama formülü ve sağlık uyarısı (Medical Disclaimer).',
           onTap: () => _showLegalModal(
             context,
             isDark: isDark,
             emoji: '⚕️',
-            title: 'Tıbbi Sorumluluk Reddi',
-            sections: const [
-              {
-                'heading': '1. Tıbbi Tavsiye Değildir (Medical Disclaimer)',
-                'body':
-                    'HydroSoft yalnızca genel sağlıklı yaşam alışkanlığı kazandırma ve su içmeyi hatırlatma amacıyla geliştirilmiştir. Uygulama içerisindeki hiçbir hesaplama, bildirim veya ipucu tıbbi teşhis, tedavi veya hekim tavsiyesi yerine geçmez.',
-              },
-              {
-                'heading': '2. Özel Sağlık Durumları',
-                'body':
-                    'Böbrek yetmezliği, kalp rahatsızlığı, gebelik, emzirme veya doktor tarafından sıvı kısıtlaması/artırımı önerilen özel bir tıbbi durumunuz varsa, uygulamanın önerdiği hedefler yerine mutlaka uzman doktorunuzun belirttiği günlük sıvı miktarını esas alınız.',
-              },
-              {
-                'heading': '3. Bilimsel Referanslar (EFSA & WHO)',
-                'body':
-                    'Uygulamadaki otomatik günlük su hedefi hesaplaması; Avrupa Gıda Güvenliği Otoritesi (EFSA - European Food Safety Authority) ve Dünya Sağlık Örgütü (WHO) yetişkin referans hidrasyon kılavuzlarındaki vücut ağırlığı başına ortalama 31–35 ml/kg standart formülüne dayanmaktadır.',
-              },
-            ],
+            title: isEn ? 'Medical Disclaimer' : 'Tıbbi Sorumluluk Reddi',
+            buttonText: isEn ? 'I Have Read and Understood' : 'Okudum, Anladım',
+            sections: isEn
+                ? const [
+                    {
+                      'heading': '1. Not Medical Advice (Medical Disclaimer)',
+                      'body':
+                          'HydroSoft is developed solely to encourage healthy hydration habits and remind you to drink water. No calculations, notifications, or tips in the app replace professional medical diagnosis, treatment, or physician advice.',
+                    },
+                    {
+                      'heading': '2. Special Medical Conditions',
+                      'body':
+                          'If you have kidney disease, cardiovascular conditions, pregnancy, breastfeeding, or a medical condition requiring fluid restriction or increase, always follow your physician’s explicit guidance rather than app recommendations.',
+                    },
+                    {
+                      'heading': '3. Scientific References (EFSA & WHO)',
+                      'body':
+                          'The automatic daily hydration calculation is based on the European Food Safety Authority (EFSA) and World Health Organization (WHO) adult guidelines recommending 31–35 ml of water per kg of body weight.',
+                    },
+                  ]
+                : const [
+                    {
+                      'heading': '1. Tıbbi Tavsiye Değildir (Medical Disclaimer)',
+                      'body':
+                          'HydroSoft yalnızca genel sağlıklı yaşam alışkanlığı kazandırma ve su içmeyi hatırlatma amacıyla geliştirilmiştir. Uygulama içerisindeki hiçbir hesaplama, bildirim veya ipucu tıbbi teşhis, tedavi veya hekim tavsiyesi yerine geçmez.',
+                    },
+                    {
+                      'heading': '2. Özel Sağlık Durumları',
+                      'body':
+                          'Böbrek yetmezliği, kalp rahatsızlığı, gebelik, emzirme veya doktor tarafından sıvı kısıtlaması/artırımı önerilen özel bir tıbbi durumunuz varsa, uygulamanın önerdiği hedefler yerine mutlaka uzman doktorunuzun belirttiği günlük sıvı miktarını esas alınız.',
+                    },
+                    {
+                      'heading': '3. Bilimsel Referanslar (EFSA & WHO)',
+                      'body':
+                          'Uygulamadaki otomatik günlük su hedefi hesaplaması; Avrupa Gıda Güvenliği Otoritesi (EFSA - European Food Safety Authority) ve Dünya Sağlık Örgütü (WHO) yetişkin referans hidrasyon kılavuzlarındaki vücut ağırlığı başına ortalama 31–35 ml/kg standart formülüne dayanmaktadır.',
+                    },
+                  ],
           ),
         ),
       ],

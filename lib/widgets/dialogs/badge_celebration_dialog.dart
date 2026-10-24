@@ -5,6 +5,8 @@ import '../../providers/water_provider.dart';
 
 Future<void> showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {VoidCallback? onDismiss}) async {
   final isDark = Theme.of(context).brightness == Brightness.dark;
+  final provider = Provider.of<WaterProvider>(context, listen: false);
+  final isEn = provider.language == 'en';
 
   await showDialog(
     context: context,
@@ -19,7 +21,7 @@ Future<void> showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {
               const Text('🎉 🏆 🎉', style: TextStyle(fontSize: 32)),
               const SizedBox(height: 8),
               Text(
-                'Yeni Rozet Kazanıldı!',
+                isEn ? 'New Badge Unlocked!' : 'Yeni Rozet Kazanıldı!',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -43,7 +45,7 @@ Future<void> showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {
             ),
             const SizedBox(height: 14),
             Text(
-              badge.title,
+              badge.localizedTitle(provider.language),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
@@ -52,7 +54,7 @@ Future<void> showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {
             ),
             const SizedBox(height: 6),
             Text(
-              badge.description,
+              badge.localizedDescription(provider.language),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -76,9 +78,9 @@ Future<void> showBadgeCelebrationDialog(BuildContext context, BadgeItem badge, {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Text(
-                'Harika! 🥳',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              child: Text(
+                isEn ? 'Awesome! 🥳' : 'Harika! 🥳',
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
             ),
           ),

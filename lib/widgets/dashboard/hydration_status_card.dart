@@ -7,12 +7,14 @@ class HydrationStatusCard extends StatefulWidget {
   final Map<String, String> status;
   final Color statusColor;
   final bool isDark;
+  final bool isCompact;
 
   const HydrationStatusCard({
     super.key,
     required this.status,
     required this.statusColor,
     required this.isDark,
+    this.isCompact = false,
   });
 
   @override
@@ -59,10 +61,13 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
           : null,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.isCompact ? 11 : 14,
+          vertical: widget.isCompact ? 8 : 12,
+        ),
         decoration: BoxDecoration(
           color: widget.isDark ? const Color(0xFF1E293B) : Colors.white,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(widget.isCompact ? 18 : 22),
           border: Border.all(
             color: widget.statusColor.withOpacity(0.35),
             width: 1.5,
@@ -70,8 +75,8 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
           boxShadow: [
             BoxShadow(
               color: widget.statusColor.withOpacity(widget.isDark ? 0.20 : 0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+              blurRadius: widget.isCompact ? 10 : 16,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -80,15 +85,15 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
           children: [
             // 1. Left: Hydration Mascot Character Stage
             Container(
-              width: 88,
-              height: 88,
+              width: widget.isCompact ? 68 : 88,
+              height: widget.isCompact ? 68 : 88,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: widgetColors(widget.isDark, widget.statusColor),
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(widget.isCompact ? 16 : 20),
                 border: Border.all(
                   color: widget.statusColor.withOpacity(0.4),
                   width: 1.5,
@@ -96,13 +101,13 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                 boxShadow: [
                   BoxShadow(
                     color: widget.statusColor.withOpacity(widget.isDark ? 0.25 : 0.12),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(widget.isCompact ? 14 : 18),
                 child: displayAsset != null
                     ? Image.asset(
                         displayAsset,
@@ -110,19 +115,19 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                         errorBuilder: (context, error, stackTrace) => Center(
                           child: Text(
                             emoji,
-                            style: const TextStyle(fontSize: 40),
+                            style: TextStyle(fontSize: widget.isCompact ? 32 : 40),
                           ),
                         ),
                       )
                     : Center(
                         child: Text(
                           emoji,
-                          style: const TextStyle(fontSize: 40),
+                          style: TextStyle(fontSize: widget.isCompact ? 32 : 40),
                         ),
                       ),
               ),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: widget.isCompact ? 10 : 14),
 
             // 2. Right: Title Badge, Energy Battery Chip & Mascot Dialogue
             Expanded(
@@ -134,7 +139,10 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                     children: [
                       Flexible(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: widget.isCompact ? 7 : 9,
+                            vertical: widget.isCompact ? 2 : 3,
+                          ),
                           decoration: BoxDecoration(
                             color: widget.statusColor.withOpacity(0.18),
                             borderRadius: BorderRadius.circular(8),
@@ -144,7 +152,7 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: widget.isCompact ? 11 : 12,
                               fontWeight: FontWeight.w800,
                               color: widget.statusColor,
                             ),
@@ -153,7 +161,10 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                       ),
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: widget.isCompact ? 5 : 7,
+                          vertical: widget.isCompact ? 1.5 : 2.5,
+                        ),
                         decoration: BoxDecoration(
                           color: widget.isDark ? const Color(0xFF334155) : const Color(0xFFEFF6FF),
                           borderRadius: BorderRadius.circular(6),
@@ -165,7 +176,7 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                         child: Text(
                           '⚡ %$energyPercentage',
                           style: TextStyle(
-                            fontSize: 10.5,
+                            fontSize: widget.isCompact ? 9.5 : 10.5,
                             fontWeight: FontWeight.w800,
                             color: widget.statusColor,
                           ),
@@ -173,13 +184,15 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: widget.isCompact ? 4 : 6),
                   Text(
                     displayMessage,
+                    maxLines: widget.isCompact ? 2 : 3,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: widget.isCompact ? 11.5 : 13,
                       fontWeight: FontWeight.w600,
-                      height: 1.35,
+                      height: widget.isCompact ? 1.25 : 1.35,
                       color: widget.isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                     ),
                   ),

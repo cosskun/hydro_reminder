@@ -107,16 +107,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         LayoutBuilder(
       builder: (context, constraints) {
-        // Dynamically compute the bubble size based on viewport height
+        // Dynamically compute the bubble size and compactness based on viewport height
         final availableHeight = constraints.maxHeight;
-        final double bubbleSize = (availableHeight * 0.28).clamp(175.0, 225.0);
+        final bool isCompact = availableHeight < 680;
+        final bool isVeryCompact = availableHeight < 590;
+
+        final double bubbleSize = isVeryCompact
+            ? (availableHeight * 0.20).clamp(110.0, 135.0)
+            : isCompact
+                ? (availableHeight * 0.22).clamp(125.0, 155.0)
+                : (availableHeight * 0.26).clamp(165.0, 215.0);
 
         return SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          physics: const ClampingScrollPhysics(),
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: isCompact ? 4.0 : 10.0,
+          ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: availableHeight > 40 ? availableHeight - 20 : availableHeight,
+              minHeight: availableHeight > 20
+                  ? availableHeight - (isCompact ? 8.0 : 20.0)
+                  : availableHeight,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,7 +147,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(
                                 AppTranslations.get('greeting', lang: provider.language),
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: isCompact ? 13 : 14,
                                   color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -146,7 +158,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: 19,
+                                  fontSize: isCompact ? 17 : 19,
                                   fontWeight: FontWeight.bold,
                                   color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                                 ),
@@ -156,7 +168,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isCompact ? 10 : 12,
+                            vertical: isCompact ? 4.5 : 6,
+                          ),
                           decoration: BoxDecoration(
                             color: isDark ? const Color(0xFF1C2541) : theme.colorScheme.primary.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(16),
@@ -168,14 +183,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.track_changes_rounded, color: theme.colorScheme.primary, size: 16),
+                              Icon(Icons.track_changes_rounded, color: theme.colorScheme.primary, size: isCompact ? 14 : 16),
                               const SizedBox(width: 5),
                               Text(
                                 '${provider.language == 'en' ? 'Goal' : 'Hedef'}: ${provider.dailyGoal} ml',
                                 style: TextStyle(
                                   color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 13,
+                                  fontSize: isCompact ? 12 : 13,
                                 ),
                               ),
                             ],
@@ -183,23 +198,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: isCompact ? 6 : 10),
 
                     // Dynamic Target Boosts (Workout / Hot Weather) Quick Action Chips
-                    BoostActionChips(provider: provider, isDark: isDark),
+                    BoostActionChips(provider: provider, isDark: isDark, isCompact: isCompact),
                   ],
                 ),
 
                 // 2. Middle Section: Dynamic Liquid Bubble, Total Intake, and Status Card
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  padding: EdgeInsets.symmetric(vertical: isCompact ? 3.0 : 8.0),
                   child: Column(
                     children: [
                       // Streak Recovery Banner (if yesterday was missed and user has an active shield)
                       if (provider.canRecoverYesterday)
                         Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          margin: EdgeInsets.only(bottom: isCompact ? 6 : 12),
+                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: isCompact ? 6 : 10),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: isDark
@@ -220,7 +235,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Text('🛡️', style: TextStyle(fontSize: 24)),
+                              Text('🛡️', style: TextStyle(fontSize: isCompact ? 20 : 24)),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
@@ -229,7 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     Text(
                                       provider.language == 'en' ? 'Streak Recovery Shield!' : 'Seri Kurtarma Kalkanı!',
                                       style: TextStyle(
-                                        fontSize: 13,
+                                        fontSize: isCompact ? 12 : 13,
                                         fontWeight: FontWeight.bold,
                                         color: isDark ? Colors.white : const Color(0xFF0F172A),
                                       ),
@@ -239,7 +254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           ? 'You missed your goal yesterday. Use 1 shield to protect your streak!'
                                           : 'Dün hedefini kaçırdın. 1 kalkan kullanarak serini koru!',
                                       style: TextStyle(
-                                        fontSize: 11,
+                                        fontSize: isCompact ? 10 : 11,
                                         color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade700,
                                       ),
                                     ),
@@ -268,12 +283,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: theme.colorScheme.primary,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: EdgeInsets.symmetric(horizontal: isCompact ? 10 : 12, vertical: isCompact ? 4 : 6),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 ),
                                 child: Text(
                                   provider.language == 'en' ? 'Recover' : 'Kurtar',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: isCompact ? 11 : 12),
                                 ),
                               ),
                             ],
@@ -283,20 +298,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       // Waving fluid progress bubble (enlarged & proportional)
                       LiquidProgressIndicator(progress: percentage, size: bubbleSize),
 
-                      const SizedBox(height: 12),
+                      SizedBox(height: isCompact ? 6 : 12),
                       // Water stats display text
                       Text(
                         '${provider.todayTotal} / ${provider.dailyGoal} ml',
                         style: TextStyle(
-                          fontSize: 25,
+                          fontSize: isCompact ? 21 : 25,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5,
                           color: isDark ? theme.colorScheme.primary : theme.colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: isCompact ? 6 : 10),
 
-                      HydrationStatusCard(status: status, statusColor: statusColor, isDark: isDark),
+                      HydrationStatusCard(
+                        status: status,
+                        statusColor: statusColor,
+                        isDark: isDark,
+                        isCompact: isCompact,
+                      ),
                     ],
                   ),
                 ),
@@ -311,7 +331,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Text(
                           AppTranslations.get('quick_add', lang: provider.language),
                           style: TextStyle(
-                            fontSize: 14.5,
+                            fontSize: isCompact ? 13.5 : 14.5,
                             fontWeight: FontWeight.bold,
                             color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
                           ),
@@ -323,14 +343,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 10.5,
+                              fontSize: isCompact ? 9.5 : 10.5,
                               color: isDark ? const Color(0xFF64748B) : Colors.grey.shade500,
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: isCompact ? 6 : 10),
 
                     provider.quickPresets.length <= 4
                         ? Row(
@@ -346,11 +366,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     canDelete: provider.quickPresets.length > 1,
                                     isExpanded: true,
                                     isDark: isDark,
+                                    isCompact: isCompact,
                                   ),
                                 );
                               }),
                               Expanded(
-                                child: HydrationCustomAddButton(context: context, isExpanded: true, isDark: isDark),
+                                child: HydrationCustomAddButton(
+                                  context: context,
+                                  isExpanded: true,
+                                  isDark: isDark,
+                                  isCompact: isCompact,
+                                ),
                               ),
                             ],
                           )
@@ -369,13 +395,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     canDelete: provider.quickPresets.length > 1,
                                     isExpanded: false,
                                     isDark: isDark,
+                                    isCompact: isCompact,
                                   );
                                 }),
-                                HydrationCustomAddButton(context: context, isExpanded: false, isDark: isDark),
+                                HydrationCustomAddButton(
+                                  context: context,
+                                  isExpanded: false,
+                                  isDark: isDark,
+                                  isCompact: isCompact,
+                                ),
                               ],
                             ),
                           ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: isCompact ? 2 : 6),
                   ],
                 ),
               ],

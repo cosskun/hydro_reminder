@@ -12,6 +12,7 @@ class HydrationQuickAddButton extends StatelessWidget {
   final bool canDelete;
   final bool isExpanded;
   final bool isDark;
+  final bool isCompact;
 
   const HydrationQuickAddButton({
     super.key,
@@ -22,6 +23,7 @@ class HydrationQuickAddButton extends StatelessWidget {
     required this.canDelete,
     this.isExpanded = false,
     this.isDark = false,
+    this.isCompact = false,
   });
 
   @override
@@ -73,8 +75,11 @@ class HydrationQuickAddButton extends StatelessWidget {
         onLongPress: canDelete ? () => showDeletePresetDialog(context, amount) : null,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: isExpanded ? null : 74,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+          width: isExpanded ? null : (isCompact ? 66 : 74),
+          padding: EdgeInsets.symmetric(
+            vertical: isCompact ? 7 : 12,
+            horizontal: 2,
+          ),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF1C2541) : Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -95,29 +100,29 @@ class HydrationQuickAddButton extends StatelessWidget {
             children: [
               Text(
                 emoji,
-                style: const TextStyle(fontSize: 22),
+                style: TextStyle(fontSize: isCompact ? 19 : 22),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: isCompact ? 2 : 4),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   '$amount ml',
                   maxLines: 1,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: isCompact ? 11 : 12,
                     fontWeight: FontWeight.bold,
                     color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                   ),
                 ),
               ),
-              const SizedBox(height: 1),
+              SizedBox(height: isCompact ? 0 : 1),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   label,
                   maxLines: 1,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: isCompact ? 9 : 10,
                     color: isDark ? const Color(0xFF64748B) : Colors.grey.shade500,
                   ),
                 ),
@@ -134,12 +139,14 @@ class HydrationCustomAddButton extends StatelessWidget {
   final BuildContext context;
   final bool isExpanded;
   final bool isDark;
+  final bool isCompact;
 
   const HydrationCustomAddButton({
     super.key,
     required this.context,
     this.isExpanded = false,
     this.isDark = false,
+    this.isCompact = false,
   });
 
   @override
@@ -151,8 +158,11 @@ class HydrationCustomAddButton extends StatelessWidget {
         onTap: () => showCustomAddBeverageDialog(context),
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: isExpanded ? null : 74,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+          width: isExpanded ? null : (isCompact ? 66 : 74),
+          padding: EdgeInsets.symmetric(
+            vertical: isCompact ? 7 : 12,
+            horizontal: 2,
+          ),
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF1C2541) : Theme.of(context).colorScheme.primary.withOpacity(0.08),
             borderRadius: BorderRadius.circular(16),
@@ -173,30 +183,30 @@ class HydrationCustomAddButton extends StatelessWidget {
             children: [
               Icon(
                 Icons.add_circle_outline_rounded,
-                size: 26,
+                size: isCompact ? 21 : 26,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: isCompact ? 2 : 4),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   isEn ? 'Custom' : 'Özel',
                   maxLines: 1,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: isCompact ? 11 : 12,
                     fontWeight: FontWeight.bold,
                     color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
                   ),
                 ),
               ),
-              const SizedBox(height: 1),
+              SizedBox(height: isCompact ? 0 : 1),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   isEn ? '+ Add' : '+ Ekle',
                   maxLines: 1,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: isCompact ? 9 : 10,
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),

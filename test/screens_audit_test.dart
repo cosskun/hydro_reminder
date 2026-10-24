@@ -11,6 +11,8 @@ import 'package:hydro_reminder/screens/settings_screen.dart';
 import 'package:hydro_reminder/screens/onboarding_screen.dart';
 import 'package:hydro_reminder/screens/alarm_active_screen.dart';
 import 'package:hydro_reminder/widgets/dashboard/hydration_quick_add_button.dart';
+import 'package:hydro_reminder/widgets/liquid_progress_indicator.dart';
+import 'package:hydro_reminder/widgets/dashboard/hydration_status_card.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -485,6 +487,36 @@ void main() {
       // Check presets bilingual meta
       expect(WaterProvider.getPresetMeta(200, lang: 'en')['name'], 'Glass');
       expect(WaterProvider.getPresetMeta(500, lang: 'en')['name'], 'Bottle');
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('9. Dashboard fits full-screen without overflow on compact Samsung devices (3-button nav)',
+        (WidgetTester tester) async {
+      // Standard Samsung Galaxy / Android screen with 3-button navigation bar (available height ~560px)
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 2.625;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final provider = WaterProvider();
+      await tester.pumpWidget(
+        createTestApp(
+          provider: provider,
+          child: const MainNavigationLayout(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // Assert all key components are rendered simultaneously on screen
+      expect(find.text('Merhaba 👋'), findsOneWidget);
+      expect(find.text('Bugün nasılsın?'), findsOneWidget);
+      expect(find.text('Spor (+500ml)'), findsOneWidget);
+      expect(find.text('Sıcak Hava (+300ml)'), findsOneWidget);
+      expect(find.byType(LiquidProgressIndicator), findsOneWidget);
+      expect(find.byType(HydrationStatusCard), findsOneWidget);
+      expect(find.byType(HydrationQuickAddButton), findsWidgets);
+      expect(find.byType(HydrationCustomAddButton), findsOneWidget);
 
       expect(tester.takeException(), isNull);
     });

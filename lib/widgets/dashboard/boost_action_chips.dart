@@ -4,11 +4,13 @@ import '../../providers/water_provider.dart';
 class BoostActionChips extends StatelessWidget {
   final WaterProvider provider;
   final bool isDark;
+  final bool isCompact;
 
   const BoostActionChips({
     super.key,
     required this.provider,
     required this.isDark,
+    this.isCompact = false,
   });
 
   @override
@@ -27,7 +29,10 @@ class BoostActionChips extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+              padding: EdgeInsets.symmetric(
+                horizontal: isCompact ? 6 : 8,
+                vertical: isCompact ? 4.5 : 7,
+              ),
               decoration: BoxDecoration(
                 color: provider.isWorkoutBoostActive
                     ? (isDark ? theme.colorScheme.primary.withOpacity(0.5) : theme.colorScheme.primary)
@@ -54,12 +59,12 @@ class BoostActionChips extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('🏃‍♂️', style: TextStyle(fontSize: 14)),
+                    Text('🏃‍♂️', style: TextStyle(fontSize: isCompact ? 12 : 14)),
                     const SizedBox(width: 5),
                     Text(
                       workoutLabel,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: isCompact ? 11 : 12,
                         fontWeight: FontWeight.bold,
                         color: provider.isWorkoutBoostActive
                             ? Colors.white
@@ -68,7 +73,7 @@ class BoostActionChips extends StatelessWidget {
                     ),
                     if (provider.isWorkoutBoostActive) ...[
                       const SizedBox(width: 4),
-                      const Icon(Icons.check_circle_rounded, size: 14, color: Colors.white),
+                      Icon(Icons.check_circle_rounded, size: isCompact ? 12 : 14, color: Colors.white),
                     ],
                   ],
                 ),
@@ -85,7 +90,10 @@ class BoostActionChips extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+              padding: EdgeInsets.symmetric(
+                horizontal: isCompact ? 6 : 8,
+                vertical: isCompact ? 4.5 : 7,
+              ),
               decoration: BoxDecoration(
                 color: provider.isHotWeatherBoostActive
                     ? (isDark ? const Color(0xFFC2410C) : Colors.orange.shade600)
@@ -112,12 +120,12 @@ class BoostActionChips extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('☀️', style: TextStyle(fontSize: 14)),
+                    Text('☀️', style: TextStyle(fontSize: isCompact ? 12 : 14)),
                     const SizedBox(width: 5),
                     Text(
                       hotWeatherLabel,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: isCompact ? 11 : 12,
                         fontWeight: FontWeight.bold,
                         color: provider.isHotWeatherBoostActive
                             ? Colors.white
@@ -126,7 +134,7 @@ class BoostActionChips extends StatelessWidget {
                     ),
                     if (provider.isHotWeatherBoostActive) ...[
                       const SizedBox(width: 4),
-                      const Icon(Icons.check_circle_rounded, size: 14, color: Colors.white),
+                      Icon(Icons.check_circle_rounded, size: isCompact ? 12 : 14, color: Colors.white),
                     ],
                   ],
                 ),

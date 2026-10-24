@@ -42,6 +42,15 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
         widgetData: SharedPreferences
     ) {
         try {
+            val views = buildViews(context, widgetData)
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        } catch (e: Exception) {
+            android.util.Log.e("WaterMiniWidget", "Error updating mini widget", e)
+        }
+    }
+
+    companion object {
+        fun buildViews(context: Context, widgetData: SharedPreferences): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.water_mini_widget)
 
             val consumed = widgetData.getInt("todayConsumed", 0)
@@ -120,9 +129,7 @@ class WaterMiniWidgetProvider : HomeWidgetProvider() {
             )
             views.setOnClickPendingIntent(R.id.widget_mini_root, pendingIntent)
 
-            appWidgetManager.updateAppWidget(appWidgetId, views)
-        } catch (e: Exception) {
-            android.util.Log.e("WaterMiniWidget", "Error updating mini widget", e)
+            return views
         }
     }
 }

@@ -15,7 +15,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="1.25"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
@@ -28,22 +28,28 @@
 
             <TextView
                 android:id="@+id/tv_streak_title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
                 android:fontFamily="sans-serif-black"
                 android:includeFontPadding="false"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:text="🔥 1 gün"
                 android:textColor="#FFFFFF"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_progress_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="7dp"
+                android:layout_marginLeft="6dp"
                 android:background="@drawable/widget_floating_pill_bg"
                 android:fontFamily="sans-serif-black"
                 android:includeFontPadding="false"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:paddingLeft="6.5dp"
                 android:paddingRight="6.5dp"
                 android:paddingTop="1.5dp"
@@ -82,7 +88,7 @@
 
         <!-- 5-Day Streak Checkmark Row (Pe Cu Ct Pa Pt) -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4.5dp"
             android:gravity="center_vertical"
@@ -90,9 +96,9 @@
 
             <!-- Day 1 -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="6dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <TextView
@@ -100,6 +106,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="Pe"
                     android:textColor="#E2E8F0"
                     android:textSize="9sp" />
@@ -111,6 +119,8 @@
                     android:background="@drawable/widget_day_circle_empty"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="•"
                     android:textColor="#94A3B8"
                     android:textSize="10sp" />
@@ -118,9 +128,9 @@
 
             <!-- Day 2 -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="6dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <TextView
@@ -128,6 +138,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="Cu"
                     android:textColor="#E2E8F0"
                     android:textSize="9sp" />
@@ -139,6 +151,8 @@
                     android:background="@drawable/widget_day_circle_empty"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="•"
                     android:textColor="#94A3B8"
                     android:textSize="10sp" />
@@ -146,9 +160,9 @@
 
             <!-- Day 3 -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="6dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <TextView
@@ -156,6 +170,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="Ct"
                     android:textColor="#E2E8F0"
                     android:textSize="9sp" />
@@ -167,6 +183,8 @@
                     android:background="@drawable/widget_day_circle_done"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="✓"
                     android:textColor="#0369A1"
                     android:textSize="10sp" />
@@ -174,9 +192,9 @@
 
             <!-- Day 4 -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="6dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <TextView
@@ -184,6 +202,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="Pa"
                     android:textColor="#E2E8F0"
                     android:textSize="9sp" />
@@ -195,6 +215,8 @@
                     android:background="@drawable/widget_day_circle_done"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="✓"
                     android:textColor="#0369A1"
                     android:textSize="10sp" />
@@ -202,8 +224,9 @@
 
             <!-- Day 5 (Today) -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
                 <TextView
@@ -211,6 +234,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-bold"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="Pt"
                     android:textColor="#FFFFFF"
                     android:textSize="9sp" />
@@ -222,6 +247,8 @@
                     android:background="@drawable/widget_day_circle_empty"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
+                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="•"
                     android:textColor="#94A3B8"
                     android:textSize="10sp" />
@@ -230,7 +257,7 @@
 
         <!-- Quick 1-Tap Action Pills -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center_vertical"
@@ -238,52 +265,66 @@
 
             <TextView
                 android:id="@+id/btn_progress_preset1"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginRight="4dp"
                 android:background="@drawable/widget_button_bg"
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:paddingLeft="9dp"
-                android:paddingRight="9dp"
+                android:gravity="center"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
                 android:paddingTop="3.5dp"
                 android:paddingBottom="3.5dp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="🥛 +200 ml"
                 android:textColor="#0369A1"
-                android:textSize="10sp" />
+                android:textSize="9.5sp" />
 
             <TextView
                 android:id="@+id/btn_progress_preset2"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
+                android:layout_weight="1"
                 android:background="@drawable/widget_floating_pill_bg"
                 android:clickable="true"
                 android:focusable="true"
                 android:fontFamily="sans-serif-black"
-                android:paddingLeft="9dp"
-                android:paddingRight="9dp"
+                android:gravity="center"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
                 android:paddingTop="3.5dp"
                 android:paddingBottom="3.5dp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="🥤 +330 ml"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp" />
+                android:textSize="9.5sp" />
         </LinearLayout>
     </LinearLayout>
 
     <!-- Right Column: Full-Height Square Mascot Card (Duolingo / iOS Style) -->
     <FrameLayout
         android:id="@+id/fl_mascot_card_container"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="0.75"
         android:layout_marginLeft="8dp"
-        android:layout_gravity="center_vertical|end">
+        android:layout_gravity="center">
 
-        <!-- Full-Scale Square Mascot Image with adjustViewBounds -->
+        <!-- Full-Scale Square Mascot Image with scaleType="fitCenter" -->
         <ImageView
             android:id="@+id/iv_mascot_image"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:visibility="visible" />
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"

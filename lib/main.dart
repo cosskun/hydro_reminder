@@ -65,10 +65,10 @@ void main() async {
           SnackBar(
             content: Row(
               children: [
-                const Text('ğŸ’§ ', style: TextStyle(fontSize: 18)),
+                const Text('💧 ', style: TextStyle(fontSize: 18)),
                 Expanded(
                   child: Text(
-                    '$amount ml su baÅŸarÄ±yla kaydedildi!',
+                    '$amount ml su başarıyla kaydedildi!',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),

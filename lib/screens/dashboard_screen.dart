@@ -39,7 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       mascotType: provider.mascotType,
       lang: provider.language,
       streakDays: provider.currentStreak,
-      lastLogTime: provider.logs.isNotEmpty ? provider.logs.first.timestamp : null,
+      lastLogTime: provider.latestLogTime,
     );
     final statusColor = Color(int.parse('FF${status['color']!}', radix: 16));
     final theme = Theme.of(context);

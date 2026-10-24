@@ -152,6 +152,16 @@ class WaterProvider with ChangeNotifier {
 
   // Getters
   List<WaterLog> get logs => _logs;
+  DateTime? get latestLogTime {
+    if (_logs.isEmpty) return null;
+    DateTime? latest;
+    for (final l in _logs) {
+      if (latest == null || l.timestamp.isAfter(latest)) {
+        latest = l.timestamp;
+      }
+    }
+    return latest;
+  }
   List<AlarmSetting> get alarms => _alarms;
   String get gender => _gender;
   int get age => _age;
@@ -762,7 +772,7 @@ class WaterProvider with ChangeNotifier {
         mascotType: _mascotType,
         lang: _language,
         streakDays: displayStreak,
-        lastLogTime: _logs.isNotEmpty ? _logs.first.timestamp : null,
+        lastLogTime: latestLogTime,
       );
       final String mascotEmoji = status['emoji'] ?? '💧';
       final String widgetTitle = status['routineTitle'] ?? status['title'] ?? 'HydroSoft';
@@ -979,7 +989,7 @@ class WaterProvider with ChangeNotifier {
         mascotType: _mascotType,
         lang: _language,
         streakDays: displayStreak,
-        lastLogTime: _logs.isNotEmpty ? _logs.first.timestamp : null,
+        lastLogTime: latestLogTime,
       );
       // Contextual Routine Mascot Illustration & Dialogue for Phone Widgets (iOS WidgetKit & Android AppWidget)
       // Widgets serve as sweet timely reminders throughout the day (morning, desk focus, lunch, afternoon slump, workout, evening, bedtime, thirst)

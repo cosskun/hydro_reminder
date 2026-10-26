@@ -109,14 +109,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       builder: (context, constraints) {
         // Dynamically compute the bubble size and compactness based on viewport height
         final availableHeight = constraints.maxHeight;
-        final bool isCompact = availableHeight < 680;
-        final bool isVeryCompact = availableHeight < 590;
+        final bool isVeryCompact = availableHeight < 600;
+        final bool isCompact = availableHeight < 670;
 
+        // Enlarged, prominent circular water gauge proportional to viewport
         final double bubbleSize = isVeryCompact
-            ? (availableHeight * 0.20).clamp(110.0, 135.0)
+            ? (availableHeight * 0.28).clamp(155.0, 185.0)
             : isCompact
-                ? (availableHeight * 0.22).clamp(125.0, 155.0)
-                : (availableHeight * 0.26).clamp(165.0, 215.0);
+                ? (availableHeight * 0.31).clamp(195.0, 225.0)
+                : (availableHeight * 0.33).clamp(230.0, 260.0);
 
         return SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
@@ -205,10 +206,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ],
                 ),
 
-                // 2. Middle Section: Dynamic Liquid Bubble, Total Intake, and Status Card
+                // 2. Middle Section: Dynamic Liquid Bubble & Total Intake
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: isCompact ? 3.0 : 8.0),
+                  padding: EdgeInsets.symmetric(vertical: isCompact ? 2.0 : 6.0),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       // Streak Recovery Banner (if yesterday was missed and user has an active shield)
                       if (provider.canRecoverYesterday)
@@ -298,33 +300,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       // Waving fluid progress bubble (enlarged & proportional)
                       LiquidProgressIndicator(progress: percentage, size: bubbleSize),
 
-                      SizedBox(height: isCompact ? 6 : 12),
+                      SizedBox(height: isCompact ? 8 : 12),
                       // Water stats display text
                       Text(
                         '${provider.todayTotal} / ${provider.dailyGoal} ml',
                         style: TextStyle(
-                          fontSize: isCompact ? 21 : 25,
+                          fontSize: isCompact ? 22 : 26,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5,
                           color: isDark ? theme.colorScheme.primary : theme.colorScheme.primary,
                         ),
                       ),
-                      SizedBox(height: isCompact ? 6 : 10),
-
-                      HydrationStatusCard(
-                        status: status,
-                        statusColor: statusColor,
-                        isDark: isDark,
-                        isCompact: isCompact,
-                      ),
                     ],
                   ),
                 ),
 
-                // 3. Bottom Section: Enlarged Quick Add Glass / Bottles & Custom Button
+                // 3. Bottom Section: Mascot Info Card & Enlarged Quick Add Glass / Bottles
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    HydrationStatusCard(
+                      status: status,
+                      statusColor: statusColor,
+                      isDark: isDark,
+                      isCompact: isCompact,
+                    ),
+                    SizedBox(height: isCompact ? 10 : 14),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

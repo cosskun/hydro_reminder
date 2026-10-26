@@ -220,7 +220,7 @@ class _LiquidPainter extends CustomPainter {
           color: progress > 0.42
               ? Colors.white
               : primaryColor,
-          fontSize: (size.width * 0.20).clamp(22.0, 46.0),
+          fontSize: (size.width * 0.20).clamp(24.0, 50.0),
           fontWeight: FontWeight.w900,
           letterSpacing: -0.5,
           shadows: [

@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+35: Android widget boyutlandırma ve responsive mini widget geçişi, Samsung launcher uyumluluğu, motivasyon mesajı taşma düzeltmeleri ve tam İngilizce dil desteği."
+          releaseNotes: "Hydro Reminder v1.0.0+36: Sincap ve tum maskot arac takimi (widget) gorsellerindeki cerceveler kaldirildi, uctan uca tam ekran kusursuz widget gorunumu saglandi."

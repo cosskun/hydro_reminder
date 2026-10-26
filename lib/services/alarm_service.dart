@@ -248,6 +248,17 @@ class AlarmService with WidgetsBindingObserver {
     final currentMinuteKey =
         '${now.year}-${now.month}-${now.day}-${now.hour}-${now.minute}';
 
+    // Check end of day summary trigger while app is open
+    if (_provider!.isEndOfDayEnabled &&
+        _provider!.endOfDayHour == now.hour &&
+        _provider!.endOfDayMinute == now.minute) {
+      final endOfDayKey = '${now.year}-${now.month}-${now.day}-end_of_day';
+      if (!_triggeredAlarmKeys.contains(endOfDayKey)) {
+        _triggeredAlarmKeys.add(endOfDayKey);
+        unawaited(sendEndOfDayNotificationNow());
+      }
+    }
+
     for (final alarm in _provider!.alarms) {
       if (!alarm.isEnabled) continue;
 
@@ -471,47 +482,34 @@ class AlarmService with WidgetsBindingObserver {
     }
   }
 
-  // Schedule daily End of Day Summary Notification
-  Future<void> scheduleEndOfDayNotification({
-    required bool isEnabled,
-    required int hour,
-    required int minute,
-    required int remainingMl,
-    required int consumedMl,
-    required int dailyGoalMl,
-  }) async {
-    if (kIsWeb) return;
+  // Send End of Day Notification immediately with live values (e.g. while app is open)
+  Future<void> sendEndOfDayNotificationNow() async {
+    if (kIsWeb || _provider == null) return;
+    if (!_provider!.isEndOfDayEnabled) return;
 
-    // Always cancel existing end-of-day notification first
-    try {
-      await _notificationsPlugin.cancel(id: _endOfDayNotificationId);
-    } catch (_) {}
+    final consumed = _provider!.todayConsumed;
+    final remaining = _provider!.dailyRemainingMl;
+    final goal = _provider!.dailyGoal;
+    final isEn = _provider!.language == 'en';
 
-    if (!isEnabled) return;
-
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
-
-    // If time has passed today, schedule for tomorrow
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
-
-    final String title = 'Gün Sonu Su Özeti 🌙💧';
+    final String title = isEn ? 'End of Day Hydration Summary 🌙💧' : 'Gün Sonu Su Özeti 🌙💧';
     final String body;
-    if (consumedMl == 0) {
-      body = 'Bugün henüz hiç su kaydı girmediniz! Günlük hedefiniz: $dailyGoalMl ml. Vücudunuzu susuz bırakmayın! 💧';
-    } else if (remainingMl <= 0) {
-      body = 'Tebrikler! 🏆 Bugün $dailyGoalMl ml su hedefinizi başarıyla tamamladınız! Harika bir iş çıkardınız.';
+    if (isEn) {
+      if (consumed == 0) {
+        body = 'You haven\'t logged any water today! Your daily goal: $goal ml. Remember to stay hydrated! 💧';
+      } else if (remaining <= 0) {
+        body = 'Congratulations! 🏆 You reached your $goal ml daily water goal! Great job.';
+      } else {
+        body = 'Remaining to reach your goal: $remaining ml (Drank: $consumed / $goal ml). Remember to hydrate before bed! 💧';
+      }
     } else {
-      body = 'Bugün hedefinize ulaşmak için kalan miktar: $remainingMl ml (İçilen: $consumedMl / $dailyGoalMl ml). Yatmadan önce su içmeyi unutmayın! 💧';
+      if (consumed == 0) {
+        body = 'Bugün henüz hiç su kaydı girmediniz! Günlük hedefiniz: $goal ml. Vücudunuzu susuz bırakmayın! 💧';
+      } else if (remaining <= 0) {
+        body = 'Tebrikler! 🏆 Bugün $goal ml su hedefinizi başarıyla tamamladınız! Harika bir iş çıkardınız.';
+      } else {
+        body = 'Bugün hedefinize ulaşmak için kalan miktar: $remaining ml (İçilen: $consumed / $goal ml). Yatmadan önce su içmeyi unutmayın! 💧';
+      }
     }
 
     final androidDetails = AndroidNotificationDetails(
@@ -543,6 +541,108 @@ class AlarmService with WidgetsBindingObserver {
     );
 
     try {
+      await _notificationsPlugin.show(
+        id: _endOfDayNotificationId,
+        title: title,
+        body: body,
+        notificationDetails: notificationDetails,
+        payload: 'summary_end_of_day',
+      );
+    } catch (_) {}
+  }
+
+  // Schedule daily End of Day Summary Notification
+  Future<void> scheduleEndOfDayNotification({
+    required bool isEnabled,
+    required int hour,
+    required int minute,
+    required int remainingMl,
+    required int consumedMl,
+    required int dailyGoalMl,
+  }) async {
+    if (kIsWeb) return;
+
+    // Always cancel existing end-of-day notification first
+    try {
+      await _notificationsPlugin.cancel(id: _endOfDayNotificationId);
+    } catch (_) {}
+
+    if (!isEnabled) return;
+
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
+
+    // If time has passed today, schedule for tomorrow
+    final bool isScheduledForTomorrow = scheduledDate.isBefore(now);
+    if (isScheduledForTomorrow) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    // CRITICAL FIX: When scheduling for tomorrow, today's water numbers must not be baked into tomorrow's summary!
+    // At the start of tomorrow, consumed is 0 and remaining is the full daily goal.
+    // When the user drinks water tomorrow, this notification is dynamically rescheduled with live numbers.
+    final int effectiveConsumed = isScheduledForTomorrow ? 0 : consumedMl;
+    final int effectiveRemaining = isScheduledForTomorrow ? dailyGoalMl : remainingMl;
+    final bool isEn = (_provider?.language ?? 'tr') == 'en';
+
+    final String title = isEn ? 'End of Day Hydration Summary 🌙💧' : 'Gün Sonu Su Özeti 🌙💧';
+    final String body;
+    if (isEn) {
+      if (effectiveConsumed == 0) {
+        body = 'You haven\'t logged any water today! Your daily goal: $dailyGoalMl ml. Remember to stay hydrated! 💧';
+      } else if (effectiveRemaining <= 0) {
+        body = 'Congratulations! 🏆 You reached your $dailyGoalMl ml daily water goal! Great job.';
+      } else {
+        body = 'Remaining to reach your goal: $effectiveRemaining ml (Drank: $effectiveConsumed / $dailyGoalMl ml). Remember to hydrate before bed! 💧';
+      }
+    } else {
+      if (effectiveConsumed == 0) {
+        body = 'Bugün henüz hiç su kaydı girmediniz! Günlük hedefiniz: $dailyGoalMl ml. Vücudunuzu susuz bırakmayın! 💧';
+      } else if (effectiveRemaining <= 0) {
+        body = 'Tebrikler! 🏆 Bugün $dailyGoalMl ml su hedefinizi başarıyla tamamladınız! Harika bir iş çıkardınız.';
+      } else {
+        body = 'Bugün hedefinize ulaşmak için kalan miktar: $effectiveRemaining ml (İçilen: $effectiveConsumed / $dailyGoalMl ml). Yatmadan önce su içmeyi unutmayın! 💧';
+      }
+    }
+
+    final androidDetails = AndroidNotificationDetails(
+      _summaryChannelId,
+      _summaryChannelName,
+      channelDescription: _summaryChannelDesc,
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      visibility: NotificationVisibility.public,
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: title,
+      ),
+    );
+
+    const darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'sound_water_drop.wav',
+      interruptionLevel: InterruptionLevel.active,
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
+
+    // CRITICAL: matchDateTimeComponents must NOT be DateTimeComponents.time!
+    // Dynamic metric notifications must be scheduled one-shot so stale numbers don't repeat across days.
+    try {
       await _notificationsPlugin.zonedSchedule(
         id: _endOfDayNotificationId,
         title: title,
@@ -550,7 +650,6 @@ class AlarmService with WidgetsBindingObserver {
         scheduledDate: scheduledDate,
         notificationDetails: notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
         payload: 'summary_end_of_day',
       );
     } catch (_) {
@@ -562,7 +661,6 @@ class AlarmService with WidgetsBindingObserver {
           scheduledDate: scheduledDate,
           notificationDetails: notificationDetails,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-          matchDateTimeComponents: DateTimeComponents.time,
           payload: 'summary_end_of_day',
         );
       } catch (_) {}
@@ -586,16 +684,19 @@ class AlarmService with WidgetsBindingObserver {
 
     final now = tz.TZDateTime.now(tz.local);
     final percent = dailyGoalMl > 0 ? ((consumedMl * 100) / dailyGoalMl).round() : 0;
+    final isEn = (_provider?.language ?? 'tr') == 'en';
 
     // Slot 1: Midday Pacing (14:00)
     var middayDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 14, 0);
-    if (middayDate.isBefore(now)) {
+    final bool isMiddayTomorrow = middayDate.isBefore(now);
+    if (isMiddayTomorrow) {
       middayDate = middayDate.add(const Duration(days: 1));
     }
 
     // Slot 2: Evening Pacing (18:30)
     var eveningDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, 18, 30);
-    if (eveningDate.isBefore(now)) {
+    final bool isEveningTomorrow = eveningDate.isBefore(now);
+    if (isEveningTomorrow) {
       eveningDate = eveningDate.add(const Duration(days: 1));
     }
 
@@ -606,8 +707,18 @@ class AlarmService with WidgetsBindingObserver {
       sound: 'sound_water_drop.wav',
     );
 
-    final middayTitle = '💧 Gün Ortası Hidrasyon Kontrolü';
-    final middayBody = 'Saat 14:00 oldu! Günlük hedefin %$percent seviyesinde. Öğleden sonraki enerjini yüksek tutmak için bir bardak taze su al! 🧊';
+    final String middayTitle = isEn ? '💧 Midday Hydration Check' : '💧 Gün Ortası Hidrasyon Kontrolü';
+    final String middayBody;
+    if (isEn) {
+      middayBody = isMiddayTomorrow
+          ? 'Midday is here! Take a fresh glass of water to keep your energy high and stay hydrated! 🧊'
+          : 'It is 14:00! You have reached $percent% of your daily goal. Grab a glass of water to keep your energy high! 🧊';
+    } else {
+      middayBody = isMiddayTomorrow
+          ? 'Günün ortası geldi! Enerjini yüksek tutmak ve susuz kalmamak için bir bardak taze su al! 🧊'
+          : 'Saat 14:00 oldu! Günlük hedefin %$percent seviyesinde. Öğleden sonraki enerjini yüksek tutmak için bir bardak taze su al! 🧊';
+    }
+
     final middayDetails = NotificationDetails(
       android: AndroidNotificationDetails(
         _tipsChannelId,
@@ -626,8 +737,18 @@ class AlarmService with WidgetsBindingObserver {
       iOS: darwinDetails,
     );
 
-    final eveningTitle = '⏰ Akşam Öncesi Su Zamanı';
-    final eveningBody = "Günün bitmesine az kaldı ve hedefin %$percent'inde. Akşam rahat uyumak ve susuz kalmamak için hedefini tamamlamaya başla! 💧";
+    final String eveningTitle = isEn ? '⏰ Pre-Evening Water Time' : '⏰ Akşam Öncesi Su Zamanı';
+    final String eveningBody;
+    if (isEn) {
+      eveningBody = isEveningTomorrow
+          ? 'Evening is approaching! Don\'t forget to drink water and complete your daily target for restful sleep! 💧'
+          : 'The day is wrapping up and you are at $percent% of your goal. Hydrate well before your evening rest! 💧';
+    } else {
+      eveningBody = isEveningTomorrow
+          ? 'Akşam yaklaşıyor! Günlük hedefini tamamlamak ve rahat uyumak için su içmeyi unutma! 💧'
+          : "Günün bitmesine az kaldı ve hedefin %$percent'inde. Akşam rahat uyumak ve susuz kalmamak için hedefini tamamlamaya başla! 💧";
+    }
+
     final eveningDetails = NotificationDetails(
       android: AndroidNotificationDetails(
         _tipsChannelId,
@@ -646,6 +767,8 @@ class AlarmService with WidgetsBindingObserver {
       iOS: darwinDetails,
     );
 
+    // CRITICAL: Do NOT use matchDateTimeComponents: DateTimeComponents.time here!
+    // Pacing reminders must be one-shot and dynamically updated whenever the user logs water.
     try {
       await _notificationsPlugin.zonedSchedule(
         id: _smartPacingMiddayId,
@@ -654,7 +777,6 @@ class AlarmService with WidgetsBindingObserver {
         scheduledDate: middayDate,
         notificationDetails: middayDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
         payload: 'smart_pacing_midday',
       );
 
@@ -665,7 +787,6 @@ class AlarmService with WidgetsBindingObserver {
         scheduledDate: eveningDate,
         notificationDetails: eveningDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
         payload: 'smart_pacing_evening',
       );
     } catch (_) {}

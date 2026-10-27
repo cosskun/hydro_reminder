@@ -395,11 +395,13 @@ class AlarmService with WidgetsBindingObserver {
       await _notificationsPlugin.cancel(id: detId + 10001);
       await _notificationsPlugin.cancel(id: detId + 20002);
       await _notificationsPlugin.cancel(id: detId + 30003);
+      await _notificationsPlugin.cancel(id: detId + 40004);
 
       final legacyId = id.hashCode;
       await _notificationsPlugin.cancel(id: legacyId + 10001);
       await _notificationsPlugin.cancel(id: legacyId + 20002);
       await _notificationsPlugin.cancel(id: legacyId + 30003);
+      await _notificationsPlugin.cancel(id: legacyId + 40004);
     } catch (_) {}
   }
 
@@ -544,20 +546,42 @@ class AlarmService with WidgetsBindingObserver {
         // On iOS, schedule persistent follow-up chime bursts so unacknowledged alarms ring repeatedly like a real alarm
         if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
           try {
+            // T+1 min
             await _notificationsPlugin.zonedSchedule(
               id: id + 10001,
               title: '⏰ $title',
-              body: '🚨 Hatırlatma (2. Çağrı): ${alarm.label} saati geçti, lütfen suyunuzu için!',
+              body: '🚨 2. Çağrı: ${alarm.label} saati geldi, alarm çalmaya devam ediyor!',
+              scheduledDate: scheduledDate.add(const Duration(minutes: 1)),
+              notificationDetails: notificationDetails,
+              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+              payload: 'alarm_${alarm.id}',
+            );
+            // T+2 min
+            await _notificationsPlugin.zonedSchedule(
+              id: id + 20002,
+              title: '🚨 $title',
+              body: '🚨 3. Çağrı: Suyu içene kadar telefonun çalmaya devam edecek!',
               scheduledDate: scheduledDate.add(const Duration(minutes: 2)),
               notificationDetails: notificationDetails,
               androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
               payload: 'alarm_${alarm.id}',
             );
+            // T+3 min
             await _notificationsPlugin.zonedSchedule(
-              id: id + 20002,
+              id: id + 30003,
               title: '🚨 $title',
-              body: '🚨 Israrcı Alarm (Son Çağrı): Su hedefinizi aksatmayın, hemen için!',
-              scheduledDate: scheduledDate.add(const Duration(minutes: 4)),
+              body: '🚨 Israrcı Alarm (4. Çağrı): Vücudunu susuz bırakma, hemen bir bardak su al!',
+              scheduledDate: scheduledDate.add(const Duration(minutes: 3)),
+              notificationDetails: notificationDetails,
+              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+              payload: 'alarm_${alarm.id}',
+            );
+            // T+5 min
+            await _notificationsPlugin.zonedSchedule(
+              id: id + 40004,
+              title: '🚨 $title',
+              body: '🚨 Son Çağrı (5. Çağrı): Su hedefin seni bekliyor, hemen aç ve onayla!',
+              scheduledDate: scheduledDate.add(const Duration(minutes: 5)),
               notificationDetails: notificationDetails,
               androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
               payload: 'alarm_${alarm.id}',

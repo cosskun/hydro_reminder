@@ -122,10 +122,19 @@ class _IosAlarmTipCardState extends State<IosAlarmTipCard> {
                   const SizedBox(height: 10),
                   _buildTipItem(
                     emoji: '⏰',
-                    title: isEn ? 'Insistent Repeat Bursts' : 'Israrcı Takip Uyarıları',
+                    title: isEn ? 'Relentless Ringing (Bursts)' : 'Durmaksızın Israrcı Çalma',
                     desc: isEn
-                        ? 'If you do not respond to the first alarm, HydroSoft will ring follow-up reminder chimes 2 and 4 minutes later until you log your water!'
-                        : 'İlk uyarıyı kaçırırsanız veya hemen su içemezseniz, HydroSoft siz suyu içene kadar 2 ve 4 dakika sonra ısrarcı tekrarlarla alarmı yeniden çalar.',
+                        ? 'If you do not respond to the first alarm, HydroSoft rings loud follow-up chimes at +1, +2, +3, and +5 minutes until you log your water!'
+                        : 'İlk uyarıya yanıt vermezseniz, HydroSoft suyu içip onaylayana kadar +1, +2, +3 ve +5. dakikalarda yüksek sesle telefonunuzu durmaksızın çaldırmaya devam eder.',
+                    isDark: isDark,
+                  ),
+                  const SizedBox(height: 10),
+                  _buildTipItem(
+                    emoji: '⚡',
+                    title: isEn ? 'Auto Full-Screen Wakeup (Apple Shortcuts)' : 'Otomatik Tam Ekran Uyandırma (Apple Kestirmeler)',
+                    desc: isEn
+                        ? 'Want iPhone to wake up and open full screen without touching anything? In Apple Shortcuts > Automation > New Automation > Time of Day > Select "Run Immediately" > Add Action "Open HydroSoft". At alarm time, iOS automatically wakes the screen into HydroSoft!'
+                        : 'Bildirime basmadan telefonun doğrudan uyanıp tam ekran açılmasını isterseniz: Apple Kestirmeler (Shortcuts) > Otomasyon > Yeni Otomasyon > Günün Saati > "Hemen Çalıştır"ı seçin > "HydroSoft\'u Aç" eylemini bağlayın. Saat geldiğinde iPhone ekranı otomatik uyanıp tam ekran alarmı karşınıza çıkarır!',
                     isDark: isDark,
                   ),
                 ],

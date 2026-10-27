@@ -217,8 +217,8 @@ void main() {
 
       // Alarm player context (hydration alarms and preview chimes)
       final alarmCtx = SoundService.alarmAudioContext;
-      expect(alarmCtx.iOS.category, AVAudioSessionCategory.ambient);
-      expect(alarmCtx.android.audioFocus, AndroidAudioFocus.none);
+      expect(alarmCtx.iOS.category, AVAudioSessionCategory.playback);
+      expect(alarmCtx.android.audioFocus, AndroidAudioFocus.gainTransientMayDuck);
       expect(alarmCtx.android.usageType, AndroidUsageType.alarm);
     });
   });

@@ -17,6 +17,8 @@ class PresetSound {
   String localizedName(String lang) {
     if (lang == 'en') {
       switch (name) {
+        case 'Çalar Saat & Melodi (Alarm)':
+          return 'Alarm Clock Ring';
         case 'Su Damlası':
           return 'Water Drop';
         case 'Okyanus Dalgası':
@@ -70,19 +72,21 @@ class SoundService {
   );
 
   /// AudioContext for alarms & alarm sound previews.
-  /// - iOS: [AVAudioSessionCategory.ambient] mixes with user audio and respects Silent Switch.
-  /// - Android: [AndroidAudioFocus.none] keeps user music playing while sounding the hydration chime.
+  /// - iOS: [AVAudioSessionCategory.playback] rings aloud through phone speakers like a real alarm and ducks other audio.
+  /// - Android: [AndroidAudioFocus.gainTransientMayDuck] ensures clear, loud alarm playback without terminating user music.
   static final AudioContext alarmAudioContext = AudioContext(
     iOS: AudioContextIOS(
-      category: AVAudioSessionCategory.ambient,
-      options: const {},
+      category: AVAudioSessionCategory.playback,
+      options: {
+        AVAudioSessionOptions.duckOthers,
+      },
     ),
     android: const AudioContextAndroid(
       isSpeakerphoneOn: false,
       stayAwake: false,
       contentType: AndroidContentType.sonification,
       usageType: AndroidUsageType.alarm,
-      audioFocus: AndroidAudioFocus.none,
+      audioFocus: AndroidAudioFocus.gainTransientMayDuck,
     ),
   );
 
@@ -102,6 +106,11 @@ class SoundService {
   }
 
   static const List<PresetSound> presetSounds = [
+    PresetSound(
+      name: 'Çalar Saat & Melodi (Alarm)',
+      icon: '⏰',
+      path: 'sounds/sound_alarm_ring.wav',
+    ),
     PresetSound(
       name: 'Su Damlası',
       icon: '💧',

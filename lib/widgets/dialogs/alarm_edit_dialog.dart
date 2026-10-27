@@ -14,8 +14,8 @@ void showAlarmEditDialog(BuildContext context, [AlarmSetting? existingAlarm]) {
     text: existingAlarm?.label ?? (isEn ? 'Water Time 💧' : 'Su Zamanı 💧'),
   );
 
-  String selectedSoundName = existingAlarm?.soundName ?? (isEn ? 'Water Drop 💧' : 'Su Damlası 💧');
-  String selectedSoundPath = existingAlarm?.soundPath ?? 'assets/sounds/sound_water_drop.wav';
+  String selectedSoundName = existingAlarm?.soundName ?? (isEn ? 'Alarm Clock Ring ⏰' : 'Çalar Saat & Melodi ⏰');
+  String selectedSoundPath = existingAlarm?.soundPath ?? 'assets/sounds/sound_alarm_ring.wav';
   bool isCustomSound = existingAlarm?.isCustomSound ?? false;
   String? currentlyPlayingPath;
   final theme = Theme.of(context);

@@ -18,6 +18,15 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		7884SND01000000000000002 /* sound_alarm_ring.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND01000000000000001 /* sound_alarm_ring.wav */; };
+		7884SND02000000000000002 /* sound_crystal_bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND02000000000000001 /* sound_crystal_bell.wav */; };
+		7884SND03000000000000002 /* sound_energy_chime.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND03000000000000001 /* sound_energy_chime.wav */; };
+		7884SND04000000000000002 /* sound_gentle_rain.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND04000000000000001 /* sound_gentle_rain.wav */; };
+		7884SND05000000000000002 /* sound_nature_birds.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND05000000000000001 /* sound_nature_birds.wav */; };
+		7884SND06000000000000002 /* sound_ocean_waves.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND06000000000000001 /* sound_ocean_waves.wav */; };
+		7884SND07000000000000002 /* sound_river_stream.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND07000000000000001 /* sound_river_stream.wav */; };
+		7884SND08000000000000002 /* sound_tibetan_bowl.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND08000000000000001 /* sound_tibetan_bowl.wav */; };
+		7884SND09000000000000002 /* sound_water_drop.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7884SND09000000000000001 /* sound_water_drop.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +72,15 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7884SND01000000000000001 /* sound_alarm_ring.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_alarm_ring.wav; sourceTree = "<group>"; };
+		7884SND02000000000000001 /* sound_crystal_bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_crystal_bell.wav; sourceTree = "<group>"; };
+		7884SND03000000000000001 /* sound_energy_chime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_energy_chime.wav; sourceTree = "<group>"; };
+		7884SND04000000000000001 /* sound_gentle_rain.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_gentle_rain.wav; sourceTree = "<group>"; };
+		7884SND05000000000000001 /* sound_nature_birds.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_nature_birds.wav; sourceTree = "<group>"; };
+		7884SND06000000000000001 /* sound_ocean_waves.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_ocean_waves.wav; sourceTree = "<group>"; };
+		7884SND07000000000000001 /* sound_river_stream.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_river_stream.wav; sourceTree = "<group>"; };
+		7884SND08000000000000001 /* sound_tibetan_bowl.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_tibetan_bowl.wav; sourceTree = "<group>"; };
+		7884SND09000000000000001 /* sound_water_drop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sound_water_drop.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +148,15 @@
 				7884E8712EC3CC0400C636F3 /* HydroLiveActivityAttributes.swift */,
 				7884E8732EC3CC0400C636F4 /* HydroLiveActivityManager.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				7884SND01000000000000001 /* sound_alarm_ring.wav */,
+				7884SND02000000000000001 /* sound_crystal_bell.wav */,
+				7884SND03000000000000001 /* sound_energy_chime.wav */,
+				7884SND04000000000000001 /* sound_gentle_rain.wav */,
+				7884SND05000000000000001 /* sound_nature_birds.wav */,
+				7884SND06000000000000001 /* sound_ocean_waves.wav */,
+				7884SND07000000000000001 /* sound_river_stream.wav */,
+				7884SND08000000000000001 /* sound_tibetan_bowl.wav */,
+				7884SND09000000000000001 /* sound_water_drop.wav */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -235,6 +262,15 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+				7884SND01000000000000002 /* sound_alarm_ring.wav in Resources */,
+				7884SND02000000000000002 /* sound_crystal_bell.wav in Resources */,
+				7884SND03000000000000002 /* sound_energy_chime.wav in Resources */,
+				7884SND04000000000000002 /* sound_gentle_rain.wav in Resources */,
+				7884SND05000000000000002 /* sound_nature_birds.wav in Resources */,
+				7884SND06000000000000002 /* sound_ocean_waves.wav in Resources */,
+				7884SND07000000000000002 /* sound_river_stream.wav in Resources */,
+				7884SND08000000000000002 /* sound_tibetan_bowl.wav in Resources */,
+				7884SND09000000000000002 /* sound_water_drop.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

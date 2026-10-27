@@ -4,6 +4,7 @@ import '../providers/water_provider.dart';
 import '../widgets/dialogs/alarm_edit_dialog.dart';
 import '../widgets/alarms/alarm_item_card.dart';
 import '../widgets/alarms/empty_alarms_view.dart';
+import '../widgets/alarms/ios_alarm_tip_card.dart';
 
 class AlarmsScreen extends StatelessWidget {
   const AlarmsScreen({super.key});
@@ -60,6 +61,9 @@ class AlarmsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
+
+          // iOS Alarm Guide & Tips
+          const IosAlarmTipCard(),
 
           // List of Alarms
           if (provider.alarms.isEmpty)

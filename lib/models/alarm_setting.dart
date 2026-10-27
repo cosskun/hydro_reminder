@@ -14,8 +14,8 @@ class AlarmSetting {
     required this.minute,
     this.isEnabled = true,
     this.label = 'Su Zamanı',
-    this.soundName = 'Su Damlası 💧',
-    this.soundPath = 'assets/sounds/sound_water_drop.wav',
+    this.soundName = 'Çalar Saat & Melodi ⏰',
+    this.soundPath = 'assets/sounds/sound_alarm_ring.wav',
     this.isCustomSound = false,
   });
 
@@ -45,8 +45,8 @@ class AlarmSetting {
       minute: json['minute'] as int,
       isEnabled: json['isEnabled'] as bool,
       label: json['label'] as String? ?? 'Su Zamanı',
-      soundName: json['soundName'] as String? ?? 'Su Damlası 💧',
-      soundPath: json['soundPath'] as String? ?? 'assets/sounds/sound_water_drop.wav',
+      soundName: json['soundName'] as String? ?? 'Çalar Saat & Melodi ⏰',
+      soundPath: json['soundPath'] as String? ?? 'assets/sounds/sound_alarm_ring.wav',
       isCustomSound: json['isCustomSound'] as bool? ?? false,
     );
   }

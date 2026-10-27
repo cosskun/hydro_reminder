@@ -76,7 +76,7 @@ class AlarmService with WidgetsBindingObserver {
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
       // iOS (Darwin) Initialization settings - do not prompt before onboarding completes
-      const DarwinInitializationSettings initializationSettingsDarwin =
+      final DarwinInitializationSettings initializationSettingsDarwin =
           DarwinInitializationSettings(
         requestAlertPermission: false,
         requestBadgePermission: false,
@@ -86,9 +86,35 @@ class AlarmService with WidgetsBindingObserver {
         defaultPresentList: true,
         defaultPresentSound: true,
         defaultPresentBadge: true,
+        notificationCategories: <DarwinNotificationCategory>[
+          DarwinNotificationCategory(
+            'alarm_category',
+            actions: <DarwinNotificationAction>[
+              DarwinNotificationAction.plain(
+                'action_open_fullscreen_alarm',
+                '🚨 Tam Ekran Alarmı Aç',
+                options: <DarwinNotificationActionOption>{
+                  DarwinNotificationActionOption.foreground,
+                },
+              ),
+              DarwinNotificationAction.plain(
+                'action_log_250',
+                '💧 250 ml Su İçtim',
+              ),
+              DarwinNotificationAction.plain(
+                'action_snooze_10',
+                '⏰ 10 Dakika Ertele',
+              ),
+            ],
+            options: <DarwinNotificationCategoryOption>{
+              DarwinNotificationCategoryOption.allowAnnouncement,
+              DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+            },
+          ),
+        ],
       );
 
-      const InitializationSettings initializationSettings = InitializationSettings(
+      final InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid,
         iOS: initializationSettingsDarwin,
       );
@@ -98,15 +124,41 @@ class AlarmService with WidgetsBindingObserver {
         settings: initializationSettings,
         onDidReceiveNotificationResponse: (NotificationResponse response) {
           final actionId = response.actionId;
-          if (actionId != null && actionId.startsWith('action_log_')) {
-            final amount = int.tryParse(actionId.substring(11));
-            if (amount != null && amount > 0) {
-              _provider?.addWater(amount);
+          final payload = response.payload;
+
+          if (actionId != null) {
+            if (actionId == 'action_log_250') {
+              _provider?.addWater(250);
+              if (payload != null && payload.startsWith('alarm_')) {
+                final alarmId = payload.substring(6);
+                cancelAlarmFollowUps(alarmId);
+              }
+              return;
+            } else if (actionId.startsWith('action_log_')) {
+              final amount = int.tryParse(actionId.substring(11));
+              if (amount != null && amount > 0) {
+                _provider?.addWater(amount);
+              }
+              if (payload != null && payload.startsWith('alarm_')) {
+                final alarmId = payload.substring(6);
+                cancelAlarmFollowUps(alarmId);
+              }
+              return;
+            } else if (actionId == 'action_snooze_10') {
+              if (payload != null && payload.startsWith('alarm_')) {
+                final alarmId = payload.substring(6);
+                cancelAlarmFollowUps(alarmId);
+              }
+              return;
+            } else if (actionId == 'action_open_fullscreen_alarm') {
+              if (payload != null && payload.startsWith('alarm_')) {
+                final alarmId = payload.substring(6);
+                _triggerAlarmFromPayload(alarmId);
+              }
+              return;
             }
-            return;
           }
 
-          final payload = response.payload;
           if (payload != null && payload.startsWith('alarm_')) {
             final alarmId = payload.substring(6); // Remove prefix
             _triggerAlarmFromPayload(alarmId);
@@ -434,23 +486,33 @@ class AlarmService with WidgetsBindingObserver {
           ),
         );
 
-        const darwinDetails = DarwinNotificationDetails(
+        // Determine sound file name for iOS (use user-selected sound or fall back to high-volume alarm chime)
+        final String soundFileName;
+        if (!alarm.isCustomSound && alarm.soundPath.isNotEmpty) {
+          final extracted = alarm.soundPath.split('/').last;
+          soundFileName = extracted.isNotEmpty ? extracted : 'sound_alarm_ring.wav';
+        } else {
+          soundFileName = 'sound_alarm_ring.wav';
+        }
+
+        final darwinDetails = DarwinNotificationDetails(
           presentAlert: true,
           presentBanner: true,
           presentList: true,
           presentBadge: true,
           presentSound: true,
-          sound: 'sound_water_drop.wav',
+          sound: soundFileName,
           interruptionLevel: InterruptionLevel.timeSensitive,
+          categoryIdentifier: 'alarm_category',
         );
 
-        const notificationDetails = NotificationDetails(
+        final notificationDetails = NotificationDetails(
           android: androidDetails,
           iOS: darwinDetails,
         );
 
         try {
-          // Schedule exactly 1 daily notification per alarm
+          // Schedule daily alarm notification
           await _notificationsPlugin.zonedSchedule(
             id: id,
             title: title,
@@ -477,6 +539,30 @@ class AlarmService with WidgetsBindingObserver {
           } catch (_) {
             // Fail silently
           }
+        }
+
+        // On iOS, schedule persistent follow-up chime bursts so unacknowledged alarms ring repeatedly like a real alarm
+        if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+          try {
+            await _notificationsPlugin.zonedSchedule(
+              id: id + 10001,
+              title: '⏰ $title',
+              body: '🚨 Hatırlatma (2. Çağrı): ${alarm.label} saati geçti, lütfen suyunuzu için!',
+              scheduledDate: scheduledDate.add(const Duration(minutes: 2)),
+              notificationDetails: notificationDetails,
+              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+              payload: 'alarm_${alarm.id}',
+            );
+            await _notificationsPlugin.zonedSchedule(
+              id: id + 20002,
+              title: '🚨 $title',
+              body: '🚨 Israrcı Alarm (Son Çağrı): Su hedefinizi aksatmayın, hemen için!',
+              scheduledDate: scheduledDate.add(const Duration(minutes: 4)),
+              notificationDetails: notificationDetails,
+              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+              payload: 'alarm_${alarm.id}',
+            );
+          } catch (_) {}
         }
       }
     }

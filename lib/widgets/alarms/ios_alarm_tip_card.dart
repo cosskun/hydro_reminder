@@ -121,15 +121,6 @@ class _IosAlarmTipCardState extends State<IosAlarmTipCard> {
                   ),
                   const SizedBox(height: 10),
                   _buildTipItem(
-                    emoji: '⏰',
-                    title: isEn ? 'Relentless Ringing (Bursts)' : 'Durmaksızın Israrcı Çalma',
-                    desc: isEn
-                        ? 'If you do not respond to the first alarm, HydroSoft rings loud follow-up chimes at +1, +2, +3, and +5 minutes until you log your water!'
-                        : 'İlk uyarıya yanıt vermezseniz, HydroSoft suyu içip onaylayana kadar +1, +2, +3 ve +5. dakikalarda yüksek sesle telefonunuzu durmaksızın çaldırmaya devam eder.',
-                    isDark: isDark,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildTipItem(
                     emoji: '⚡',
                     title: isEn ? 'Auto Full-Screen Wakeup (Apple Shortcuts)' : 'Otomatik Tam Ekran Uyandırma (Apple Kestirmeler)',
                     desc: isEn

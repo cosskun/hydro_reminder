@@ -563,17 +563,25 @@ class MascotResolver {
       return MascotState.streakFire;
     }
 
-    // Dynamic Hydration Energy Ladder (Su içtikçe artan enerji ve canlılık)
-    if (percentage < 0.25) {
+    // Natural Time-of-Day Daytime Routine Progression
+    if (hour >= 6 && (hour < 9 || (hour == 9 && current.minute <= 30))) {
       return MascotState.morning;
-    } else if (percentage < 0.50) {
+    } else if ((hour == 9 && current.minute > 30) || hour == 10 || (hour == 11 && current.minute <= 30)) {
+      // In the morning work window, if user hasn't started drinking yet (< 25%), keep encouraging morning wake-up
+      if (percentage < 0.25) {
+        return MascotState.morning;
+      }
       return MascotState.workFocus;
-    } else if (percentage < 0.70) {
+    } else if ((hour == 11 && current.minute > 30) || (hour >= 12 && hour < 14)) {
       return MascotState.lunch;
-    } else if (percentage < 0.88) {
+    } else if (hour >= 14 && (hour < 16 || (hour == 16 && current.minute <= 30))) {
+      return MascotState.afternoonSlump;
+    } else if ((hour == 16 && current.minute > 30) || hour == 17 || hour == 18 || (hour == 19 && current.minute <= 30)) {
       return MascotState.workout;
-    } else {
+    } else if ((hour == 19 && current.minute > 30) || hour == 20 || (hour == 21 && current.minute < 30)) {
       return MascotState.evening;
+    } else {
+      return MascotState.bedtime;
     }
   }
 

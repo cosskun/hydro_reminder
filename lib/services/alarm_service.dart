@@ -542,52 +542,6 @@ class AlarmService with WidgetsBindingObserver {
             // Fail silently
           }
         }
-
-        // On iOS, schedule persistent follow-up chime bursts so unacknowledged alarms ring repeatedly like a real alarm
-        if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-          try {
-            // T+1 min
-            await _notificationsPlugin.zonedSchedule(
-              id: id + 10001,
-              title: '⏰ $title',
-              body: '🚨 2. Çağrı: ${alarm.label} saati geldi, alarm çalmaya devam ediyor!',
-              scheduledDate: scheduledDate.add(const Duration(minutes: 1)),
-              notificationDetails: notificationDetails,
-              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-              payload: 'alarm_${alarm.id}',
-            );
-            // T+2 min
-            await _notificationsPlugin.zonedSchedule(
-              id: id + 20002,
-              title: '🚨 $title',
-              body: '🚨 3. Çağrı: Suyu içene kadar telefonun çalmaya devam edecek!',
-              scheduledDate: scheduledDate.add(const Duration(minutes: 2)),
-              notificationDetails: notificationDetails,
-              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-              payload: 'alarm_${alarm.id}',
-            );
-            // T+3 min
-            await _notificationsPlugin.zonedSchedule(
-              id: id + 30003,
-              title: '🚨 $title',
-              body: '🚨 Israrcı Alarm (4. Çağrı): Vücudunu susuz bırakma, hemen bir bardak su al!',
-              scheduledDate: scheduledDate.add(const Duration(minutes: 3)),
-              notificationDetails: notificationDetails,
-              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-              payload: 'alarm_${alarm.id}',
-            );
-            // T+5 min
-            await _notificationsPlugin.zonedSchedule(
-              id: id + 40004,
-              title: '🚨 $title',
-              body: '🚨 Son Çağrı (5. Çağrı): Su hedefin seni bekliyor, hemen aç ve onayla!',
-              scheduledDate: scheduledDate.add(const Duration(minutes: 5)),
-              notificationDetails: notificationDetails,
-              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-              payload: 'alarm_${alarm.id}',
-            );
-          } catch (_) {}
-        }
       }
     }
   }

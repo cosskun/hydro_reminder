@@ -42,4 +42,4 @@ jobs:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           file: build/app/outputs/flutter-apk/app-release.apk
           testers: furkanc28@gmail.com, rumeysa1166metin@gmail.com, mtn.rumeysa@gmail.com
-          releaseNotes: "Hydro Reminder v1.0.0+39: iOS araliksiz coklu alarm tonlari (multi-burst chimes), Apple Kestirmeler (Shortcuts) rehberi ve sincap maskotunun 100% metinsiz cizimleri entegre edildi."
+          releaseNotes: "Hydro Reminder v1.0.0+40: Gunun saatine gore dogal maskot rutin dongusu (sabah, ogle, ikindi, aksam, uyku) duzeltildi ve bildirim tekrarlari optimize edildi."

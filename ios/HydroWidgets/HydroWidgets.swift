@@ -31,6 +31,7 @@ struct WaterWidgetEntry: TimelineEntry {
     let preset3Emoji: String
     let widgetTheme: String
     let mascotType: String
+    var routineKey: String = ""
 }
 
 func loadKeychainPayload() -> [String: Any]? {
@@ -147,31 +148,84 @@ struct WaterTimelineProvider: TimelineProvider {
             preset2Emoji: "🥤",
             preset3Emoji: "🫙",
             widgetTheme: "ocean",
-            mascotType: "cat"
+            mascotType: "cat",
+            routineKey: "afternoon_slump"
         )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WaterWidgetEntry) -> Void) {
-        let entry = loadCurrentData()
+        let entry = loadCurrentData(for: Date())
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WaterWidgetEntry>) -> Void) {
-        let entry = loadCurrentData()
-        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date()
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        let calendar = Calendar.current
+        let now = Date()
+        var entries: [WaterWidgetEntry] = []
+
+        // 1. Current moment entry
+        entries.append(loadCurrentData(for: now))
+
+        // 2. Scheduled transition points for today and tomorrow
+        // Routine transition hours & minutes:
+        // 06:00 (morning), 09:31 (work focus), 11:31 (lunch), 14:00 (slump), 16:31 (workout), 19:31 (evening), 21:31 (bedtime), 00:01 (rollover)
+        let transitionSchedule: [(hour: Int, minute: Int)] = [
+            (0, 1),
+            (6, 0),
+            (9, 31),
+            (11, 31),
+            (14, 0),
+            (16, 31),
+            (19, 31),
+            (21, 31)
+        ]
+
+        for dayOffset in 0...1 {
+            guard let targetDay = calendar.date(byAdding: .day, value: dayOffset, to: now) else { continue }
+            for (h, m) in transitionSchedule {
+                var components = calendar.dateComponents([.year, .month, .day], from: targetDay)
+                components.hour = h
+                components.minute = m
+                components.second = 0
+                if let transitionDate = calendar.date(from: components), transitionDate > now {
+                    entries.append(loadCurrentData(for: transitionDate))
+                }
+            }
+        }
+
+        // Sort entries chronologically
+        entries.sort { $0.date < $1.date }
+
+        let nextUpdate = calendar.date(byAdding: .minute, value: 30, to: now) ?? now.addingTimeInterval(1800)
+        let timeline = Timeline(entries: entries, policy: .after(nextUpdate))
         completion(timeline)
     }
 
-    private func loadCurrentData() -> WaterWidgetEntry {
+    private func loadCurrentData(for date: Date = Date()) -> WaterWidgetEntry {
         let kcDict = loadKeychainPayload()
         let prefs = UserDefaults(suiteName: appGroupId)
 
-        let consumed = intValue(from: kcDict, prefs: prefs, key: "todayConsumed", defaultVal: 0)
+        // Check if date is from today or a future date (rollover check)
+        let syncDateStr = stringValue(from: kcDict, prefs: prefs, key: "syncDate", defaultVal: "")
+        let isDifferentDay: Bool
+        if !syncDateStr.isEmpty {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            if let syncDate = formatter.date(from: syncDateStr) {
+                isDifferentDay = !Calendar.current.isDate(date, inSameDayAs: syncDate)
+            } else {
+                isDifferentDay = false
+            }
+        } else {
+            isDifferentDay = false
+        }
+
+        let rawConsumed = intValue(from: kcDict, prefs: prefs, key: "todayConsumed", defaultVal: 0)
         let goal = intValue(from: kcDict, prefs: prefs, key: "dailyGoal", defaultVal: 2500)
-        let remaining = intValue(from: kcDict, prefs: prefs, key: "dailyRemaining", defaultVal: max(goal - consumed, 0))
+        let consumed = isDifferentDay ? 0 : rawConsumed
+        let remaining = isDifferentDay ? goal : intValue(from: kcDict, prefs: prefs, key: "dailyRemaining", defaultVal: max(goal - consumed, 0))
         let computedPercent = goal > 0 ? min(Int((Double(consumed) * 100.0) / Double(goal)), 200) : 0
-        let percent = intValue(
+        let percent = isDifferentDay ? 0 : intValue(
             from: kcDict,
             prefs: prefs,
             key: "percentage",
@@ -189,6 +243,39 @@ struct WaterTimelineProvider: TimelineProvider {
         let rawStatuses = stringValue(from: kcDict, prefs: prefs, key: "dayStatuses", defaultVal: "0,0,0,0,0")
         let statuses = rawStatuses.components(separatedBy: ",").map { Int($0) ?? 0 }
         let finalStatuses = statuses.count == 5 ? statuses : [0, 0, 0, 0, (consumed > 0 ? 1 : 0)]
+
+        // Time of day routine calculation
+        let hour = Calendar.current.component(.hour, from: date)
+        let minute = Calendar.current.component(.minute, from: date)
+
+        let routineKey: String
+        let routineEmoji: String
+        if percent >= 100 {
+            routineKey = "goal_reached"
+            routineEmoji = "🏆"
+        } else if (hour >= 22) || (hour < 6) || (hour == 21 && minute >= 30) {
+            routineKey = "bedtime"
+            routineEmoji = "🌙"
+        } else if (hour >= 6 && hour < 9) || (hour == 9 && minute <= 30) {
+            routineKey = "morning"
+            routineEmoji = "🥱"
+        } else if (hour == 9 && minute > 30) || hour == 10 || (hour == 11 && minute <= 30) {
+            routineKey = percent < 25 ? "morning" : "work_focus"
+            routineEmoji = "💻"
+        } else if (hour == 11 && minute > 30) || (hour >= 12 && hour < 14) {
+            routineKey = "lunch"
+            routineEmoji = "🥪"
+        } else if hour >= 14 && (hour < 16 || (hour == 16 && minute <= 30)) {
+            routineKey = "afternoon_slump"
+            routineEmoji = "😴"
+        } else if (hour == 16 && minute > 30) || hour == 17 || hour == 18 || (hour == 19 && minute <= 30) {
+            routineKey = "workout"
+            routineEmoji = "⚡"
+        } else {
+            // 19:30 to 21:30
+            routineKey = "evening"
+            routineEmoji = "🛋️"
+        }
 
         // Synchronized with DashboardScreen & WaterProvider.getHydrationStatus
         let statusEmoji: String
@@ -216,25 +303,28 @@ struct WaterTimelineProvider: TimelineProvider {
             statusSub = "Hemen bir bardak su al."
         }
 
-        let syncedEmoji = stringValue(from: kcDict, prefs: prefs, key: "mascotEmoji", defaultVal: statusEmoji)
-        let finalEmoji = syncedEmoji.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? statusEmoji : syncedEmoji
-        let syncedTitle = stringValue(from: kcDict, prefs: prefs, key: "mascotTitle", defaultVal: "")
-        let finalTitle: String
-        let finalSub: String
-        if !syncedTitle.isEmpty {
-            finalTitle = syncedTitle
-            finalSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
-        } else {
-            let rawSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
-            let parts = rawSub.components(separatedBy: " • ")
-            if parts.count >= 2 {
-                finalTitle = parts[0]
-                finalSub = parts[1]
-            } else {
-                finalTitle = statusTitle
-                finalSub = rawSub
-            }
+        var resolvedTitle = ""
+        var resolvedSub = ""
+
+        if let titles = prefs?.dictionary(forKey: "routineTitles") as? [String: String],
+           let title = titles[routineKey], !title.isEmpty {
+            resolvedTitle = title
         }
+        if let subs = prefs?.dictionary(forKey: "routineSubtitles") as? [String: String],
+           let sub = subs[routineKey], !sub.isEmpty {
+            resolvedSub = sub
+        }
+
+        if resolvedTitle.isEmpty {
+            let syncedTitle = stringValue(from: kcDict, prefs: prefs, key: "mascotTitle", defaultVal: "")
+            resolvedTitle = !syncedTitle.isEmpty ? syncedTitle : statusTitle
+        }
+        if resolvedSub.isEmpty {
+            resolvedSub = stringValue(from: kcDict, prefs: prefs, key: "mascotSubtitle", defaultVal: statusSub)
+        }
+
+        let syncedEmoji = stringValue(from: kcDict, prefs: prefs, key: "mascotEmoji", defaultVal: statusEmoji)
+        let finalEmoji = !routineEmoji.isEmpty ? routineEmoji : (syncedEmoji.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? statusEmoji : syncedEmoji)
 
         let p1Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset1Emoji", defaultVal: "🥛")
         let p2Emoji = stringValue(from: kcDict, prefs: prefs, key: "preset2Emoji", defaultVal: "🥤")
@@ -243,7 +333,7 @@ struct WaterTimelineProvider: TimelineProvider {
         let mascotType = stringValue(from: kcDict, prefs: prefs, key: "mascotType", defaultVal: "cat")
 
         return WaterWidgetEntry(
-            date: Date(),
+            date: date,
             todayConsumed: consumed,
             dailyGoal: goal > 0 ? goal : 2500,
             dailyRemaining: remaining >= 0 ? remaining : 0,
@@ -255,13 +345,14 @@ struct WaterTimelineProvider: TimelineProvider {
             dayLabels: finalLabels,
             dayStatuses: finalStatuses,
             mascotEmoji: finalEmoji,
-            mascotTitle: finalTitle,
-            mascotSubtitle: finalSub,
+            mascotTitle: resolvedTitle,
+            mascotSubtitle: resolvedSub,
             preset1Emoji: p1Emoji,
             preset2Emoji: p2Emoji,
             preset3Emoji: p3Emoji,
             widgetTheme: widgetTheme,
-            mascotType: mascotType
+            mascotType: mascotType,
+            routineKey: routineKey
         )
     }
 }
@@ -426,8 +517,14 @@ private func widgetCardGradient(for percentage: Int, theme: String = "ocean") ->
     }
 }
 
-func getSharedMascotImage() -> UIImage? {
+func getSharedMascotImage(routine: String? = nil) -> UIImage? {
     if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) {
+        if let routine = routine, !routine.isEmpty {
+            let routineFileURL = containerURL.appendingPathComponent("widget_mascot_\(routine).png")
+            if let data = try? Data(contentsOf: routineFileURL), let img = UIImage(data: data) {
+                return img
+            }
+        }
         let fileURL = containerURL.appendingPathComponent("widget_mascot.png")
         if let data = try? Data(contentsOf: fileURL), let img = UIImage(data: data) {
             return img
@@ -453,7 +550,7 @@ struct MascotWidgetView: View {
     let size: CGFloat
 
     var body: some View {
-        if let uiImage = getSharedMascotImage() {
+        if let uiImage = getSharedMascotImage(routine: entry.routineKey) {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFit()
@@ -474,7 +571,7 @@ struct MascotSquareCardView: View {
 
     var body: some View {
         ZStack {
-            if let uiImage = getSharedMascotImage() {
+            if let uiImage = getSharedMascotImage(routine: entry.routineKey) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
@@ -507,7 +604,7 @@ struct MascotHeroView: View {
     var width: CGFloat? = nil
 
     var body: some View {
-        if let uiImage = getSharedMascotImage() {
+        if let uiImage = getSharedMascotImage(routine: entry.routineKey) {
             Image(uiImage: uiImage)
                 .resizable()
                 .scaledToFit()
@@ -545,7 +642,7 @@ struct WaterProgressWidgetEntryView: View {
             GeometryReader { geo in
                 ZStack {
                     // 1. Full-Bleed Mascot Illustration Covering the Entire Square Widget
-                    if let uiImage = getSharedMascotImage() {
+                    if let uiImage = getSharedMascotImage(routine: entry.routineKey) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
@@ -825,7 +922,7 @@ struct WaterMiniWidgetEntryView: View {
             GeometryReader { geo in
                 ZStack {
                     // Full-Bleed Mascot Illustration
-                    if let uiImage = getSharedMascotImage() {
+                    if let uiImage = getSharedMascotImage(routine: entry.routineKey) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()

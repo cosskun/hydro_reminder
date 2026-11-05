@@ -190,6 +190,41 @@ class WidgetService {
     }
   }
 
+  static String? _cachedMascotType;
+  static Map<String, String> _cachedRoutineBase64 = {};
+
+  Future<Map<String, String>> loadRoutineImages(String mascotType) async {
+    if (mascotType == _cachedMascotType && _cachedRoutineBase64.isNotEmpty) {
+      return _cachedRoutineBase64;
+    }
+    final result = <String, String>{};
+    const routineStates = [
+      'morning',
+      'work_focus',
+      'lunch',
+      'afternoon_slump',
+      'workout',
+      'evening',
+      'bedtime',
+      'goal_reached',
+      'thirsty',
+    ];
+    for (final suffix in routineStates) {
+      final assetPath = 'assets/mascots/${mascotType}_$suffix.png';
+      try {
+        final ByteData byteData = await rootBundle.load(assetPath);
+        final rawBytes = byteData.buffer.asUint8List();
+        final resizedBytes = await _resizeAssetBytes(rawBytes, targetSize: 512);
+        result[suffix] = base64Encode(resizedBytes);
+      } catch (e) {
+        debugPrint('Error loading routine asset $assetPath: $e');
+      }
+    }
+    _cachedMascotType = mascotType;
+    _cachedRoutineBase64 = result;
+    return result;
+  }
+
   // Sync latest hydration data across all widgets (including streak & 5-day tracker)
   Future<void> updateWidgets({
     required int todayConsumed,
@@ -211,6 +246,8 @@ class WidgetService {
     String widgetTheme = 'ocean',
     String mascotType = 'cat',
     String? imageAsset,
+    Map<String, String>? routineTitles,
+    Map<String, String>? routineSubtitles,
   }) async {
     if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) return;
 
@@ -237,6 +274,15 @@ class WidgetService {
         }
       }
 
+      Map<String, String>? routineBase64;
+      if (Platform.isIOS) {
+        try {
+          routineBase64 = await loadRoutineImages(mascotType);
+        } catch (e) {
+          debugPrint('Error loading routine images for iOS widget: $e');
+        }
+      }
+
       await HomeWidget.saveWidgetData<int>('todayConsumed', todayConsumed);
       await HomeWidget.saveWidgetData<int>('dailyGoal', dailyGoal);
       await HomeWidget.saveWidgetData<int>('dailyRemaining', dailyRemaining);
@@ -259,6 +305,8 @@ class WidgetService {
 
       if (Platform.isIOS) {
         try {
+          final now = DateTime.now();
+          final syncDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
           await _platformChannel.invokeMethod('syncIosWidgetData', {
             'todayConsumed': todayConsumed,
             'dailyGoal': dailyGoal,
@@ -279,6 +327,11 @@ class WidgetService {
             'widgetTheme': widgetTheme,
             'mascotType': mascotType,
             'mascotBase64': mascotBase64 ?? '',
+            'routineBase64': routineBase64 ?? {},
+            'routineTitles': routineTitles ?? {},
+            'routineSubtitles': routineSubtitles ?? {},
+            'syncDate': syncDate,
+            'syncTimestamp': now.millisecondsSinceEpoch,
           });
         } catch (e) {
           debugPrint('syncIosWidgetData error: $e');

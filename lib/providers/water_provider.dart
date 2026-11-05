@@ -1003,6 +1003,31 @@ class WaterProvider with ChangeNotifier {
       final p2Emoji = WaterProvider.getPresetMeta(preset2)['emoji'] ?? '🥤';
       final p3Emoji = WaterProvider.getPresetMeta(preset3)['emoji'] ?? '🫙';
 
+      final routineTitles = <String, String>{};
+      final routineSubtitles = <String, String>{};
+      final isEn = _language == 'en';
+      for (final state in [
+        MascotState.morning,
+        MascotState.workFocus,
+        MascotState.lunch,
+        MascotState.afternoonSlump,
+        MascotState.workout,
+        MascotState.evening,
+        MascotState.bedtime,
+        MascotState.goalReached,
+        MascotState.thirsty,
+      ]) {
+        final d = MascotResolver.getRoutineDialogue(
+          mascotId: _mascotType,
+          state: state,
+          isEn: isEn,
+          streakDays: displayStreak,
+          isGoalCompleted: todayPercentage >= 1.0,
+        );
+        routineTitles[state.assetSuffix] = d['title'] ?? '';
+        routineSubtitles[state.assetSuffix] = d['message'] ?? '';
+      }
+
       await WidgetService().updateWidgets(
         todayConsumed: todayConsumed,
         dailyGoal: dailyGoal,
@@ -1023,6 +1048,8 @@ class WaterProvider with ChangeNotifier {
         widgetTheme: effectiveThemePreset,
         mascotType: _mascotType,
         imageAsset: widgetImageAsset,
+        routineTitles: routineTitles,
+        routineSubtitles: routineSubtitles,
       );
     } catch (_) {}
   }

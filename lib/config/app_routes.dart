@@ -42,7 +42,7 @@ class MainNavigationLayout extends StatefulWidget {
   State<MainNavigationLayout> createState() => MainNavigationLayoutState();
 }
 
-class MainNavigationLayoutState extends State<MainNavigationLayout> {
+class MainNavigationLayoutState extends State<MainNavigationLayout> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   void setTabIndex(int index) {
@@ -56,9 +56,27 @@ class MainNavigationLayoutState extends State<MainNavigationLayout> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkPermissionsSilently();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (mounted) {
+        final provider = Provider.of<WaterProvider>(context, listen: false);
+        provider.notifyListeners();
+        provider.syncWidgetsNow();
+      }
+    }
   }
 
   Future<void> _checkPermissionsSilently() async {

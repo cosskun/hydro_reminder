@@ -108,6 +108,31 @@ import ActivityKit
         try? data.write(to: fileURL)
     }
 
+    // 3.5.1 Save all routine mascot images to App Group container
+    if let routineDict = args["routineBase64"] as? [String: String],
+       let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) {
+        for (routineName, b64) in routineDict {
+            if let data = Data(base64Encoded: b64) {
+                let fileURL = containerURL.appendingPathComponent("widget_mascot_\(routineName).png")
+                try? data.write(to: fileURL)
+            }
+        }
+    }
+
+    // 3.5.2 Save routine titles, subtitles and sync date to App Group UserDefaults
+    if let prefs = UserDefaults(suiteName: appGroupId) {
+        if let titles = args["routineTitles"] as? [String: String] {
+            prefs.set(titles, forKey: "routineTitles")
+        }
+        if let subtitles = args["routineSubtitles"] as? [String: String] {
+            prefs.set(subtitles, forKey: "routineSubtitles")
+        }
+        if let syncDate = args["syncDate"] as? String {
+            prefs.set(syncDate, forKey: "syncDate")
+        }
+        prefs.synchronize()
+    }
+
     // 3.6. Keep any running Live Activity up to date with new progress
     if #available(iOS 16.1, *) {
       #if canImport(ActivityKit)

@@ -50,6 +50,7 @@ class StorageService {
   static const String _keyHotWeatherBoost = 'is_hot_weather_boost_active';
   static const String _keyIsSiriShortcutsEnabled = 'ios_siri_shortcuts_enabled';
   static const String _keyIsBackTapEnabled = 'ios_back_tap_enabled';
+  static const String _keyIsAutoFullScreenEnabled = 'ios_auto_fullscreen_enabled';
   static const String _keyAppleHealthEnabled = 'apple_health_sync_enabled';
   static const String _keyAppleHealthAutoGoal = 'apple_health_auto_goal_enabled';
   static const String _keyIsOngoingNotificationEnabled = 'ongoing_notification_enabled';
@@ -334,6 +335,22 @@ class StorageService {
       'isSiriEnabled': prefs.getBool(_keyIsSiriShortcutsEnabled) ?? true,
       'isBackTapEnabled': prefs.getBool(_keyIsBackTapEnabled) ?? true,
     };
+  }
+
+  // Save iOS Auto Full Screen Wakeup Setting
+  Future<void> saveAutoFullScreenEnabled(bool isEnabled) async {
+    final prefs = _prefsSync;
+    await prefs.setBool(_keyIsAutoFullScreenEnabled, isEnabled);
+  }
+
+  // Get iOS Auto Full Screen Wakeup Setting
+  bool getAutoFullScreenEnabled() {
+    try {
+      final prefs = _prefsSync;
+      return prefs.getBool(_keyIsAutoFullScreenEnabled) ?? false;
+    } catch (_) {
+      return false;
+    }
   }
 
   // Save Apple Health Settings

@@ -1091,6 +1091,15 @@ class AlarmService with WidgetsBindingObserver {
     } catch (_) {}
   }
 
+  // Open Apple Shortcuts App directly (shortcuts://)
+  Future<void> openShortcutsApp() async {
+    if (kIsWeb) return;
+    try {
+      const channel = MethodChannel('com.antigravity.hydroReminder/alarm_haptics');
+      await channel.invokeMethod('openShortcutsApp');
+    } catch (_) {}
+  }
+
   // Cancel all notifications
   Future<void> cancelAllNotifications() async {
     if (kIsWeb) return;

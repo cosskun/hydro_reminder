@@ -205,6 +205,15 @@ import ActivityKit
           UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
         result(true)
+      } else if call.method == "openShortcutsApp" {
+        if let url = URL(string: "shortcuts://") {
+          if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+          } else if let appStoreUrl = URL(string: "https://apps.apple.com/app/shortcuts/id915254992") {
+            UIApplication.shared.open(appStoreUrl, options: [:], completionHandler: nil)
+          }
+        }
+        result(true)
       } else if call.method == "consumeInitialShortcutUri" {
         let uri = AppDelegate.pendingShortcutUri
         AppDelegate.pendingShortcutUri = nil

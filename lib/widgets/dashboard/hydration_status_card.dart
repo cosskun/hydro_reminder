@@ -22,13 +22,23 @@ class HydrationStatusCard extends StatefulWidget {
 }
 
 class _HydrationStatusCardState extends State<HydrationStatusCard> {
-  bool _showEnergyVisual = false;
+  bool _showRoutinePreview = false;
+
+  @override
+  void didUpdateWidget(covariant HydrationStatusCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When hydration progress or mascot changes, snap back to energy ladder visual
+    if (oldWidget.status['energyPercentage'] != widget.status['energyPercentage'] ||
+        oldWidget.status['imageAsset'] != widget.status['imageAsset']) {
+      _showRoutinePreview = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final emoji = widget.status['emoji'] ?? '💧';
-    final routineAsset = widget.status['routineImageAsset'] ?? widget.status['imageAsset'];
-    final energyAsset = widget.status['energyImageAsset'];
+    final energyAsset = widget.status['energyImageAsset'] ?? widget.status['imageAsset'];
+    final routineAsset = widget.status['routineImageAsset'];
 
     final bool canToggle = energyAsset != null &&
         energyAsset.isNotEmpty &&
@@ -36,26 +46,28 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
         routineAsset.isNotEmpty &&
         energyAsset != routineAsset;
 
-    final displayAsset = (_showEnergyVisual && canToggle)
-        ? energyAsset
-        : (routineAsset ?? widget.status['imageAsset']);
+    // In-app Dashboard displays Energy Level (water-intake ladder) by default.
+    final displayAsset = (_showRoutinePreview && canToggle)
+        ? (routineAsset ?? energyAsset)
+        : (energyAsset ?? widget.status['imageAsset']);
 
-    final displayTitle = (_showEnergyVisual && canToggle && widget.status['energyTitle']?.isNotEmpty == true)
-        ? widget.status['energyTitle']!
-        : (widget.status['routineTitle'] ?? widget.status['title'] ?? 'Durumunuz');
+    final displayTitle = (_showRoutinePreview && canToggle && widget.status['routineTitle']?.isNotEmpty == true)
+        ? widget.status['routineTitle']!
+        : (widget.status['energyTitle'] ?? widget.status['title'] ?? 'Durumunuz');
 
-    final displayMessage = (_showEnergyVisual && canToggle && widget.status['energyMessage']?.isNotEmpty == true)
-        ? widget.status['energyMessage']!
-        : (widget.status['routineMessage'] ?? widget.status['message'] ?? '');
+    final displayMessage = (_showRoutinePreview && canToggle && widget.status['routineMessage']?.isNotEmpty == true)
+        ? widget.status['routineMessage']!
+        : (widget.status['energyMessage'] ?? widget.status['message'] ?? '');
 
     final energyPercentage = widget.status['energyPercentage'] ?? '0';
+    final isEn = widget.status['lang'] == 'en';
 
     return GestureDetector(
       onTap: canToggle
           ? () {
               HapticFeedback.lightImpact();
               setState(() {
-                _showEnergyVisual = !_showEnergyVisual;
+                _showRoutinePreview = !_showRoutinePreview;
               });
             }
           : null,
@@ -174,7 +186,9 @@ class _HydrationStatusCardState extends State<HydrationStatusCard> {
                           ),
                         ),
                         child: Text(
-                          '⚡ %$energyPercentage',
+                          _showRoutinePreview
+                              ? (isEn ? '🕒 Routine' : '🕒 Rutin')
+                              : '⚡ %$energyPercentage',
                           style: TextStyle(
                             fontSize: widget.isCompact ? 9.5 : 10.5,
                             fontWeight: FontWeight.w800,

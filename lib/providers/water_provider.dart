@@ -148,6 +148,7 @@ class WaterProvider with ChangeNotifier {
       'routineTitle': dialogue.routineTitle,
       'routineMessage': dialogue.routineMessage,
       'state': dialogue.state.name,
+      'lang': lang,
     };
   }
 
